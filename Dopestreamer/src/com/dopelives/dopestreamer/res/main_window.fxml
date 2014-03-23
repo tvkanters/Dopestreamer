@@ -1,0 +1,41 @@
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.image.*?>
+
+<VBox fx:controller="com.dopelives.dopestreamer.MainWindowController"
+	xmlns:fx="http://javafx.com/fxml" styleClass="root">
+
+	<stylesheets>
+		<URL value="@main_window.css" />
+	</stylesheets>
+
+
+	<Text id="header" text="Dopestreamer 420" />
+
+
+	<fx:define>
+		<ToggleGroup fx:id="channel" />
+	</fx:define>
+
+	<RadioButton selected="true" text="Dopelives" toggleGroup="$channel" />
+
+	<HBox>
+		<RadioButton fx:id="channelCustom" toggleGroup="$channel" />
+
+		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" />
+	</HBox>
+
+	<ComboBox fx:id="streamServiceSelection" />
+
+    <Button text="Live!" onAction="#onLiveClicked" />
+
+</VBox>
