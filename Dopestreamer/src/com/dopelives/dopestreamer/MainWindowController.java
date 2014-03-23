@@ -46,22 +46,11 @@ public class MainWindowController implements Initializable {
         streamServices.add(new StreamService("Twitch", "twitch.png"));
 
         // Make the stream services look nice within the combo box
+        streamServiceSelection.setButtonCell(new StreamServiceCell());
         streamServiceSelection.setCellFactory(new Callback<ListView<StreamService>, ListCell<StreamService>>() {
             @Override
             public ListCell<StreamService> call(final ListView<StreamService> param) {
-                return new ListCell<StreamService>() {
-                    @Override
-                    public void updateItem(final StreamService item, final boolean empty) {
-                        super.updateItem(item, empty);
-
-                        if (item == null) {
-                            return;
-                        }
-
-                        setText(item.label);
-                        setGraphic(new ImageView(new Image(Initialiser.IMAGE_FOLDER + item.icon)));
-                    }
-                };
+                return new StreamServiceCell();
             }
         });
 
@@ -86,6 +75,23 @@ public class MainWindowController implements Initializable {
         public StreamService(final String label, final String icon) {
             this.label = label;
             this.icon = icon;
+        }
+    }
+
+    /**
+     * A combo box cell that shows the label and icon of stream services.
+     */
+    private class StreamServiceCell extends ListCell<StreamService> {
+        @Override
+        public void updateItem(final StreamService item, final boolean empty) {
+            super.updateItem(item, empty);
+
+            if (item == null) {
+                return;
+            }
+
+            setText(item.label);
+            setGraphic(new ImageView(new Image(Initialiser.IMAGE_FOLDER + item.icon)));
         }
     }
 }
