@@ -33,6 +33,8 @@
 
 		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" />
 	</HBox>
+	
+	<TextField fx:id="streamQuality" promptText="Stream quality (optional)" maxWidth="150" />
 
 	<ComboBox fx:id="streamServiceSelection" />
 

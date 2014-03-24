@@ -27,6 +27,8 @@ public class MainWindowController implements Initializable {
     private TextField channelCustomInput;
     @FXML
     private ComboBox<StreamService> streamServiceSelection;
+    @FXML
+    private TextField streamQuality;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -80,7 +82,14 @@ public class MainWindowController implements Initializable {
 					dopelivesName = "youfuckedup";
 				}
 				
-				Runtime.getRuntime().exec("livestreamer -l debug " + selected.url + dopelivesName + " best");
+				// Check if user has selected a quality setting. If not, then choose best
+				if(streamQuality.getLength() <= 0){
+				    Runtime.getRuntime().exec("livestreamer -l debug " + selected.url + dopelivesName + " best");
+				}
+				else
+				{
+				   Runtime.getRuntime().exec("livestreamer -l debug " + selected.url + dopelivesName + " " + streamQuality.getText());
+				}
 			}
 			catch(IOException e){
 				//write error handling
