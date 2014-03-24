@@ -80,7 +80,7 @@ public class MainWindowController implements Initializable {
 					dopelivesName = "youfuckedup";
 				}
 				
-				Runtime.getRuntime().exec("livestreamer -l debug " + selected.link + dopelivesName + " best");
+				Runtime.getRuntime().exec("livestreamer -l debug " + selected.url + dopelivesName + " best");
 			}
 			catch(IOException e){
 				//write error handling
@@ -100,13 +100,13 @@ public class MainWindowController implements Initializable {
         public final String label;
         /** The icon to show in the combo box */
         public final String icon;
-        /** Link to the stream */
-        public final String link;
+        /** The URL that Livestreamer use to choose the correct stream service plugin */
+        public final String url;
         
-        public StreamService(final String label, final String icon, final String link) {
+        public StreamService(final String label, final String icon, final String url) {
             this.label = label;
             this.icon = icon;
-            this.link = link;
+            this.url = url;
         }
     }
 
