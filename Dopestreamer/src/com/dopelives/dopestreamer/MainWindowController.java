@@ -1,5 +1,6 @@
 package com.dopelives.dopestreamer;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -42,8 +43,8 @@ public class MainWindowController implements Initializable {
 
         // Add stream services to the combo box
         final ObservableList<StreamService> streamServices = streamServiceSelection.getItems();
-        streamServices.add(new StreamService("Hitbox", "hitbox.png"));
-        streamServices.add(new StreamService("Twitch", "twitch.png"));
+        streamServices.add(new StreamService("Hitbox", "hitbox.png", "hitbox.tv/"));
+        streamServices.add(new StreamService("Twitch", "twitch.png", "twitch.tv/"));
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new StreamServiceCell());
@@ -56,11 +57,39 @@ public class MainWindowController implements Initializable {
 
         // Select the first stream service by default
         streamServiceSelection.setValue(streamServices.get(0));
+        
     }
 
-    @FXML
+	@FXML
     protected void onLiveClicked(final ActionEvent event) {
         // Start stream
+		if(/**Check radio buttons */true){
+			StreamService selected = streamServiceSelection.getValue();
+			try{
+				//Accounting for different dopelives stream names
+				String dopelivesName = "";
+				if(selected.label == "Hitbox"){
+					dopelivesName = "dopefish";
+				}
+				else if(selected.label == "Twitch")
+				{
+					dopelivesName = "dopelives";
+				}
+				else
+				{
+					dopelivesName = "youfuckedup";
+				}
+				
+				Runtime.getRuntime().exec("livestreamer -l debug " + selected.link + dopelivesName + " best");
+			}
+			catch(IOException e){
+				//write error handling
+			}
+		}
+		else
+		{
+			//Start process with the string from textbox
+		}
     }
 
     /**
@@ -71,10 +100,13 @@ public class MainWindowController implements Initializable {
         public final String label;
         /** The icon to show in the combo box */
         public final String icon;
-
-        public StreamService(final String label, final String icon) {
+        /** Link to the stream */
+        public final String link;
+        
+        public StreamService(final String label, final String icon, final String link) {
             this.label = label;
             this.icon = icon;
+            this.link = link;
         }
     }
 
