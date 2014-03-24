@@ -1,12 +1,11 @@
 package com.dopelives.dopestreamer;
 
-import java.io.IOException;
 import java.net.URL;
+import java.security.InvalidParameterException;
 import java.util.ResourceBundle;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,9 +14,11 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Callback;
+
+import com.dopelives.dopestreamer.streamservices.StreamService;
+import com.dopelives.dopestreamer.streamservices.StreamServiceManager;
 
 public class MainWindowController implements Initializable {
 
@@ -43,10 +44,9 @@ public class MainWindowController implements Initializable {
             }
         });
 
-        // Add stream services to the combo box
-        final ObservableList<StreamService> streamServices = streamServiceSelection.getItems();
-        streamServices.add(new StreamService("Hitbox", "hitbox.png", "hitbox.tv/"));
-        streamServices.add(new StreamService("Twitch", "twitch.png", "twitch.tv/"));
+        // Add stream services to the combo box and select the first
+        streamServiceSelection.getItems().addAll(StreamServiceManager.getStreamServices());
+        streamServiceSelection.getSelectionModel().select(0);
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new StreamServiceCell());
@@ -57,65 +57,20 @@ public class MainWindowController implements Initializable {
             }
         });
 
-        // Select the first stream service by default
-        streamServiceSelection.setValue(streamServices.get(0));
-        
     }
 
-	@FXML
+    @FXML
     protected void onLiveClicked(final ActionEvent event) {
         // Start stream
-		if(/**Check radio buttons */true){
-			StreamService selected = streamServiceSelection.getValue();
-			try{
-				//Accounting for different dopelives stream names
-				String dopelivesName = "";
-				if(selected.label == "Hitbox"){
-					dopelivesName = "dopefish";
-				}
-				else if(selected.label == "Twitch")
-				{
-					dopelivesName = "dopelives";
-				}
-				else
-				{
-					dopelivesName = "youfuckedup";
-				}
-				
-				// Check if user has selected a quality setting. If not, then choose best
-				if(streamQuality.getLength() <= 0){
-				    Runtime.getRuntime().exec("livestreamer -l debug " + selected.url + dopelivesName + " best");
-				}
-				else
-				{
-				   Runtime.getRuntime().exec("livestreamer -l debug " + selected.url + dopelivesName + " " + streamQuality.getText());
-				}
-			}
-			catch(IOException e){
-				//write error handling
-			}
-		}
-		else
-		{
-			//Start process with the string from textbox
-		}
-    }
-
-    /**
-     * The data class for a stream service that can be selected in the combo box.
-     */
-    private class StreamService {
-        /** The label to show in the combo box */
-        public final String label;
-        /** The icon to show in the combo box */
-        public final String icon;
-        /** The URL that Livestreamer use to choose the correct stream service plugin */
-        public final String url;
-        
-        public StreamService(final String label, final String icon, final String url) {
-            this.label = label;
-            this.icon = icon;
-            this.url = url;
+        final StreamService selectedStreamService = streamServiceSelection.getValue();
+        if (channelCustom.isSelected()) {
+            try {
+                StreamServiceManager.startStream(selectedStreamService, channelCustomInput.getText());
+            } catch (final InvalidParameterException ex) {
+                // TODO: Tell user that a channel must be provided
+            }
+        } else {
+            StreamServiceManager.startStream(selectedStreamService);
         }
     }
 
@@ -131,8 +86,9 @@ public class MainWindowController implements Initializable {
                 return;
             }
 
-            setText(item.label);
-            setGraphic(new ImageView(new Image(Initialiser.IMAGE_FOLDER + item.icon)));
+            setText(item.getLabel());
+            setGraphic(new ImageView(item.getIcon()));
         }
     }
+
 }
