@@ -25,9 +25,11 @@ public class StreamServiceManager {
      * 
      * @param streamService
      *            The service to start
+     * @param quality
+     *            The quality to show the stream in
      */
-    public static void startStream(final StreamService streamService) {
-        startStream(streamService, streamService.getDefaultChannel());
+    public static void startStream(final StreamService streamService, final Quality quality) {
+        startStream(streamService, streamService.getDefaultChannel(), quality);
     }
 
     /**
@@ -37,18 +39,21 @@ public class StreamServiceManager {
      *            The service to start
      * @param channel
      *            The channel to start on the service
+     * @param quality
+     *            The quality to show the stream in
      * 
      * @throws InvalidParameterException
      *             Thrown when the provided channel isn't valid
      */
-    public static void startStream(final StreamService streamService, final String channel)
+    public static void startStream(final StreamService streamService, final String channel, final Quality quality)
             throws InvalidParameterException {
         if (channel == null || channel.length() == 0) {
             throw new InvalidParameterException("Channel cannot be empty");
         }
 
         try {
-            Runtime.getRuntime().exec("livestreamer -l debug " + streamService.getUrl() + channel + " best");
+            Runtime.getRuntime().exec(
+                    "livestreamer -l debug " + streamService.getUrl() + channel + " " + quality.getCommand());
         } catch (final IOException ex) {
             ex.printStackTrace();
         }

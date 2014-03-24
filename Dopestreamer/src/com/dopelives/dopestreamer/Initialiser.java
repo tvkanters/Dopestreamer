@@ -2,8 +2,8 @@ package com.dopelives.dopestreamer;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class Initialiser extends Application {
@@ -14,7 +14,7 @@ public class Initialiser extends Application {
     public static final String IMAGE_FOLDER = RESOURCE_FOLDER + "images/";
 
     /** The window title */
-    private static final String TITLE = "Dopestreamer 420";
+    private static final String TITLE = "Dopestreamer";
 
     public static void main(final String[] args) {
         Application.launch(Initialiser.class, args);
@@ -22,10 +22,11 @@ public class Initialiser extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final Parent root = FXMLLoader.load(getClass().getResource(RESOURCE_FOLDER + "main_window.fxml"));
+        final VBox root = FXMLLoader.load(getClass().getResource(RESOURCE_FOLDER + "main_window.fxml"));
 
         stage.setTitle(TITLE);
-        stage.setScene(new Scene(root, 300, 275));
+        stage.setScene(new Scene(root, 300, 300));
+        stage.setResizable(false);
         stage.show();
     }
 

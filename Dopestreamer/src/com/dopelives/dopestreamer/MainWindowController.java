@@ -14,9 +14,11 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.util.Callback;
 
+import com.dopelives.dopestreamer.combobox.QualityCell;
+import com.dopelives.dopestreamer.combobox.StreamServiceCell;
+import com.dopelives.dopestreamer.streamservices.Quality;
 import com.dopelives.dopestreamer.streamservices.StreamService;
 import com.dopelives.dopestreamer.streamservices.StreamServiceManager;
 
@@ -29,7 +31,7 @@ public class MainWindowController implements Initializable {
     @FXML
     private ComboBox<StreamService> streamServiceSelection;
     @FXML
-    private TextField streamQuality;
+    private ComboBox<Quality> qualitySelection;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -57,37 +59,34 @@ public class MainWindowController implements Initializable {
             }
         });
 
+        // Add qualities to the combo box and select the first
+        qualitySelection.getItems().addAll(Quality.values());
+        qualitySelection.getSelectionModel().select(0);
+
+        // Make the qualities look nice within the combo box
+        qualitySelection.setButtonCell(new QualityCell());
+        qualitySelection.setCellFactory(new Callback<ListView<Quality>, ListCell<Quality>>() {
+            @Override
+            public ListCell<Quality> call(final ListView<Quality> param) {
+                return new QualityCell();
+            }
+        });
     }
 
     @FXML
     protected void onLiveClicked(final ActionEvent event) {
         // Start stream
         final StreamService selectedStreamService = streamServiceSelection.getValue();
+        final Quality quality = qualitySelection.getValue();
+
         if (channelCustom.isSelected()) {
             try {
-                StreamServiceManager.startStream(selectedStreamService, channelCustomInput.getText());
+                StreamServiceManager.startStream(selectedStreamService, channelCustomInput.getText(), quality);
             } catch (final InvalidParameterException ex) {
                 // TODO: Tell user that a channel must be provided
             }
         } else {
-            StreamServiceManager.startStream(selectedStreamService);
-        }
-    }
-
-    /**
-     * A combo box cell that shows the label and icon of stream services.
-     */
-    private class StreamServiceCell extends ListCell<StreamService> {
-        @Override
-        public void updateItem(final StreamService item, final boolean empty) {
-            super.updateItem(item, empty);
-
-            if (item == null) {
-                return;
-            }
-
-            setText(item.getLabel());
-            setGraphic(new ImageView(item.getIcon()));
+            StreamServiceManager.startStream(selectedStreamService, quality);
         }
     }
 

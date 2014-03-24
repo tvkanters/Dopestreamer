@@ -10,6 +10,7 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.image.*?>
+<?import javafx.scene.text.Text?>
 
 <VBox fx:controller="com.dopelives.dopestreamer.MainWindowController"
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
@@ -17,27 +18,36 @@
 	<stylesheets>
 		<URL value="@main_window.css" />
 	</stylesheets>
-
-
-	<Text id="header" text="Dopestreamer 420" />
-
-
 	<fx:define>
-		<ToggleGroup fx:id="channel" />
+	   <ToggleGroup fx:id="channelGroup" />
 	</fx:define>
 
-	<RadioButton selected="true" text="Dopelives" toggleGroup="$channel" />
+
+	<Text id="header" text="Dopestreamer" />
+
 
 	<HBox>
-		<RadioButton fx:id="channelCustom" toggleGroup="$channel" />
-
-		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" />
+		<VBox prefWidth="160">
+			<Label text="Stream service" />
+			<ComboBox fx:id="streamServiceSelection" prefWidth="150" prefHeight="30" />
+		</VBox>
+		<VBox>
+			<Label text="Quality" />
+			<ComboBox fx:id="qualitySelection" prefWidth="100" prefHeight="30"  />
+		</VBox>
 	</HBox>
-	
-	<TextField fx:id="streamQuality" promptText="Stream quality (optional)" maxWidth="150" />
 
-	<ComboBox fx:id="streamServiceSelection" />
 
-    <Button text="Live!" onAction="#onLiveClicked" />
+	<Label text="Channel" />
+	<RadioButton selected="true" text="Dopelives" toggleGroup="$channelGroup" />
+    <VBox prefHeight="5" />
+	<HBox alignment="CENTER_LEFT">
+		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
+		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefHeight="30" />
+	</HBox>
+
+
+    <VBox prefHeight="20" />
+	<Button id="liveButton" text="Live!" onAction="#onLiveClicked" prefWidth="260" prefHeight="50" />
 
 </VBox>
