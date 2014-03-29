@@ -1,10 +1,12 @@
 package com.dopelives.dopestreamer.streamservices;
 
-import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.dopelives.dopestreamer.shell.Console;
+import com.dopelives.dopestreamer.shell.Shell;
 
 /**
  * A manager for all available stream services.
@@ -22,7 +24,7 @@ public class StreamServiceManager {
 
     /**
      * Starts a stream for the default channel at the given service.
-     * 
+     *
      * @param streamService
      *            The service to start
      * @param quality
@@ -34,14 +36,14 @@ public class StreamServiceManager {
 
     /**
      * Starts a stream for the given channel at the service.
-     * 
+     *
      * @param streamService
      *            The service to start
      * @param channel
      *            The channel to start on the service
      * @param quality
      *            The quality to show the stream in
-     * 
+     *
      * @throws InvalidParameterException
      *             Thrown when the provided channel isn't valid
      */
@@ -51,17 +53,16 @@ public class StreamServiceManager {
             throw new InvalidParameterException("Channel cannot be empty");
         }
 
-        try {
-            Runtime.getRuntime().exec(
-                    "livestreamer -l debug " + streamService.getUrl() + channel + " " + quality.getCommand());
-        } catch (final IOException ex) {
-            ex.printStackTrace();
-        }
+        final Console console = Shell.getInstance().createConsole(
+                "livestreamer -l debug --retry-streams 2 " + streamService.getUrl() + channel + " "
+                        + quality.getCommand());
+        // TODO: Add listener to console for GUI updates
+        console.start();
     }
 
     /**
      * Registers a stream service for global use.
-     * 
+     *
      * @param streamService
      *            The stream service to register
      */
