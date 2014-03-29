@@ -95,6 +95,20 @@ public abstract class Shell implements ConsoleListener {
     }
 
     /**
+     * Executes the shell command given and waits for it to finish.
+     *
+     * @param command
+     *            The command to execute.
+     */
+    public void executeCommand(final String command) {
+        try {
+            getProcessBuilder(command).start().waitFor();
+        } catch (final IOException | InterruptedException ex) {
+            throw new RuntimeException("Couldn't execute command", ex);
+        }
+    }
+
+    /**
      * Creates a console that can execute shell commands in the current OS.
      *
      * @param command

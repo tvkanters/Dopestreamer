@@ -75,7 +75,7 @@ public class WindowsShell extends Shell {
      */
     @Override
     public void stopProcess(final ProcessId processId) {
-        executeCommandForResult("taskkill /f /pid " + processId);
+        executeCommand("taskkill /f /pid " + processId);
     }
 
 }
