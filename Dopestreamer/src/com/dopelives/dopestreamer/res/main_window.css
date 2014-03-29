@@ -1,14 +1,14 @@
 
 .root {
-    -fx-padding:25px;
+    -fx-padding: 25.0px;
     -fx-background-image: url("images/bg.jpg");
     -fx-effect: innershadow( three-pass-box , rgba(0.0,0.0,0.0,0.7) , 5.0, 0.0, 0.0, 0.0);
-    -fx-font-size: 14px;
+    -fx-font-size: 14.0px;
     -fx-font-family: Arial;
 }
 
 #header {
-    -fx-font-size: 26px;
+    -fx-font-size: 26.0px;
     -fx-font-family: "Arial Black";
     -fx-fill: #696;
     -fx-effect: innershadow( three-pass-box , rgba(0.0,0.0,0.0,0.7) , 4.0, 0.0, 0.0, 2.0);
@@ -16,23 +16,21 @@
 
 .label {
     -fx-font-family: Arial;
-    -fx-font-size: 15px;
+    -fx-font-size: 15.0px;
     -fx-font-weight: bold;
     -fx-text-fill: #696;
-    -fx-label-padding: 20px 0 4px 0;
+    -fx-label-padding: 20.0px 0.0 4.0px 0.0;
     -fx-effect: innershadow( three-pass-box , rgba(0.0,0.0,0.0,0.7) , 3.0, 0.0, 0.0, 1.5);
 }
 
 
-#liveButton {
-    -fx-font-size: 20px;
+#streamButton {
+    -fx-font-size: 22.0px;
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
-    -fx-background-color: linear-gradient(#7a7, #585);
-    -fx-effect: dropshadow( three-pass-box , rgba(0.0,0.0,0.0,0.6) , 5.0, 0.0, 0.0, 1.0);
+    -fx-base: #696;
     -fx-alignment: center;
 }
-
-#liveButton:hover {
-    -fx-background-color: linear-gradient(#8b8, #696);
+#streamButton .text {
+    -fx-effect: innershadow( three-pass-box , rgba(0.0,0.0,0.0,0.2) , 1.5, 0.0, 0.0, 1);
 }

@@ -48,6 +48,6 @@
 
 
     <VBox prefHeight="20" />
-	<Button id="liveButton" text="Live!" onAction="#onLiveClicked" prefWidth="260" prefHeight="50" />
+	<Button fx:id="streamButton" onAction="#onStreamButtonClicked" prefWidth="260" prefHeight="50" />
 
 </VBox>

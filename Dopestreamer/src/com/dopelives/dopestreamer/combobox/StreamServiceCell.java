@@ -2,7 +2,7 @@ package com.dopelives.dopestreamer.combobox;
 
 import javafx.scene.image.ImageView;
 
-import com.dopelives.dopestreamer.streamservices.StreamService;
+import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
  * A combo box cell that shows the label and icons of stream services.

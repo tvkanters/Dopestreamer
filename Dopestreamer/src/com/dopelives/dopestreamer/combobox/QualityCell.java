@@ -1,6 +1,6 @@
 package com.dopelives.dopestreamer.combobox;
 
-import com.dopelives.dopestreamer.streamservices.Quality;
+import com.dopelives.dopestreamer.streams.Quality;
 
 /**
  * A combo box cell that shows the label of qualities.

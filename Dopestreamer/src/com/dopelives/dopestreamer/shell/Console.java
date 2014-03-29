@@ -56,6 +56,7 @@ public class Console {
             throw new IllegalStateException("Console already executed");
         }
         mStarting = true;
+        System.out.println(mPrefix + " START");
 
         // Execute the command
         final Thread mainThread = Thread.currentThread();
@@ -77,6 +78,7 @@ public class Console {
      * Forcefully stops the running process.
      */
     public void stop() {
+        System.out.println(mPrefix + " STOP");
         mProcess.destroy();
     }
 

@@ -4,11 +4,13 @@ import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -18,11 +20,14 @@ import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.combobox.QualityCell;
 import com.dopelives.dopestreamer.combobox.StreamServiceCell;
-import com.dopelives.dopestreamer.streamservices.Quality;
-import com.dopelives.dopestreamer.streamservices.StreamService;
-import com.dopelives.dopestreamer.streamservices.StreamServiceManager;
+import com.dopelives.dopestreamer.shell.ConsoleListener;
+import com.dopelives.dopestreamer.shell.ProcessId;
+import com.dopelives.dopestreamer.streams.Quality;
+import com.dopelives.dopestreamer.streams.Stream;
+import com.dopelives.dopestreamer.streams.StreamService;
+import com.dopelives.dopestreamer.streams.StreamServiceManager;
 
-public class MainWindowController implements Initializable {
+public class MainWindowController implements Initializable, ConsoleListener {
 
     @FXML
     private RadioButton channelCustom;
@@ -32,11 +37,17 @@ public class MainWindowController implements Initializable {
     private ComboBox<StreamService> streamServiceSelection;
     @FXML
     private ComboBox<Quality> qualitySelection;
+    @FXML
+    private Button streamButton;
+
+    /** The current state of the main stream */
+    private StreamState mStreamState;
+    /** The currently active stream */
+    private Stream mStream;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        // Select the custom channel radio button upon focusing the text field
-        // next to it
+        // Select the custom channel radio button upon focusing the text field next to it
         channelCustomInput.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
@@ -72,23 +83,94 @@ public class MainWindowController implements Initializable {
                 return new QualityCell();
             }
         });
+
+        updateState(StreamState.INACTIVE);
     }
 
     @FXML
-    protected void onLiveClicked(final ActionEvent event) {
-        // Start stream
+    protected synchronized void onStreamButtonClicked(final ActionEvent event) {
+        switch (mStreamState) {
+            case INACTIVE:
+                startStream();
+                break;
+
+            case LOADING:
+            case ACTIVE:
+                updateState(StreamState.INACTIVE);
+                mStream.stop();
+                mStream = null;
+                break;
+
+            default:
+                throw new IllegalStateException("Unknown state: " + mStreamState);
+        }
+    }
+
+    @Override
+    public synchronized void onConsoleOutput(final ProcessId processId, final String output) {
+        // Mark the stream as active once Livestreamer says it has started
+        if (output.contains("Writing stream to output")) {
+            // Run in UI thread
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    updateState(StreamState.ACTIVE);
+                }
+            });
+        }
+    }
+
+    @Override
+    public synchronized void onConsoleStop(final ProcessId processId) {
+        switch (mStreamState) {
+            case INACTIVE:
+                break;
+
+            case LOADING:
+            case ACTIVE:
+                // The user didn't cancel streaming, so try starting the stream again
+                startStream();
+                break;
+
+            default:
+                throw new IllegalStateException("Unknown state: " + mStreamState);
+        }
+    }
+
+    /**
+     * Starts the stream based on the user preferences and transitions to the loading state.
+     */
+    private void startStream() {
         final StreamService selectedStreamService = streamServiceSelection.getValue();
         final Quality quality = qualitySelection.getValue();
 
         if (channelCustom.isSelected()) {
             try {
-                StreamServiceManager.startStream(selectedStreamService, channelCustomInput.getText(), quality);
+                mStream = new Stream(selectedStreamService, channelCustomInput.getText(), quality);
             } catch (final InvalidParameterException ex) {
                 // TODO: Tell user that a channel must be provided
             }
         } else {
-            StreamServiceManager.startStream(selectedStreamService, quality);
+            mStream = new Stream(selectedStreamService, quality);
         }
+
+        if (mStream != null) {
+            updateState(StreamState.LOADING);
+
+            mStream.addListener(this);
+            mStream.start();
+        }
+    }
+
+    /**
+     * Transitions to the given state and updates GUI components.
+     *
+     * @param newState
+     *            The stream state to transition to
+     */
+    public void updateState(final StreamState newState) {
+        mStreamState = newState;
+        streamButton.setText(mStreamState.getLabel());
     }
 
 }

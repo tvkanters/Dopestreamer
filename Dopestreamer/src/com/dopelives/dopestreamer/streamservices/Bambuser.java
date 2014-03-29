@@ -1,5 +1,7 @@
 package com.dopelives.dopestreamer.streamservices;
 
+import com.dopelives.dopestreamer.streams.StreamService;
+
 /**
  * The service for Bambuser streams.
  */

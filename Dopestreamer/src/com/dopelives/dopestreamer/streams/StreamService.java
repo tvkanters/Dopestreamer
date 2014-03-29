@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams;
 
 import javafx.scene.image.Image;
 
