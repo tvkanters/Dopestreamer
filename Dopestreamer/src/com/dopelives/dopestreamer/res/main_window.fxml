@@ -11,6 +11,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.CheckBox?>
 
 <VBox fx:controller="com.dopelives.dopestreamer.MainWindowController"
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
@@ -49,5 +50,8 @@
 
     <VBox prefHeight="20" />
 	<Button fx:id="streamButton" onAction="#onStreamButtonClicked" prefWidth="260" prefHeight="50" />
+	
+    <VBox prefHeight="20" />
+	<CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
 
 </VBox>

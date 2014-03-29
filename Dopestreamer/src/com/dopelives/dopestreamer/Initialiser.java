@@ -18,8 +18,12 @@ public class Initialiser extends Application {
     /** The absolute path to the folder containing the GUI image resources */
     public static final String IMAGE_FOLDER = RESOURCE_FOLDER + "images/";
 
-    /** The window title */
+    /** The window's title */
     private static final String TITLE = "Dopestreamer";
+    /** The window's width */
+    private static final int WIDTH = 300;
+    /** The window's height */
+    private static final int HEIGHT = 340;
 
     /** The controller of the main window */
     private MainWindowController mController;
@@ -38,7 +42,7 @@ public class Initialiser extends Application {
 
         stage.setTitle(TITLE);
         stage.getIcons().add(new Image(cls.getResourceAsStream(IMAGE_FOLDER + "dopestreamer.png")));
-        stage.setScene(new Scene(root, 300, 300));
+        stage.setScene(new Scene(root, WIDTH, HEIGHT));
         stage.setResizable(false);
         stage.show();
 

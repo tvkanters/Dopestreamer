@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -39,6 +40,8 @@ public class MainWindowController implements Initializable, ConsoleListener {
     private ComboBox<Quality> qualitySelection;
     @FXML
     private Button streamButton;
+    @FXML
+    private CheckBox autoStartToggle;
 
     /** The current state of the main stream */
     private StreamState mStreamState;
@@ -84,7 +87,16 @@ public class MainWindowController implements Initializable, ConsoleListener {
             }
         });
 
-        updateState(StreamState.INACTIVE);
+        // Set the stream button label
+
+        // Check the auto-start preference
+        final boolean autoStart = Pref.AUTO_START.getBoolean();
+        autoStartToggle.setSelected(autoStart);
+        if (autoStart) {
+            startStream();
+        } else {
+            updateState(StreamState.INACTIVE);
+        }
     }
 
     @FXML
@@ -171,6 +183,11 @@ public class MainWindowController implements Initializable, ConsoleListener {
     public void updateState(final StreamState newState) {
         mStreamState = newState;
         streamButton.setText(mStreamState.getLabel());
+    }
+
+    @FXML
+    public void onAutoStartToggle() {
+        Pref.AUTO_START.put(autoStartToggle.isSelected());
     }
 
 }
