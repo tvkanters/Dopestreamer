@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Graphic version="2.0" viewHeight="550" viewWidth="550" ATE:version="1.0.0" flm:version="1.0.0" d:id="1" d:using="" xmlns="http://ns.adobe.com/fxg/2008" xmlns:ATE="http://ns.adobe.com/ate/2009" xmlns:d="http://ns.adobe.com/fxg/2008/dt" xmlns:flm="http://ns.adobe.com/flame/2008">
+  <Library/>
+  <Group blendMode="normal" d:type="layer" d:userLabel="Body">
+    <Path flm:isDrawingObject="false" data="M449.75 310.75Q453.95 386.25 407.25 438.05 376.15 472.7 334.2 483.95 311.5 490.05 285.65 489.3 265.05 488.7 245.8 483.95 194.05 471.1 152.3 428 94.25 368 91.7 286.95 89.1 206.75 142.6 155.7 187.45 112.8 249.35 112.9 258.9 112.8 268.9 113.9 341.15
+ 121.3 393.7 179.1 445.55 236 449.75 310.75Z">
+      <fill>
+        <SolidColor color="#00A845"/>
+      </fill>
+    </Path>
+  </Group>
+  <Group blendMode="normal" d:type="layer" d:userLabel="Fins">
+    <Path flm:isDrawingObject="false" data="M486 188Q518.85 244.5 500 300.95L409 260ZM492 316.95Q478.6 371.4 409.3 435.7L424 316.95ZM264 56Q283.6 80.55 289 130L234 130Q242.1 87.8 264 56ZM55 366.95Q14.95 306.5 48 248L121 298.95ZM138 340.95 113 406.95Q83.95 392.5 69 363.95Z">
+      <fill>
+        <SolidColor color="#00A845"/>
+      </fill>
+    </Path>
+  </Group>
+  <Group blendMode="normal" d:type="layer" d:userLabel="Eyes">
+    <Group>
+      <Path y="40" flm:isDrawingObject="false" data="M219.25 117.6Q235.25469 117.55508 250.2 125.075 277.02109 138.32344 284.75 167.975 287.45313 178.60645 287.3 189.175 286.88184 208.52656 276.5 227.6 260.03594 257.45938 228.85 268.675 214.84961 273.70176 201.7 273.7 185.09961 273.70195 169.9
+ 265.825 142.6918 251.55332 135.925 220.55 133.53359 209.73125 134.15 199.05 135.26016 179.82871 146.25 161.225 163.07012 132.72305 193.425 122.175 206.6959 117.59707 219.25 117.6Z">
+        <fill>
+          <SolidColor color="#FFFFFF"/>
+        </fill>
+      </Path>
+    </Group>
+    <Group>
+      <Path scaleX="1.4068298" scaleY="1.4464111" x="-59.35" y="-69.55" flm:isDrawingObject="false" data="M296.15 192.65Q306.55 202.8 305.5 216.2 304.5 229.55 292.6 238.35 280.75 247.05 265 246.05 249.25 245 238.85 234.85 228.5 224.65 229.5 211.3 230.55 197.9 242.4 189.15 254.25 180.35 270 181.4 285.75 182.4 296.15 192.65Z">
+        <fill>
+          <SolidColor color="#FFFFFF"/>
+        </fill>
+      </Path>
+    </Group>
+  </Group>
+  <Private>
+      <xfl:PrivateElement d:ref="#1" xmlns:xfl="http://ns.adobe.com/xfl/2008/">
+        <xfl:publishSettings xfl:source=""/>
+        <xfl:mobileSettings xfl:source=""/>
+        <xfl:as3ExportItems/>
+      </xfl:PrivateElement>
+    </Private>
+  </Graphic>

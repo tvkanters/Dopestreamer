@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -26,9 +27,11 @@ public class Initialiser extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        final VBox root = FXMLLoader.load(getClass().getResource(RESOURCE_FOLDER + "main_window.fxml"));
+        final Class<? extends Initialiser> cls = getClass();
+        final VBox root = FXMLLoader.load(cls.getResource(RESOURCE_FOLDER + "main_window.fxml"));
 
         stage.setTitle(TITLE);
+        stage.getIcons().add(new Image(cls.getResourceAsStream(IMAGE_FOLDER + "dopestreamer.png")));
         stage.setScene(new Scene(root, 300, 300));
         stage.setResizable(false);
         stage.show();
