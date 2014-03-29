@@ -35,7 +35,8 @@ public class MainWindowController implements Initializable {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        // Select the custom channel radio button upon focusing the text field next to it
+        // Select the custom channel radio button upon focusing the text field
+        // next to it
         channelCustomInput.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
@@ -48,7 +49,7 @@ public class MainWindowController implements Initializable {
 
         // Add stream services to the combo box and select the first
         streamServiceSelection.getItems().addAll(StreamServiceManager.getStreamServices());
-        streamServiceSelection.getSelectionModel().select(0);
+        streamServiceSelection.getSelectionModel().select(3);
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new StreamServiceCell());

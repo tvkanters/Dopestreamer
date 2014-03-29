@@ -17,6 +17,9 @@ public class StreamServiceManager {
     private static final List<StreamService> sStreamServices = new LinkedList<>();
 
     static {
+        register(new Afreeca());
+        register(new Bambuser());
+        register(new Cast3d());
         register(new Hitbox());
         register(new Twitch());
         register(new Movie());
