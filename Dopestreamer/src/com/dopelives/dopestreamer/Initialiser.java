@@ -4,7 +4,6 @@ import java.awt.AWTException;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +19,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
+import javax.swing.ImageIcon;
 
 import com.dopelives.dopestreamer.shell.Shell;
 
@@ -75,8 +76,8 @@ public class Initialiser extends Application {
                 if (newValue.booleanValue() && Pref.MINIMISE_TO_TRAY.getBoolean() && SystemTray.isSupported()) {
                     // Construct the tray icon
                     final SystemTray tray = SystemTray.getSystemTray();
-                    final TrayIcon trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().getImage(
-                            "src/" + IMAGE_FOLDER + "dopestreamer_small.png"), TITLE);
+                    final TrayIcon trayIcon = new TrayIcon(new ImageIcon(getClass().getResource(
+                            IMAGE_FOLDER + "dopestreamer_small.png")).getImage(), TITLE);
 
                     // Open the main window upon double clicking the tray icon
                     trayIcon.addActionListener(new ActionListener() {
