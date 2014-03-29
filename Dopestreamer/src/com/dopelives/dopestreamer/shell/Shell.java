@@ -42,15 +42,15 @@ public abstract class Shell implements ConsoleListener {
     /**
      * @return The PID of the running process
      */
-    public String getJvmProcessId() {
+    public ProcessId getJvmProcessId() {
         final String jvmName = ManagementFactory.getRuntimeMXBean().getName();
         final int end = jvmName.indexOf('@');
 
         if (end == -1) {
-            return jvmName;
+            return new ProcessId(jvmName);
         }
 
-        return jvmName.substring(0, end);
+        return new ProcessId(jvmName.substring(0, end));
     }
 
     /**
@@ -64,8 +64,8 @@ public abstract class Shell implements ConsoleListener {
     public abstract ProcessId getProcessId(final Process process);
 
     /**
-     * Executes the shell command given and waits for it to finish so that it may return the result. Does not end with a
-     * \n char.
+     * Executes the shell command given and waits for it to finish so that it may return the result. Lines are separated
+     * by \n character. The returned value does not end with a \n char.
      *
      * @param command
      *            The command to execute.

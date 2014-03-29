@@ -54,11 +54,10 @@ public class WindowsShell extends Shell {
                 + processId + "\"");
 
         if (!result.equals("")) {
-            final String[] children = result.split("\n");
+            final String[] children = result.split("\n+");
 
             // Search through the process results, but skip the header line
             for (int i = 0; i < children.length; ++i) {
-                System.err.println("CHILD: <" + children[i] + ">");
                 final ProcessId childId = new ProcessId(children[i].trim().split(" +")[1]);
 
                 // The queried process ID can also be in the list if it's still open, so check for that
