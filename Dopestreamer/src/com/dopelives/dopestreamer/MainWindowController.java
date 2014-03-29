@@ -123,12 +123,7 @@ public class MainWindowController implements Initializable, ConsoleListener {
         // Mark the stream as active once Livestreamer says it has started
         if (output.contains("Writing stream to output")) {
             // Run in UI thread
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    updateState(StreamState.ACTIVE);
-                }
-            });
+            updateState(StreamState.ACTIVE);
         }
     }
 
@@ -182,7 +177,14 @@ public class MainWindowController implements Initializable, ConsoleListener {
      */
     public void updateState(final StreamState newState) {
         mStreamState = newState;
-        streamButton.setText(mStreamState.getLabel());
+
+        // Run in UI thread
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                streamButton.setText(mStreamState.getLabel());
+            }
+        });
     }
 
     @FXML
