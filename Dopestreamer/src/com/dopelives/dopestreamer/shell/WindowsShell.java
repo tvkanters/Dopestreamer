@@ -1,8 +1,6 @@
 package com.dopelives.dopestreamer.shell;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.HashSet;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
@@ -48,34 +46,8 @@ public class WindowsShell extends Shell {
      * {@inheritDoc}
      */
     @Override
-    public Collection<ProcessId> getChildProcessIds(final ProcessId processId) {
-        final Collection<ProcessId> processIds = new HashSet<>();
-        final String result = executeCommandForResult("wmic process get processid,parentprocessid | find \""
-                + processId + "\"");
-
-        if (!result.equals("")) {
-            final String[] children = result.split("\n+");
-
-            // Search through the process results, but skip the header line
-            for (int i = 0; i < children.length; ++i) {
-                final ProcessId childId = new ProcessId(children[i].trim().split(" +")[1]);
-
-                // The queried process ID can also be in the list if it's still open, so check for that
-                if (!childId.equals(processId)) {
-                    processIds.add(childId);
-                }
-            }
-        }
-
-        return processIds;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void stopProcess(final ProcessId processId) {
-        executeCommand("taskkill /f /pid " + processId);
+    public void killProcessTree(final ProcessId processId) {
+        executeCommand("taskkill /f /t /pid " + processId);
     }
 
 }

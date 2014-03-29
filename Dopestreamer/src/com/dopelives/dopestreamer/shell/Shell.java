@@ -4,12 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
-import java.util.Collection;
 
 /**
  * A base class for OS-specific shell functionality.
  */
-public abstract class Shell implements ConsoleListener {
+public abstract class Shell {
 
     /** The OS specific shell */
     private final static Shell sInstance;
@@ -117,9 +116,7 @@ public abstract class Shell implements ConsoleListener {
      * @return The console that can execute the command
      */
     public Console createConsole(final String command) {
-        final Console console = new Console(getProcessBuilder(command));
-        console.addListener(this);
-        return console;
+        return new Console(getProcessBuilder(command));
     }
 
     /**
@@ -133,39 +130,11 @@ public abstract class Shell implements ConsoleListener {
     protected abstract ProcessBuilder getProcessBuilder(String command);
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onConsoleOutput(final ProcessId processId, final String output) {}
-
-    /**
-     * {@inheritDoc}
-     *
-     * Recursively stops child processes of the stopped console.
-     */
-    @Override
-    public void onConsoleStop(final ProcessId processId) {
-        for (final ProcessId child : getChildProcessIds(processId)) {
-            stopProcess(child);
-            onConsoleStop(child);
-        }
-    }
-
-    /**
-     * Retrieves the child processes for the process with the given PID.
+     * Forcefully stops the process with the given PID and its child processes.
      *
      * @param processId
-     *            The process ID so seek children from
-     *
-     * @return The PIDs with the given PID as parent
+     *            The PID of the process tree root to stop
      */
-    public abstract Collection<ProcessId> getChildProcessIds(ProcessId processId);
+    public abstract void killProcessTree(ProcessId processId);
 
-    /**
-     * Forcefully stops the process with the given PID.
-     *
-     * @param processId
-     *            The PID of the process to stop
-     */
-    public abstract void stopProcess(ProcessId processId);
 }

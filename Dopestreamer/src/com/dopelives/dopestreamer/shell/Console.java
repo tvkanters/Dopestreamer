@@ -78,8 +78,7 @@ public class Console {
      * Forcefully stops the running process.
      */
     public void stop() {
-        System.out.println(mPrefix + " STOP");
-        mProcess.destroy();
+        Shell.getInstance().killProcessTree(mProcessId);
     }
 
     /**
@@ -140,6 +139,8 @@ public class Console {
                 for (final ConsoleListener listener : mListeners) {
                     listener.onConsoleStop(mProcessId);
                 }
+
+                System.out.println(mPrefix + " STOP");
 
             } catch (final IOException ex) {
                 ex.printStackTrace();
