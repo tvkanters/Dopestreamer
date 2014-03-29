@@ -52,6 +52,8 @@
 	<Button fx:id="streamButton" onAction="#onStreamButtonClicked" prefWidth="260" prefHeight="50" />
 	
     <VBox prefHeight="20" />
-	<CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
+    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
+    <VBox prefHeight="10" />
+    <CheckBox fx:id="minimiseToTrayToggle" onAction="#onMinimiseToTrayToggle" text="Minimise to tray" />
 
 </VBox>

@@ -42,6 +42,8 @@ public class MainWindowController implements Initializable, ConsoleListener {
     private Button streamButton;
     @FXML
     private CheckBox autoStartToggle;
+    @FXML
+    private CheckBox minimiseToTrayToggle;
 
     /** The current state of the main stream */
     private StreamState mStreamState;
@@ -87,8 +89,6 @@ public class MainWindowController implements Initializable, ConsoleListener {
             }
         });
 
-        // Set the stream button label
-
         // Check the auto-start preference
         final boolean autoStart = Pref.AUTO_START.getBoolean();
         autoStartToggle.setSelected(autoStart);
@@ -97,6 +97,9 @@ public class MainWindowController implements Initializable, ConsoleListener {
         } else {
             updateState(StreamState.INACTIVE);
         }
+
+        // Check the minimise-to-tray preference
+        minimiseToTrayToggle.setSelected(Pref.MINIMISE_TO_TRAY.getBoolean());
     }
 
     @FXML
@@ -190,6 +193,11 @@ public class MainWindowController implements Initializable, ConsoleListener {
     @FXML
     public void onAutoStartToggle() {
         Pref.AUTO_START.put(autoStartToggle.isSelected());
+    }
+
+    @FXML
+    public void onMinimiseToTrayToggle() {
+        Pref.MINIMISE_TO_TRAY.put(minimiseToTrayToggle.isSelected());
     }
 
 }
