@@ -8,11 +8,12 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -33,6 +34,8 @@ import com.dopelives.dopestreamer.streams.StreamServiceManager;
 
 public class MainWindowController implements Initializable, ConsoleListener {
 
+    @FXML
+    private RadioButton channelDefault;
     @FXML
     private RadioButton channelCustom;
     @FXML
@@ -66,14 +69,6 @@ public class MainWindowController implements Initializable, ConsoleListener {
             }
         });
 
-        // Remove possible invalid warnings when the user types in the input field
-        channelCustomInput.setOnKeyPressed(new EventHandler<Event>() {
-            @Override
-            public void handle(final Event event) {
-                setCustomChannelValid(true);
-            }
-        });
-
         // Set the last used channel if provided
         final String lastChannel = Pref.LAST_CHANNEL.getString();
         if (!lastChannel.equals("")) {
@@ -84,6 +79,14 @@ public class MainWindowController implements Initializable, ConsoleListener {
         // Add stream services to the combo box
         final List<StreamService> streamServices = StreamServiceManager.getStreamServices();
         streamServiceSelection.getItems().addAll(streamServices);
+
+        // Indicate unavailable streams
+        streamServiceSelection.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent event) {
+                setCssClass(channelDefault, "unavailable", !streamServiceSelection.getValue().hasDefaultChannel());
+            }
+        });
 
         // Select the stored last stream service
         final String selectedStreamServiceKey = Pref.LAST_STREAM_SERVICE.getString();
@@ -166,7 +169,9 @@ public class MainWindowController implements Initializable, ConsoleListener {
             updateState(StreamState.WAITING);
 
         } else if (output.contains("Unable to open URL")) {
-            setCustomChannelValid(false);
+            if (channelCustom.isSelected()) {
+                setCustomChannelValid(false);
+            }
             stopStream();
 
         } else if (output.contains("Writing stream to output")) {
@@ -201,24 +206,34 @@ public class MainWindowController implements Initializable, ConsoleListener {
         final String channel;
         final Quality quality = qualitySelection.getValue();
 
-        if (channelCustom.isSelected()) {
+        // Clean up if needed
+        if (mStream != null) {
+            mStream.stop();
+            mStream = null;
+        }
+
+        // Pick a default or custom channel
+        if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
+            channel = "";
+            mStream = new Stream(selectedStreamService, quality);
+        } else {
             channel = channelCustomInput.getText();
             try {
                 mStream = new Stream(selectedStreamService, channel, quality);
             } catch (final InvalidParameterException ex) {
                 setCustomChannelValid(false);
             }
-        } else {
-            channel = "";
-            mStream = new Stream(selectedStreamService, quality);
         }
 
         if (mStream != null) {
+            // Start the stream
+            setCustomChannelValid(true);
             updateState(StreamState.CONNECTING);
 
             mStream.addListener(this);
             mStream.start();
 
+            // Save the stream settings
             Pref.LAST_CHANNEL.put(channel);
             Pref.LAST_STREAM_SERVICE.put(selectedStreamService.getKey());
             Pref.LAST_QUALITY.put(quality.toString());
@@ -253,8 +268,8 @@ public class MainWindowController implements Initializable, ConsoleListener {
 
                 final String newCssClass = newState.getCssClass();
                 if (!newCssClass.equals(oldCssClass)) {
-                    streamButton.getStyleClass().remove(oldCssClass);
-                    streamButton.getStyleClass().add(newCssClass);
+                    setCssClass(streamButton, oldCssClass, false);
+                    setCssClass(streamButton, newCssClass, true);
                 }
             }
         });
@@ -271,13 +286,30 @@ public class MainWindowController implements Initializable, ConsoleListener {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                if (valid) {
-                    channelCustomInput.getStyleClass().remove("invalid");
-                } else {
-                    channelCustomInput.getStyleClass().add("invalid");
-                }
+                setCssClass(channelCustomInput, "invalid", !valid);
             }
         });
+    }
+
+    /**
+     * Adds or removes a CSS class on an element.
+     *
+     * @param element
+     *            The element to change the CSS class of
+     * @param cssClass
+     *            The CSS class to add or remove
+     * @param enabled
+     *            True if the CSS class should be added, false for removal
+     */
+    private void setCssClass(final Node element, final String cssClass, final boolean enabled) {
+        final ObservableList<String> cssClasses = element.getStyleClass();
+        if (enabled) {
+            if (!cssClasses.contains(cssClass)) {
+                cssClasses.add(cssClass);
+            }
+        } else {
+            cssClasses.remove(cssClass);
+        }
     }
 
     @FXML

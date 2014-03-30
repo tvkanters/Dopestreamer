@@ -39,12 +39,4 @@ public class Afreeca extends StreamService {
         return "afreeca.com/";
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultChannel() {
-        return "kimjye";
-    }
-
 }

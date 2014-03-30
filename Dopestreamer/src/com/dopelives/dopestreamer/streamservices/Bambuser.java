@@ -39,12 +39,4 @@ public class Bambuser extends StreamService {
         return "bambuser.com/v/";
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultChannel() {
-        return "dopelives";
-    }
-
 }

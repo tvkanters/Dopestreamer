@@ -39,12 +39,4 @@ public class Cast3d extends StreamService {
         return "cast3d.tv/channel/";
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultChannel() {
-        return "dopelives";
-    }
-
 }

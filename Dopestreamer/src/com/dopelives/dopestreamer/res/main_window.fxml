@@ -40,7 +40,7 @@
 
 
 	<Label text="Channel" />
-	<RadioButton selected="true" text="Dopelives" toggleGroup="$channelGroup" />
+	<RadioButton fx:id="channelDefault" selected="true" text="Dopelives" toggleGroup="$channelGroup" />
     <VBox prefHeight="5" />
 	<HBox alignment="CENTER_LEFT">
 		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />

@@ -48,9 +48,15 @@ public abstract class StreamService {
      */
     public abstract String getUrl();
 
+    public boolean hasDefaultChannel() {
+        return getDefaultChannel() != null;
+    }
+
     /**
      * @return The default channel to start for this service when a channel isn't provided
      */
-    public abstract String getDefaultChannel();
+    public String getDefaultChannel() {
+        return null;
+    }
 
 }

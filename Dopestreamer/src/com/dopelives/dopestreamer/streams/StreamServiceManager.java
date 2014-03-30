@@ -8,6 +8,7 @@ import com.dopelives.dopestreamer.streamservices.Afreeca;
 import com.dopelives.dopestreamer.streamservices.Bambuser;
 import com.dopelives.dopestreamer.streamservices.Cast3d;
 import com.dopelives.dopestreamer.streamservices.Hitbox;
+import com.dopelives.dopestreamer.streamservices.Livestream;
 import com.dopelives.dopestreamer.streamservices.Movie;
 import com.dopelives.dopestreamer.streamservices.Twitch;
 
@@ -24,6 +25,7 @@ public class StreamServiceManager {
         register(new Bambuser());
         register(new Cast3d());
         register(new Hitbox());
+        register(new Livestream());
         register(new Twitch());
         register(new Movie());
     }
