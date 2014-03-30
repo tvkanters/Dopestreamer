@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -38,6 +39,9 @@ public class Initialiser extends Application {
     /** The window's height */
     private static final int HEIGHT = 370;
 
+    /** The stage of the main window */
+    private Stage mStage;
+
     public static void main(final String[] args) {
         Application.launch(Initialiser.class, args);
     }
@@ -45,17 +49,19 @@ public class Initialiser extends Application {
     @Override
     public void start(final Stage stage) throws Exception {
         Platform.setImplicitExit(false);
+        mStage = stage;
 
         final Parent root = FXMLLoader.load(getClass().getResource(RESOURCE_FOLDER + "main_window.fxml"));
 
-        stage.setTitle(TITLE);
-        stage.getIcons().add(new Image(getClass().getResourceAsStream(IMAGE_FOLDER + "dopestreamer.png")));
-        stage.setScene(new Scene(root, WIDTH, HEIGHT));
-        stage.setResizable(false);
-        stage.show();
+        // Create main window
+        mStage.setTitle(TITLE);
+        mStage.getIcons().add(new Image(getClass().getResourceAsStream(IMAGE_FOLDER + "dopestreamer.png")));
+        mStage.setScene(new Scene(root, WIDTH, HEIGHT));
+        mStage.setResizable(false);
+        loadWindowPosition();
 
         // Exit when the window gets closed
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        mStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(final WindowEvent event) {
                 // Don't delay the window closing
@@ -69,7 +75,7 @@ public class Initialiser extends Application {
         });
 
         // Make minimise-to-tray possible
-        stage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
+        mStage.iconifiedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
                     final Boolean newValue) {
@@ -86,8 +92,9 @@ public class Initialiser extends Application {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    stage.setIconified(false);
-                                    stage.show();
+                                    mStage.setIconified(false);
+                                    loadWindowPosition();
+                                    mStage.show();
                                     tray.remove(trayIcon);
                                 }
                             });
@@ -110,7 +117,7 @@ public class Initialiser extends Application {
                     // Show the tray icon and hide the main window
                     try {
                         tray.add(trayIcon);
-                        stage.hide();
+                        mStage.hide();
                     } catch (final AWTException ex) {
                         System.err.println(ex);
                     }
@@ -118,6 +125,45 @@ public class Initialiser extends Application {
                 }
             }
         });
+
+        // Remember the window position when moving the stage
+        mStage.xProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(final ObservableValue<? extends Number> observable, final Number oldValue,
+                    final Number newValue) {
+                if (newValue.intValue() >= 0) {
+                    Pref.WINDOW_X.put(newValue.intValue());
+                }
+            }
+        });
+        mStage.yProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(final ObservableValue<? extends Number> observable, final Number oldValue,
+                    final Number newValue) {
+                if (newValue.intValue() >= 0) {
+                    Pref.WINDOW_Y.put(newValue.intValue());
+                }
+            }
+        });
+
+        // Initialisation complete, show stage
+        mStage.show();
+    }
+
+    /**
+     * Sets the stage's window position to the stores or default position.
+     */
+    private void loadWindowPosition() {
+        final int windowX = Pref.WINDOW_X.getInteger();
+        final int windowY = Pref.WINDOW_Y.getInteger();
+
+        if (Screen.getScreensForRectangle(windowX, windowY, WIDTH, HEIGHT).isEmpty()) {
+            // If the window is not in a visible area, centre it
+            mStage.centerOnScreen();
+        } else {
+            mStage.setX(windowX);
+            mStage.setY(windowY);
+        }
     }
 
     /**

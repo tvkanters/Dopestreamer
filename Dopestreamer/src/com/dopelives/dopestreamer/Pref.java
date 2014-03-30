@@ -10,7 +10,11 @@ public enum Pref {
     /** Boolean type indication whether or not the stream should start upon opening */
     AUTO_START("autostart", false),
     /** Boolean type indication whether or not Dopestreamer should start minimise to the tray */
-    MINIMISE_TO_TRAY("minimisetotray", false);
+    MINIMISE_TO_TRAY("minimisetotray", false),
+    /** Integer type representation of the window's x-coordinate */
+    WINDOW_X("windowx", -32000),
+    /** Integer type representation of the window's y-coordinate */
+    WINDOW_Y("windowy", -32000);
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
@@ -19,7 +23,7 @@ public enum Pref {
     private final String mKey;
     /** The default boolean value for the preference */
     private final Boolean mDefaultBoolean;
-    /** The default int value for the preference */
+    /** The default integer value for the preference */
     private final Integer mDefaultInt;
     /** The default string value for the preference */
     private final String mDefaultString;
@@ -100,6 +104,13 @@ public enum Pref {
      */
     public String getString() {
         return sPreferences.get(mKey, mDefaultString);
+    }
+
+    /**
+     * Resets the value to the default.
+     */
+    public void reset() {
+        sPreferences.remove(mKey);
     }
 
 }
