@@ -11,6 +11,14 @@ public class Afreeca extends StreamService {
      * {@inheritDoc}
      */
     @Override
+    public String getKey() {
+        return "afreeca";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLabel() {
         return "Afreeca";
     }

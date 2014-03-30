@@ -9,6 +9,14 @@ public class Movie extends Hitbox {
      * {@inheritDoc}
      */
     @Override
+    public String getKey() {
+        return "movie";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLabel() {
         return "Movie";
     }

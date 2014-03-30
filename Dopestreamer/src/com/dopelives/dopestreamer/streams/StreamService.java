@@ -20,6 +20,11 @@ public abstract class StreamService {
     }
 
     /**
+     * @return The key to make to this service, shouldn't be changed during refactoring and must be unique
+     */
+    public abstract String getKey();
+
+    /**
      * @return The label to show for this service
      */
     public abstract String getLabel();
@@ -38,7 +43,7 @@ public abstract class StreamService {
 
     /**
      * The URL that Livestreamer use to choose the correct stream service plug-in.
-     * 
+     *
      * @return The URL in format <domain>.<tld>/(<channelpath>)?
      */
     public abstract String getUrl();

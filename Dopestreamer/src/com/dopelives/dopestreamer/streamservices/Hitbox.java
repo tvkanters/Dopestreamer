@@ -11,6 +11,14 @@ public class Hitbox extends StreamService {
      * {@inheritDoc}
      */
     @Override
+    public String getKey() {
+        return "hitbox";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLabel() {
         return "Hitbox";
     }

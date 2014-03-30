@@ -11,6 +11,14 @@ public class Cast3d extends StreamService {
      * {@inheritDoc}
      */
     @Override
+    public String getKey() {
+        return "cast3d";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLabel() {
         return "Cast3d";
     }

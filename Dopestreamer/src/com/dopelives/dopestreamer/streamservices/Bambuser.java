@@ -11,6 +11,14 @@ public class Bambuser extends StreamService {
      * {@inheritDoc}
      */
     @Override
+    public String getKey() {
+        return "bambuser";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLabel() {
         return "Bambuser";
     }

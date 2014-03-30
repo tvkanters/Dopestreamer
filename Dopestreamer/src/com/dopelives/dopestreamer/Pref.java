@@ -14,7 +14,13 @@ public enum Pref {
     /** Integer type representation of the window's x-coordinate */
     WINDOW_X("windowx", -32000),
     /** Integer type representation of the window's y-coordinate */
-    WINDOW_Y("windowy", -32000);
+    WINDOW_Y("windowy", -32000),
+    /** The last channel someone streamed, empty string for default Dopelives channel */
+    LAST_CHANNEL("lastchannel", ""),
+    /** The key of the last stream service used */
+    LAST_STREAM_SERVICE("laststreamservice", "hitbox"),
+    /** The enum constant of the last quality used */
+    LAST_QUALITY("lastquality", "BEST");
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());

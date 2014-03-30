@@ -11,6 +11,14 @@ public class Twitch extends StreamService {
      * {@inheritDoc}
      */
     @Override
+    public String getKey() {
+        return "twitch";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getLabel() {
         return "Twitch";
     }

@@ -2,6 +2,7 @@ package com.dopelives.dopestreamer;
 
 import java.net.URL;
 import java.security.InvalidParameterException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -64,6 +65,8 @@ public class MainWindowController implements Initializable, ConsoleListener {
                 }
             }
         });
+
+        // Remove possible invalid warnings when the user types in the input field
         channelCustomInput.setOnKeyPressed(new EventHandler<Event>() {
             @Override
             public void handle(final Event event) {
@@ -71,9 +74,25 @@ public class MainWindowController implements Initializable, ConsoleListener {
             }
         });
 
-        // Add stream services to the combo box and select the first
-        streamServiceSelection.getItems().addAll(StreamServiceManager.getStreamServices());
-        streamServiceSelection.getSelectionModel().select(3);
+        // Set the last used channel if provided
+        final String lastChannel = Pref.LAST_CHANNEL.getString();
+        if (!lastChannel.equals("")) {
+            channelCustom.setSelected(true);
+            channelCustomInput.setText(lastChannel);
+        }
+
+        // Add stream services to the combo box
+        final List<StreamService> streamServices = StreamServiceManager.getStreamServices();
+        streamServiceSelection.getItems().addAll(streamServices);
+
+        // Select the stored last stream service
+        final String selectedStreamServiceKey = Pref.LAST_STREAM_SERVICE.getString();
+        for (int i = 0; i < streamServices.size(); ++i) {
+            if (streamServices.get(i).getKey().equals(selectedStreamServiceKey)) {
+                streamServiceSelection.getSelectionModel().select(i);
+                break;
+            }
+        }
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new StreamServiceCell());
@@ -84,9 +103,18 @@ public class MainWindowController implements Initializable, ConsoleListener {
             }
         });
 
-        // Add qualities to the combo box and select the first
-        qualitySelection.getItems().addAll(Quality.values());
-        qualitySelection.getSelectionModel().select(0);
+        // Add qualities to the combo box
+        final Quality[] qualities = Quality.values();
+        qualitySelection.getItems().addAll(qualities);
+
+        // Select the stored last quality
+        final String selectedQualityKey = Pref.LAST_QUALITY.getString();
+        for (int i = 0; i < qualities.length; ++i) {
+            if (qualities[i].toString().equals(selectedQualityKey)) {
+                qualitySelection.getSelectionModel().select(i);
+                break;
+            }
+        }
 
         // Make the qualities look nice within the combo box
         qualitySelection.setButtonCell(new QualityCell());
@@ -170,15 +198,18 @@ public class MainWindowController implements Initializable, ConsoleListener {
      */
     private synchronized void startStream() {
         final StreamService selectedStreamService = streamServiceSelection.getValue();
+        final String channel;
         final Quality quality = qualitySelection.getValue();
 
         if (channelCustom.isSelected()) {
+            channel = channelCustomInput.getText();
             try {
-                mStream = new Stream(selectedStreamService, channelCustomInput.getText(), quality);
+                mStream = new Stream(selectedStreamService, channel, quality);
             } catch (final InvalidParameterException ex) {
                 setCustomChannelValid(false);
             }
         } else {
+            channel = "";
             mStream = new Stream(selectedStreamService, quality);
         }
 
@@ -187,6 +218,10 @@ public class MainWindowController implements Initializable, ConsoleListener {
 
             mStream.addListener(this);
             mStream.start();
+
+            Pref.LAST_CHANNEL.put(channel);
+            Pref.LAST_STREAM_SERVICE.put(selectedStreamService.getKey());
+            Pref.LAST_QUALITY.put(quality.toString());
         }
     }
 
@@ -227,7 +262,7 @@ public class MainWindowController implements Initializable, ConsoleListener {
 
     /**
      * Defines whether or not the inserted custom channel is valid or not. Will update the GUI appropriately.
-     * 
+     *
      * @param valid
      *            True iff the input value is valid
      */
