@@ -46,7 +46,7 @@ public class MainWindowController implements Initializable, ConsoleListener {
     @FXML
     private CheckBox autoStartToggle;
     @FXML
-    private CheckBox minimiseToTrayToggle;
+    private CheckBox showInTrayToggle;
 
     /** The current state of the main stream */
     private StreamState mStreamState;
@@ -135,7 +135,7 @@ public class MainWindowController implements Initializable, ConsoleListener {
         }
 
         // Check the minimise-to-tray preference
-        minimiseToTrayToggle.setSelected(Pref.MINIMISE_TO_TRAY.getBoolean());
+        showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
     }
 
     @FXML
@@ -286,8 +286,15 @@ public class MainWindowController implements Initializable, ConsoleListener {
     }
 
     @FXML
-    public void onMinimiseToTrayToggle() {
-        Pref.MINIMISE_TO_TRAY.put(minimiseToTrayToggle.isSelected());
+    public void onShowInTrayToggle() {
+        final boolean showInTray = showInTrayToggle.isSelected();
+        Pref.SHOW_IN_TRAY.put(showInTray);
+
+        if (showInTray) {
+            TrayManager.show();
+        } else {
+            TrayManager.hide();
+        }
     }
 
 }

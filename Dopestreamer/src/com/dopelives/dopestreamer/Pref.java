@@ -10,7 +10,7 @@ public enum Pref {
     /** Boolean type indication whether or not the stream should start upon opening */
     AUTO_START("autostart", false),
     /** Boolean type indication whether or not Dopestreamer should start minimise to the tray */
-    MINIMISE_TO_TRAY("minimisetotray", false),
+    SHOW_IN_TRAY("minimisetotray", false),
     /** Integer type representation of the window's x-coordinate */
     WINDOW_X("windowx", -32000),
     /** Integer type representation of the window's y-coordinate */

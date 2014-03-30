@@ -2,7 +2,7 @@ package com.dopelives.dopestreamer.streams;
 
 import javafx.scene.image.Image;
 
-import com.dopelives.dopestreamer.Initialiser;
+import com.dopelives.dopestreamer.Environment;
 
 /**
  * The class for a stream service that can be selected and started to provide streams.
@@ -16,7 +16,7 @@ public abstract class StreamService {
      * Prepares the stream service that can be selected and started to provide streams.
      */
     protected StreamService() {
-        mIcon = new Image(Initialiser.IMAGE_FOLDER + getIconUrl());
+        mIcon = new Image(Environment.IMAGE_FOLDER + getIconUrl());
     }
 
     /**

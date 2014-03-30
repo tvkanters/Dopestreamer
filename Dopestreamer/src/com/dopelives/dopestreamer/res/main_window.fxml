@@ -54,6 +54,6 @@
     <VBox prefHeight="20" />
     <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
     <VBox prefHeight="10" />
-    <CheckBox fx:id="minimiseToTrayToggle" onAction="#onMinimiseToTrayToggle" text="Minimise to tray" />
+    <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
 
 </VBox>
