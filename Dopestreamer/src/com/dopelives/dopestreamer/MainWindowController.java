@@ -8,6 +8,8 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -51,7 +53,7 @@ public class MainWindowController implements Initializable, ConsoleListener {
     private Stream mStream;
 
     @Override
-    public void initialize(final URL location, final ResourceBundle resources) {
+    public synchronized void initialize(final URL location, final ResourceBundle resources) {
         // Select the custom channel radio button upon focusing the text field next to it
         channelCustomInput.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -60,6 +62,12 @@ public class MainWindowController implements Initializable, ConsoleListener {
                 if (newValue) {
                     channelCustom.setSelected(true);
                 }
+            }
+        });
+        channelCustomInput.setOnKeyPressed(new EventHandler<Event>() {
+            @Override
+            public void handle(final Event event) {
+                setCustomChannelValid(true);
             }
         });
 
@@ -109,11 +117,11 @@ public class MainWindowController implements Initializable, ConsoleListener {
                 startStream();
                 break;
 
-            case LOADING:
+            case CONNECTING:
+            case WAITING:
+            case BUFFERING:
             case ACTIVE:
-                updateState(StreamState.INACTIVE);
-                mStream.stop();
-                mStream = null;
+                stopStream();
                 break;
 
             default:
@@ -123,9 +131,17 @@ public class MainWindowController implements Initializable, ConsoleListener {
 
     @Override
     public synchronized void onConsoleOutput(final ProcessId processId, final String output) {
-        // Mark the stream as active once Livestreamer says it has started
-        if (output.contains("Writing stream to output")) {
-            // Run in UI thread
+        if (output.contains("Opening stream")) {
+            updateState(StreamState.BUFFERING);
+
+        } else if (output.contains("Waiting for streams")) {
+            updateState(StreamState.WAITING);
+
+        } else if (output.contains("Unable to open URL")) {
+            setCustomChannelValid(false);
+            stopStream();
+
+        } else if (output.contains("Writing stream to output")) {
             updateState(StreamState.ACTIVE);
         }
     }
@@ -136,7 +152,9 @@ public class MainWindowController implements Initializable, ConsoleListener {
             case INACTIVE:
                 break;
 
-            case LOADING:
+            case CONNECTING:
+            case WAITING:
+            case BUFFERING:
             case ACTIVE:
                 // The user didn't cancel streaming, so try starting the stream again
                 startStream();
@@ -148,9 +166,9 @@ public class MainWindowController implements Initializable, ConsoleListener {
     }
 
     /**
-     * Starts the stream based on the user preferences and transitions to the loading state.
+     * Starts the stream based on the user preferences and transitions to the connecting state.
      */
-    private void startStream() {
+    private synchronized void startStream() {
         final StreamService selectedStreamService = streamServiceSelection.getValue();
         final Quality quality = qualitySelection.getValue();
 
@@ -158,18 +176,27 @@ public class MainWindowController implements Initializable, ConsoleListener {
             try {
                 mStream = new Stream(selectedStreamService, channelCustomInput.getText(), quality);
             } catch (final InvalidParameterException ex) {
-                // TODO: Tell user that a channel must be provided
+                setCustomChannelValid(false);
             }
         } else {
             mStream = new Stream(selectedStreamService, quality);
         }
 
         if (mStream != null) {
-            updateState(StreamState.LOADING);
+            updateState(StreamState.CONNECTING);
 
             mStream.addListener(this);
             mStream.start();
         }
+    }
+
+    /**
+     * Stops the active stream and transitions to the inactive state.
+     */
+    private synchronized void stopStream() {
+        updateState(StreamState.INACTIVE);
+        mStream.stop();
+        mStream = null;
     }
 
     /**
@@ -178,7 +205,9 @@ public class MainWindowController implements Initializable, ConsoleListener {
      * @param newState
      *            The stream state to transition to
      */
-    public void updateState(final StreamState newState) {
+    public synchronized void updateState(final StreamState newState) {
+        final String oldCssClass = (mStreamState != null ? mStreamState.getCssClass() : null);
+
         mStreamState = newState;
 
         // Run in UI thread
@@ -186,6 +215,32 @@ public class MainWindowController implements Initializable, ConsoleListener {
             @Override
             public void run() {
                 streamButton.setText(mStreamState.getLabel());
+
+                final String newCssClass = newState.getCssClass();
+                if (!newCssClass.equals(oldCssClass)) {
+                    streamButton.getStyleClass().remove(oldCssClass);
+                    streamButton.getStyleClass().add(newCssClass);
+                }
+            }
+        });
+    }
+
+    /**
+     * Defines whether or not the inserted custom channel is valid or not. Will update the GUI appropriately.
+     * 
+     * @param valid
+     *            True iff the input value is valid
+     */
+    private synchronized void setCustomChannelValid(final boolean valid) {
+        // Run in UI thread
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                if (valid) {
+                    channelCustomInput.getStyleClass().remove("invalid");
+                } else {
+                    channelCustomInput.getStyleClass().add("invalid");
+                }
             }
         });
     }

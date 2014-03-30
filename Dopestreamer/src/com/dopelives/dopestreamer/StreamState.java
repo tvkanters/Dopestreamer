@@ -4,15 +4,21 @@ package com.dopelives.dopestreamer;
  * The possible states that a stream can be in.
  */
 public enum StreamState {
-    INACTIVE("Start stream"),
-    LOADING("Loading…"),
-    ACTIVE("Streaming…");
+    INACTIVE("Start stream", "inactive"),
+    CONNECTING("Connecting…", "busy"),
+    WAITING("Waiting for stream…", "busy"),
+    BUFFERING("Buffering…", "busy"),
+    ACTIVE("Streaming…", "active");
 
     /** The label to show in the GUI for this state */
     private final String mLabel;
 
-    private StreamState(final String label) {
+    /** The class to apply to the button during this state */
+    private final String mCssClass;
+
+    private StreamState(final String label, final String cssClass) {
         mLabel = label;
+        mCssClass = cssClass;
     }
 
     /**
@@ -20,6 +26,13 @@ public enum StreamState {
      */
     public String getLabel() {
         return mLabel;
+    }
+
+    /**
+     * @return The class to apply to the button during this state
+     */
+    public String getCssClass() {
+        return mCssClass;
     }
 
 }

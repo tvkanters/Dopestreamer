@@ -1,6 +1,7 @@
 package com.dopelives.dopestreamer.streams;
 
 import java.security.InvalidParameterException;
+import java.util.regex.Pattern;
 
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
@@ -13,6 +14,9 @@ public class Stream {
 
     /** The delay in seconds at which the stream service should be polled */
     private static final int RETRY_DELAY = 2;
+
+    /** The regex that will match valid channels */
+    private static final Pattern sChannelMatcher = Pattern.compile("^[a-zA-Z0-9_-]+$");
 
     /** The console that the stream runs in */
     private final Console mConsole;
@@ -32,7 +36,7 @@ public class Stream {
      */
     public Stream(final StreamService streamService, final String channel, final Quality quality)
             throws InvalidParameterException {
-        if (channel == null || channel.length() == 0) {
+        if (!sChannelMatcher.matcher(channel).find()) {
             throw new InvalidParameterException("Channel cannot be empty");
         }
 
