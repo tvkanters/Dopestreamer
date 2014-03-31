@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer;
+package com.dopelives.dopestreamer.gui;
 
 /**
  * The possible states that a stream can be in.

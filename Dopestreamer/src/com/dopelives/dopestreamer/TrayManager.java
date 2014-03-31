@@ -12,6 +12,8 @@ import javafx.application.Platform;
 
 import javax.swing.ImageIcon;
 
+import com.dopelives.dopestreamer.gui.StageManager;
+
 /**
  * Handles tray icon related functionality.
  */
@@ -31,7 +33,7 @@ public class TrayManager {
     private static TrayIcon getTrayIcon() {
         if (sTrayIcon == null) {
             // Construct the tray icon
-            sTrayIcon = new TrayIcon(new ImageIcon(MainWindow.class.getResource(Environment.IMAGE_FOLDER
+            sTrayIcon = new TrayIcon(new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER
                     + "dopestreamer_small.png")).getImage(), Environment.TITLE);
 
             // Open the main window upon double clicking the tray icon
@@ -41,7 +43,7 @@ public class TrayManager {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            MainWindow.show();
+                            StageManager.show();
                         }
                     });
                 }

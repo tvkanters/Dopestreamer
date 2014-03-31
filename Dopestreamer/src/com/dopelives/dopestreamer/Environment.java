@@ -2,6 +2,7 @@ package com.dopelives.dopestreamer;
 
 import javafx.application.Application;
 
+import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.shell.Shell;
 
 /**
@@ -19,7 +20,7 @@ public class Environment {
     public static void main(final String[] args) {
         TrayManager.show();
 
-        Application.launch(MainWindow.class, args);
+        Application.launch(StageManager.class, args);
     }
 
     /**
@@ -31,5 +32,10 @@ public class Environment {
         final Shell shell = Shell.getInstance();
         shell.killProcessTree(shell.getJvmProcessId());
     }
+
+    /**
+     * This is a static-only class.
+     */
+    private Environment() {}
 
 }

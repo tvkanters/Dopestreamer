@@ -1,8 +1,7 @@
 
 .root {
-    -fx-padding: 25.0px;
+    -fx-padding: 20.0px;
     -fx-background-image: url("images/bg.jpg");
-    -fx-effect: innershadow(three-pass-box, rgba(0.0,0.0,0.0,0.7), 5.0, 0.0, 0.0, 0.0);
     -fx-font-size: 14.0px;
     -fx-font-family: Arial;
 }
@@ -12,6 +11,14 @@
     -fx-font-family: "Arial Black";
     -fx-fill: #696;
     -fx-effect: innershadow(three-pass-box, rgba(0.0,0.0,0.0,0.7), 4.0, 0.0, 0.0, 2.0);
+}
+
+#settingsImage {
+    -fx-padding: 10.0px 0.0px 0.0px 0.0px;
+}
+#settingsImage ImageView {
+    -fx-background-color: rgba(0.0,0.0,0.0,0.0);
+    -fx-cursor: hand;
 }
 
 .label {
@@ -36,6 +43,7 @@
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
     -fx-alignment: center;
+    -fx-cursor: hand;
 }
 #streamButton.inactive {
     -fx-base: #808d96;

@@ -1,0 +1,69 @@
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.image.ImageView?>
+
+<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Streams"
+	xmlns:fx="http://javafx.com/fxml" styleClass="root">
+
+	<stylesheets>
+		<URL value="@style.css" />
+	</stylesheets>
+	<fx:define>
+		<ToggleGroup fx:id="channelGroup" />
+	</fx:define>
+
+
+	<HBox>
+		<Text id="header" text="Dopestreamer" wrappingWidth="236" />
+		<VBox id="settingsImage">
+			<ImageView onMouseClicked="#onSettingsClicked">
+				<image>
+					<Image url="@images/settings.png" />
+				</image>
+			</ImageView>
+		</VBox>
+	</HBox>
+
+
+	<HBox>
+		<VBox prefWidth="160">
+			<Label text="Stream service" />
+			<ComboBox fx:id="streamServiceSelection" prefWidth="150"
+				prefHeight="30" />
+		</VBox>
+		<VBox>
+			<Label text="Quality" />
+			<ComboBox fx:id="qualitySelection" prefWidth="100"
+				prefHeight="30" />
+		</VBox>
+	</HBox>
+
+
+	<Label text="Channel" />
+	<RadioButton fx:id="channelDefault" selected="true" text="Dopelives"
+		toggleGroup="$channelGroup" />
+	<VBox prefHeight="5" />
+	<HBox alignment="CENTER_LEFT">
+		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
+		<TextField fx:id="channelCustomInput" promptText="Enter a channel name"
+			prefHeight="30" />
+	</HBox>
+
+
+	<VBox prefHeight="20" />
+	<Button fx:id="streamButton" onAction="#onStreamButtonClicked"
+		prefWidth="260" prefHeight="50" />
+
+</VBox>

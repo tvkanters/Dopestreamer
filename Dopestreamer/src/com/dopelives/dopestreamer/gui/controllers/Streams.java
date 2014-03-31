@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer;
+package com.dopelives.dopestreamer.gui.controllers;
 
 import java.net.URL;
 import java.security.InvalidParameterException;
@@ -15,7 +15,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -23,8 +22,12 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
-import com.dopelives.dopestreamer.combobox.QualityCell;
-import com.dopelives.dopestreamer.combobox.StreamServiceCell;
+import com.dopelives.dopestreamer.Pref;
+import com.dopelives.dopestreamer.gui.Screen;
+import com.dopelives.dopestreamer.gui.StageManager;
+import com.dopelives.dopestreamer.gui.StreamState;
+import com.dopelives.dopestreamer.gui.combobox.QualityCell;
+import com.dopelives.dopestreamer.gui.combobox.StreamServiceCell;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
 import com.dopelives.dopestreamer.streams.Quality;
@@ -32,7 +35,10 @@ import com.dopelives.dopestreamer.streams.Stream;
 import com.dopelives.dopestreamer.streams.StreamService;
 import com.dopelives.dopestreamer.streams.StreamServiceManager;
 
-public class MainWindowController implements Initializable, ConsoleListener {
+/**
+ * The controller for the streams screen.
+ */
+public class Streams implements Initializable, ConsoleListener {
 
     @FXML
     private RadioButton channelDefault;
@@ -46,10 +52,6 @@ public class MainWindowController implements Initializable, ConsoleListener {
     private ComboBox<Quality> qualitySelection;
     @FXML
     private Button streamButton;
-    @FXML
-    private CheckBox autoStartToggle;
-    @FXML
-    private CheckBox showInTrayToggle;
 
     /** The current state of the main stream */
     private StreamState mStreamState;
@@ -129,16 +131,11 @@ public class MainWindowController implements Initializable, ConsoleListener {
         });
 
         // Check the auto-start preference
-        final boolean autoStart = Pref.AUTO_START.getBoolean();
-        autoStartToggle.setSelected(autoStart);
-        if (autoStart) {
+        if (Pref.AUTO_START.getBoolean()) {
             startStream();
         } else {
             updateState(StreamState.INACTIVE);
         }
-
-        // Check the minimise-to-tray preference
-        showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
     }
 
     @FXML
@@ -313,20 +310,8 @@ public class MainWindowController implements Initializable, ConsoleListener {
     }
 
     @FXML
-    public void onAutoStartToggle() {
-        Pref.AUTO_START.put(autoStartToggle.isSelected());
-    }
-
-    @FXML
-    public void onShowInTrayToggle() {
-        final boolean showInTray = showInTrayToggle.isSelected();
-        Pref.SHOW_IN_TRAY.put(showInTray);
-
-        if (showInTray) {
-            TrayManager.show();
-        } else {
-            TrayManager.hide();
-        }
+    public void onSettingsClicked() {
+        StageManager.setScreen(Screen.SETTINGS);
     }
 
 }

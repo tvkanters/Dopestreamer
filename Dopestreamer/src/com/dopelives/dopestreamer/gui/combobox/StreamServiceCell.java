@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer.combobox;
+package com.dopelives.dopestreamer.gui.combobox;
 
 import javafx.scene.image.ImageView;
 

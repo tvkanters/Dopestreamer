@@ -1,0 +1,42 @@
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.CheckBox?>
+
+<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Settings"
+	xmlns:fx="http://javafx.com/fxml" styleClass="root">
+
+	<stylesheets>
+		<URL value="@style.css" />
+	</stylesheets>
+
+
+    <HBox>
+        <Text id="header" text="Dopestreamer" wrappingWidth="236" />
+        <VBox id="settingsImage">
+            <ImageView onMouseClicked="#onSettingsClicked">
+                <image>
+                    <Image url="@images/settings_active.png" />
+                </image>
+            </ImageView>
+        </VBox>
+    </HBox>
+
+    
+    <VBox prefHeight="20" />
+    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
+    <VBox prefHeight="10" />
+    <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
+
+
+</VBox>
