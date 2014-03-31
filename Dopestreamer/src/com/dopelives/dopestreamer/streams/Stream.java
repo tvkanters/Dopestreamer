@@ -1,6 +1,5 @@
 package com.dopelives.dopestreamer.streams;
 
-import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
 
@@ -41,16 +40,10 @@ public class Stream {
             throw new InvalidParameterException("Channel cannot be empty");
         }
 
-        File rtmpdumpCheck = new File("rtmpdump.exe");
-        if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
-            mConsole = Shell.getInstance().createConsole(
-                    "livestreamer -l debug -r ./rtmpdump.exe --retry-streams " + RETRY_DELAY + " "
-                            + streamService.getUrl() + channel + " " + quality.getCommand());
-        } else {
-            mConsole = Shell.getInstance().createConsole(
-                    "livestreamer -l debug --retry-streams " + RETRY_DELAY + " " + streamService.getUrl() + channel
-                            + " " + quality.getCommand());
-        }
+        final Shell shell = Shell.getInstance();
+        mConsole = shell.createConsole("livestreamer -l debug --retry-streams " + RETRY_DELAY + " "
+                + shell.getAdditionalLivestreamerArguments() + " " + streamService.getUrl() + channel + " "
+                + quality.getCommand());
 
     }
 

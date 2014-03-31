@@ -1,5 +1,6 @@
 package com.dopelives.dopestreamer.shell;
 
+import java.io.File;
 import java.lang.reflect.Field;
 
 import com.sun.jna.Pointer;
@@ -48,6 +49,22 @@ public class WindowsShell extends Shell {
     @Override
     public void killProcessTree(final ProcessId processId) {
         executeCommand("taskkill /f /t /pid " + processId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getAdditionalLivestreamerArguments() {
+        String additionalArguments = "";
+
+        // Add the rtfmdump argument if the file is found next to the JAR
+        final File rtmpdumpCheck = new File("rtmpdump.exe");
+        if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
+            additionalArguments += "-r ./rtmpdump.exe";
+        }
+
+        return additionalArguments;
     }
 
 }

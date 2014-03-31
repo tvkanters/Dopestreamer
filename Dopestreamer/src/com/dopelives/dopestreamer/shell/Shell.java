@@ -137,4 +137,13 @@ public abstract class Shell {
      */
     public abstract void killProcessTree(ProcessId processId);
 
+    /**
+     * Can be overridden to append the arguments given to Livestreamer.
+     *
+     * @return The arguments to add or an empty string if none are given
+     */
+    public String getAdditionalLivestreamerArguments() {
+        return "";
+    }
+
 }
