@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
 
-<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Settings"
+<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.About"
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
 
 	<stylesheets>
@@ -21,13 +21,18 @@
 	</stylesheets>
 
 
-    <fx:include source="header.fxml" />
+	<fx:include source="header.fxml" />
 
-    
-    <VBox prefHeight="20" />
-    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
-    <VBox prefHeight="10" />
-    <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
+
+	<Label fx:id="version" />
+
+	<Label text="Developed by" />
+	<Text text="Timon Kanters (Ezid)" />
+	<Text text="Simon Vacker (Xphome)" />
+
+	<Label text="Special thanks to" />
+	<Text text="The Dopelives community" />
+	<Text text="The Livestreamer devs" />
 
 
 </VBox>

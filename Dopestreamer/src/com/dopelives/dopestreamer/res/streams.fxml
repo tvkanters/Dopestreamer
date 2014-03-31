@@ -25,16 +25,7 @@
 	</fx:define>
 
 
-	<HBox>
-		<Text id="header" text="Dopestreamer" wrappingWidth="236" />
-		<VBox id="settingsImage">
-			<ImageView onMouseClicked="#onSettingsClicked">
-				<image>
-					<Image url="@images/settings.png" />
-				</image>
-			</ImageView>
-		</VBox>
-	</HBox>
+	<fx:include source="header.fxml" />
 
 
 	<HBox>

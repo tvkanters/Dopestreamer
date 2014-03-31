@@ -25,7 +25,7 @@ public class StageManager extends Application {
     /** The window's width */
     public static final int WIDTH = 300;
     /** The window's height */
-    public static final int HEIGHT = 315;
+    public static final int HEIGHT = 310;
     /** The margin that JavaFX adds for some reason */
     public static final int MARGIN_CORRECTION = 10;
 
@@ -58,16 +58,6 @@ public class StageManager extends Application {
     }
 
     /**
-     * Switches the screen of the main window.
-     *
-     * @param screen
-     *            The screen to show
-     */
-    public static void setScreen(final Screen screen) {
-        sScreenManager.setScreen(screen);
-    }
-
-    /**
      * Shows the main stage in the last set location and focuses it.
      */
     public static void show() {
@@ -91,6 +81,13 @@ public class StageManager extends Application {
             sStage.setX(windowX);
             sStage.setY(windowY);
         }
+    }
+
+    /**
+     * @return The manager used to change the active screens
+     */
+    public static ScreenManager getScreenmanager() {
+        return sScreenManager;
     }
 
     /**

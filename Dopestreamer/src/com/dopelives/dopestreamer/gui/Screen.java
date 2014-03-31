@@ -15,7 +15,9 @@ public enum Screen {
     /** The main screen with the interface to control streams */
     STREAMS("streams.fxml"),
     /** The screen where the users can change settings */
-    SETTINGS("settings.fxml");
+    SETTINGS("settings.fxml"),
+    /** The screen where the version number and credits are displayed */
+    ABOUT("about.fxml");
 
     /** The node for the screen's contents */
     private final Node mNode;

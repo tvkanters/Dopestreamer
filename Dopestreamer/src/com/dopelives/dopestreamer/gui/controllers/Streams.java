@@ -23,8 +23,6 @@ import javafx.scene.control.TextField;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Pref;
-import com.dopelives.dopestreamer.gui.Screen;
-import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.gui.combobox.QualityCell;
 import com.dopelives.dopestreamer.gui.combobox.StreamServiceCell;
@@ -307,11 +305,6 @@ public class Streams implements Initializable, ConsoleListener {
         } else {
             cssClasses.remove(cssClass);
         }
-    }
-
-    @FXML
-    public void onSettingsClicked() {
-        StageManager.setScreen(Screen.SETTINGS);
     }
 
 }

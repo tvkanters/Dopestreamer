@@ -9,8 +9,6 @@ import javafx.scene.control.CheckBox;
 
 import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.TrayManager;
-import com.dopelives.dopestreamer.gui.Screen;
-import com.dopelives.dopestreamer.gui.StageManager;
 
 public class Settings implements Initializable {
 
@@ -45,11 +43,6 @@ public class Settings implements Initializable {
         } else {
             TrayManager.hide();
         }
-    }
-
-    @FXML
-    public void onSettingsClicked() {
-        StageManager.setScreen(Screen.STREAMS);
     }
 
 }

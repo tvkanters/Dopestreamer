@@ -1,0 +1,38 @@
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Header"
+	xmlns:fx="http://javafx.com/fxml">
+
+	<Text id="header" text="Dopestreamer" onMouseClicked="#onHomeClicked" />
+
+	<HBox alignment="CENTER_RIGHT" prefWidth="300">
+		<VBox styleClass="headerButton">
+			<ImageView onMouseClicked="#onAboutClicked">
+				<image>
+					<Image url="@images/about.png" />
+				</image>
+			</ImageView>
+		</VBox>
+
+		<HBox prefWidth="5" />
+
+		<VBox styleClass="headerButton">
+			<ImageView onMouseClicked="#onSettingsClicked">
+				<image>
+					<Image url="@images/settings.png" />
+				</image>
+			</ImageView>
+		</VBox>
+	</HBox>
+
+</HBox>
