@@ -17,7 +17,7 @@ public abstract class Shell {
         // Instantiate an OS specific implementation
         final String OS = System.getProperty("os.name", "generic").toLowerCase();
         if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
-            sInstance = null;
+            sInstance = new OSXShell();
         } else if (OS.indexOf("win") >= 0) {
             sInstance = new WindowsShell();
         } else if (OS.indexOf("nux") >= 0) {
