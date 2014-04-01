@@ -1,18 +1,18 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams.services;
 
 import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
- * The service for Bambuser streams.
+ * The service for Cast3d streams.
  */
-public class Bambuser extends StreamService {
+public class Cast3d extends StreamService {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getKey() {
-        return "bambuser";
+        return "cast3d";
     }
 
     /**
@@ -20,7 +20,7 @@ public class Bambuser extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Bambuser";
+        return "Cast3d";
     }
 
     /**
@@ -28,7 +28,7 @@ public class Bambuser extends StreamService {
      */
     @Override
     protected String getIconUrl() {
-        return "bambuser.png";
+        return "noimage.png";
     }
 
     /**
@@ -36,7 +36,7 @@ public class Bambuser extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "bambuser.com/v/";
+        return "cast3d.tv/channel/";
     }
 
 }

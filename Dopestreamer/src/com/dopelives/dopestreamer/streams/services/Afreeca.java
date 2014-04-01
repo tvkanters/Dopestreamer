@@ -1,18 +1,18 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams.services;
 
 import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
- * The service for Cast3d streams.
+ * The service for Afreeca streams.
  */
-public class Cast3d extends StreamService {
+public class Afreeca extends StreamService {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getKey() {
-        return "cast3d";
+        return "afreeca";
     }
 
     /**
@@ -20,7 +20,7 @@ public class Cast3d extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Cast3d";
+        return "Afreeca";
     }
 
     /**
@@ -28,7 +28,7 @@ public class Cast3d extends StreamService {
      */
     @Override
     protected String getIconUrl() {
-        return "noimage.png";
+        return "afreeca.png";
     }
 
     /**
@@ -36,7 +36,7 @@ public class Cast3d extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "cast3d.tv/channel/";
+        return "afreeca.com/";
     }
 
 }

@@ -1,18 +1,18 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams.services;
 
 import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
  * The service for Twitch streams.
  */
-public class Livestream extends StreamService {
+public class Twitch extends StreamService {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getKey() {
-        return "livestream";
+        return "twitch";
     }
 
     /**
@@ -20,7 +20,7 @@ public class Livestream extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Livestream (new only)";
+        return "Twitch";
     }
 
     /**
@@ -28,7 +28,7 @@ public class Livestream extends StreamService {
      */
     @Override
     protected String getIconUrl() {
-        return "livestream.png";
+        return "twitch.png";
     }
 
     /**
@@ -36,7 +36,15 @@ public class Livestream extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "new.livestream.com/";
+        return "twitch.tv/";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDefaultChannel() {
+        return "dopelives";
     }
 
 }

@@ -1,18 +1,18 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams.services;
 
 import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
- * The service for Twitch streams.
+ * The service for Hitbox streams.
  */
-public class Twitch extends StreamService {
+public class Hitbox extends StreamService {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getKey() {
-        return "twitch";
+        return "hitbox";
     }
 
     /**
@@ -20,7 +20,7 @@ public class Twitch extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Twitch";
+        return "Hitbox";
     }
 
     /**
@@ -28,7 +28,7 @@ public class Twitch extends StreamService {
      */
     @Override
     protected String getIconUrl() {
-        return "twitch.png";
+        return "hitbox.png";
     }
 
     /**
@@ -36,7 +36,7 @@ public class Twitch extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "twitch.tv/";
+        return "hitbox.tv/";
     }
 
     /**
@@ -44,7 +44,7 @@ public class Twitch extends StreamService {
      */
     @Override
     public String getDefaultChannel() {
-        return "dopelives";
+        return "dopefish";
     }
 
 }

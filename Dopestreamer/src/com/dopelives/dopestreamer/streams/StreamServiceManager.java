@@ -4,12 +4,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dopelives.dopestreamer.streamservices.Afreeca;
-import com.dopelives.dopestreamer.streamservices.Bambuser;
-import com.dopelives.dopestreamer.streamservices.Hitbox;
-import com.dopelives.dopestreamer.streamservices.Livestream;
-import com.dopelives.dopestreamer.streamservices.Movie;
-import com.dopelives.dopestreamer.streamservices.Twitch;
+import com.dopelives.dopestreamer.streams.services.Afreeca;
+import com.dopelives.dopestreamer.streams.services.Bambuser;
+import com.dopelives.dopestreamer.streams.services.Hitbox;
+import com.dopelives.dopestreamer.streams.services.Livestream;
+import com.dopelives.dopestreamer.streams.services.Movie;
+import com.dopelives.dopestreamer.streams.services.Twitch;
 
 /**
  * A manager for all available stream services.

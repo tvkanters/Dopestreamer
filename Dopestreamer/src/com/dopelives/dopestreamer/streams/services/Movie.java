@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams.services;
 
 /**
  * The service for movie streams.

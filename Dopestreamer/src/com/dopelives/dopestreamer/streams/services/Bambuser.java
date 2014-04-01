@@ -1,18 +1,18 @@
-package com.dopelives.dopestreamer.streamservices;
+package com.dopelives.dopestreamer.streams.services;
 
 import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
- * The service for Afreeca streams.
+ * The service for Bambuser streams.
  */
-public class Afreeca extends StreamService {
+public class Bambuser extends StreamService {
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getKey() {
-        return "afreeca";
+        return "bambuser";
     }
 
     /**
@@ -20,7 +20,7 @@ public class Afreeca extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Afreeca";
+        return "Bambuser";
     }
 
     /**
@@ -28,7 +28,7 @@ public class Afreeca extends StreamService {
      */
     @Override
     protected String getIconUrl() {
-        return "afreeca.png";
+        return "bambuser.png";
     }
 
     /**
@@ -36,7 +36,7 @@ public class Afreeca extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "afreeca.com/";
+        return "bambuser.com/v/";
     }
 
 }
