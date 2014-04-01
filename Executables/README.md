@@ -1,0 +1,1 @@
+The executable files here are purely for convenience of quick tests and EXE conversions. They are guaranteed to be up-to-date with the latest release, but will probably not be in line with the latest commit.
