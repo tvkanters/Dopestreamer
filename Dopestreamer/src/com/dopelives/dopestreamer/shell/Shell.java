@@ -21,7 +21,7 @@ public abstract class Shell {
         } else if (OS.indexOf("win") >= 0) {
             sInstance = new WindowsShell();
         } else if (OS.indexOf("nux") >= 0) {
-            sInstance = null;
+            sInstance = new LinuxShell();
         } else {
             sInstance = null;
         }
