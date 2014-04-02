@@ -12,6 +12,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
 
 <VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.About"
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
@@ -27,12 +28,14 @@
 	<Label fx:id="version" />
 
 	<Label text="Developed by" />
-	<Text text="Timon Kanters (Ezid)" />
-	<Text text="Simon Vacker (Xphome)" />
+	<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
+    <Text text="Simon Vacker (Xphome)" onMouseClicked="#onXphomeClicked" styleClass="link" />
+    <Text text="Jimmy (did nothing wrong)" />
 
 	<Label text="Special thanks to" />
-	<Text text="The Dopelives community" />
-	<Text text="The Livestreamer devs" />
+	<Text text="The Dopelives community" onMouseClicked="#onDopelivesClicked" styleClass="link" />
+	<Text text="The Livestreamer devs" onMouseClicked="#onLivestreamerClicked" styleClass="link" />
+	<Text text="The RTMPDump devs" onMouseClicked="#onRtmpDumpClicked" styleClass="link" />
 
 
 </VBox>

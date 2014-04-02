@@ -31,6 +31,14 @@
     -fx-effect: innershadow(three-pass-box, rgba(0.0,0.0,0.0,0.7), 3.0, 0.0, 0.0, 1.5);
 }
 
+.link {
+    -fx-fill: #585;
+    -fx-cursor: hand;
+}
+.link:hover {
+    -fx-fill: #8b8;
+}
+
 .unavailable {
     -fx-opacity: 0.4;
 }
