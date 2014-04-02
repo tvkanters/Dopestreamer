@@ -19,7 +19,7 @@
 		<VBox styleClass="headerButton">
 			<ImageView onMouseClicked="#onAboutClicked">
 				<image>
-					<Image url="@images/about.png" />
+					<Image url="@../images/about.png" />
 				</image>
 			</ImageView>
 		</VBox>
@@ -29,7 +29,7 @@
 		<VBox styleClass="headerButton">
 			<ImageView onMouseClicked="#onSettingsClicked">
 				<image>
-					<Image url="@images/settings.png" />
+					<Image url="@../images/settings.png" />
 				</image>
 			</ImageView>
 		</VBox>

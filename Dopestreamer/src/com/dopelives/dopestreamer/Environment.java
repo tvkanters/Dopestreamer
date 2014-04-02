@@ -17,8 +17,12 @@ public class Environment {
 
     /** The absolute path to the folder containing the GUI resources */
     public static final String RESOURCE_FOLDER = "/com/dopelives/dopestreamer/res/";
+    /** The absolute path to the folder containing the GUI layout resources */
+    public static final String LAYOUT_FOLDER = RESOURCE_FOLDER + "layout/";
     /** The absolute path to the folder containing the GUI image resources */
     public static final String IMAGE_FOLDER = RESOURCE_FOLDER + "images/";
+    /** The absolute path to the folder containing the GUI CSS resources */
+    public static final String STYLE_FOLDER = RESOURCE_FOLDER + "style/";
     /** The application's title */
     public static final String TITLE = "Dopestreamer";
 

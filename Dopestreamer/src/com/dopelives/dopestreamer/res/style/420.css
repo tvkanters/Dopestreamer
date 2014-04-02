@@ -1,0 +1,13 @@
+
+.root {
+    -fx-background-image: url("../images/weed.jpg");
+}
+
+#header, .label, CheckBox, RadioButton, TextField, Button, Text, .link, #streamButton, ComboBox {
+    -fx-text-fill: #c0f;
+    -fx-fill: #c0f;
+}
+
+Button, ComboBox, TextField {
+    -fx-background-color: #0f0;
+}

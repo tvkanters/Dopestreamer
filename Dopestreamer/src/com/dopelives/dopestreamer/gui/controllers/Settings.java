@@ -21,6 +21,7 @@ import javafx.scene.input.KeyEvent;
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.TrayManager;
+import com.dopelives.dopestreamer.gui.Screen;
 
 public class Settings implements Initializable {
 
@@ -94,6 +95,12 @@ public class Settings implements Initializable {
         }
 
         final String input = playerLocation.getText();
+        if (input.equals("420")) {
+            for (final Screen screen : Screen.values()) {
+                screen.getNode().getStylesheets().add(Environment.STYLE_FOLDER + "420.css");
+            }
+            return;
+        }
 
         // Check input validity
         final boolean inputValid;

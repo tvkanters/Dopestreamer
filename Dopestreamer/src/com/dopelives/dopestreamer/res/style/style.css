@@ -1,7 +1,7 @@
 
 .root {
     -fx-padding: 20.0px;
-    -fx-background-image: url("images/bg.jpg");
+    -fx-background-image: url("../images/bg.jpg");
     -fx-font-size: 14.0px;
     -fx-font-family: Arial;
 }

@@ -18,7 +18,7 @@
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
 
 	<stylesheets>
-		<URL value="@style.css" />
+		<URL value="@../style/style.css" />
 	</stylesheets>
 	<fx:define>
 		<ToggleGroup fx:id="channelGroup" />

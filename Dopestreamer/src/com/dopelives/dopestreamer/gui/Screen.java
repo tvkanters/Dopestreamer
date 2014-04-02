@@ -3,7 +3,7 @@ package com.dopelives.dopestreamer.gui;
 import java.io.IOException;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
+import javafx.scene.Parent;
 
 import com.dopelives.dopestreamer.Environment;
 
@@ -20,11 +20,11 @@ public enum Screen {
     ABOUT("about.fxml");
 
     /** The node for the screen's contents */
-    private final Node mNode;
+    private final Parent mNode;
 
     private Screen(final String resource) {
         try {
-            mNode = FXMLLoader.load(getClass().getResource(Environment.RESOURCE_FOLDER + resource));
+            mNode = FXMLLoader.load(getClass().getResource(Environment.LAYOUT_FOLDER + resource));
         } catch (final IOException ex) {
             throw new RuntimeException("Couldn't load resource " + resource, ex);
         }
@@ -33,7 +33,7 @@ public enum Screen {
     /**
      * @return The node for the screen's contents
      */
-    public Node getNode() {
+    public Parent getNode() {
         return mNode;
     }
 }
