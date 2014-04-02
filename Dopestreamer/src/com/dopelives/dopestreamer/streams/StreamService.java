@@ -49,7 +49,7 @@ public abstract class StreamService {
     public abstract String getUrl();
 
     /**
-     * @return True iff the the service has a default (Dopelives) channel
+     * @return True iff the service has a default (Dopelives) channel
      */
     public boolean hasDefaultChannel() {
         return getDefaultChannel() != null;

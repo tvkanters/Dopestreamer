@@ -1,5 +1,7 @@
 package com.dopelives.dopestreamer;
 
+import java.io.PrintStream;
+
 import javafx.application.Application;
 
 import com.dopelives.dopestreamer.gui.StageManager;
@@ -10,6 +12,9 @@ import com.dopelives.dopestreamer.shell.Shell;
  */
 public class Environment {
 
+    /** The current version without prefix */
+    public static final String VERSION = "0.3";
+
     /** The absolute path to the folder containing the GUI resources */
     public static final String RESOURCE_FOLDER = "/com/dopelives/dopestreamer/res/";
     /** The absolute path to the folder containing the GUI image resources */
@@ -17,10 +22,12 @@ public class Environment {
     /** The application's title */
     public static final String TITLE = "Dopestreamer";
 
-    /** The current version without prefix */
-    public static final String VERSION = "0.3";
+    /** Remembers all output for logging purposes */
+    private static final OutputSpy sOutputSpy = new OutputSpy(System.out);
 
     public static void main(final String[] args) {
+        System.setOut(new PrintStream(sOutputSpy));
+
         TrayManager.show();
 
         Application.launch(StageManager.class, args);
@@ -34,6 +41,13 @@ public class Environment {
 
         final Shell shell = Shell.getInstance();
         shell.killProcessTree(shell.getJvmProcessId());
+    }
+
+    /**
+     * @return The reader that remembers all output for logging purposes
+     */
+    public static OutputSpy getOutputSpy() {
+        return sOutputSpy;
     }
 
     /**

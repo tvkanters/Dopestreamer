@@ -1,12 +1,19 @@
 package com.dopelives.dopestreamer.gui.controllers;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 
+import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.TrayManager;
 
@@ -16,6 +23,8 @@ public class Settings implements Initializable {
     private CheckBox autoStartToggle;
     @FXML
     private CheckBox showInTrayToggle;
+    @FXML
+    private Button saveOutputButton;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -43,6 +52,26 @@ public class Settings implements Initializable {
         } else {
             TrayManager.hide();
         }
+    }
+
+    @FXML
+    public void onSaveOutput() {
+        saveOutputButton.setDisable(true);
+
+        final String filename = new SimpleDateFormat("'dopelog-'yyyyMMddhhmmss'.txt'").format(new Date());
+        Environment.getOutputSpy().writeToFile(filename);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        saveOutputButton.setDisable(false);
+                    }
+                });
+            }
+        }, 1000);
     }
 
 }
