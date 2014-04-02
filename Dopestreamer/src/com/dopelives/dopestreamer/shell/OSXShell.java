@@ -1,11 +1,10 @@
 package com.dopelives.dopestreamer.shell;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
 
 /**
- * A class for OSX-specific shell functionality.
+ * A class for OS X-specific shell functionality.
  */
 public class OSXShell extends Shell {
 
@@ -21,8 +20,7 @@ public class OSXShell extends Shell {
         try {
             final Field f = process.getClass().getDeclaredField("pid");
             f.setAccessible(true);
-            int id = f.getInt(process);
-            return new ProcessId(id);
+            return new ProcessId(f.getInt(process));
 
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             throw new RuntimeException("Could not retrieve PID", ex);
@@ -34,8 +32,7 @@ public class OSXShell extends Shell {
      */
     @Override
     protected ProcessBuilder getProcessBuilder(final String command) {
-        String[] commands = command.split(" +");
-        return new ProcessBuilder(commands);
+        return new ProcessBuilder(command.split(" +"));
     }
 
     /**
@@ -43,14 +40,17 @@ public class OSXShell extends Shell {
      */
     @Override
     public void killProcessTree(final ProcessId processId) {
-        // Get LSer process
-        String child = executeCommandForResult("pgrep -P " + processId);
+        // Get child processes
+        final String child = executeCommandForResult("pgrep -P " + processId);
         if (!child.equals("")) {
+            // Close each child process
             final String[] childIds = child.trim().split("\\s+");
             for (final String childId : childIds) {
                 killProcessTree(new ProcessId(childId));
             }
         }
+
+        // Close current process
         executeCommand("kill " + processId);
     }
 
@@ -62,9 +62,9 @@ public class OSXShell extends Shell {
         String additionalArguments = "";
 
         // Add the rtfmdump argument if the file is found next to the JAR
-        final File rtmpdumpCheck = new File("rtmpdump.exe");
+        final File rtmpdumpCheck = new File("rtmpdump");
         if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
-            additionalArguments += "-r ./rtmpdump.exe";
+            additionalArguments += " -r ./rtmpdump";
         }
 
         return additionalArguments;

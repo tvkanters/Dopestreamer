@@ -61,7 +61,7 @@ public class WindowsShell extends Shell {
         // Add the rtfmdump argument if the file is found next to the JAR
         final File rtmpdumpCheck = new File("rtmpdump.exe");
         if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
-            additionalArguments += "-r ./rtmpdump.exe";
+            additionalArguments += " -r ./rtmpdump.exe";
         }
 
         return additionalArguments;
