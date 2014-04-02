@@ -12,6 +12,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
 
 <VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Settings"
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
@@ -28,6 +29,8 @@
     <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
     <VBox prefHeight="10" />
     <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
+    <VBox prefHeight="10" />
+    <TextField  fx:id="playerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30" />
     <VBox prefHeight="10" />
     <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save output to file" />
 

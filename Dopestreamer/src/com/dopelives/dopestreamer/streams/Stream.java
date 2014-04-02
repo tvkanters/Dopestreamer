@@ -3,6 +3,7 @@ package com.dopelives.dopestreamer.streams;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
 
+import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.Shell;
@@ -40,10 +41,26 @@ public class Stream {
             throw new InvalidParameterException("Channel cannot be empty");
         }
 
+        // Prepare Livestreamer command
         final Shell shell = Shell.getInstance();
-        mConsole = shell.createConsole("livestreamer -l debug --retry-streams " + RETRY_DELAY + " "
-                + shell.getAdditionalLivestreamerArguments() + " " + streamService.getUrl() + channel + " "
-                + quality.getCommand());
+        String command = "livestreamer -l debug --retry-streams " + RETRY_DELAY;
+
+        // Add OS specific arguments
+        final String additionalArguments = shell.getAdditionalLivestreamerArguments();
+        if (!additionalArguments.equals("")) {
+            command += " " + additionalArguments.trim();
+        }
+
+        // Add custom player location, if any
+        final String playerLocation = Pref.PLAYER_LOCATION.getString();
+        if (!playerLocation.equals("")) {
+            command += " -p \"" + playerLocation + "\"";
+        }
+
+        // Add channel information
+        command += " " + streamService.getUrl() + channel + " " + quality.getCommand();
+
+        mConsole = shell.createConsole(command);
 
     }
 

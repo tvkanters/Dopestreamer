@@ -20,7 +20,9 @@ public enum Pref {
     /** The key of the last stream service used */
     LAST_STREAM_SERVICE("laststreamservice", "hitbox"),
     /** The enum constant of the last quality used */
-    LAST_QUALITY("lastquality", "BEST");
+    LAST_QUALITY("lastquality", "BEST"),
+    /** The location of the media player to use */
+    PLAYER_LOCATION("playerlocation", "");
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());

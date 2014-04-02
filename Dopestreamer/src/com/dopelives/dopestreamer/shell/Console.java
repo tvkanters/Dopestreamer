@@ -104,7 +104,6 @@ public class Console {
             mOutputThread = new Thread(new OutputReader());
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public void run() {
             try {
@@ -133,7 +132,7 @@ public class Console {
                 // Shut down the console
                 mRunning = false;
                 mStopped = true;
-                mOutputThread.stop();
+                mOutput.close();
 
                 // Inform the listeners that the process has stopped
                 for (final ConsoleListener listener : mListeners) {

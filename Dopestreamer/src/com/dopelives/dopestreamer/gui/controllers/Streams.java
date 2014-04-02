@@ -8,12 +8,10 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
@@ -84,7 +82,8 @@ public class Streams implements Initializable, ConsoleListener {
         streamServiceSelection.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
-                setCssClass(channelDefault, "unavailable", !streamServiceSelection.getValue().hasDefaultChannel());
+                ControllerHelper.setCssClass(channelDefault, "unavailable", !streamServiceSelection.getValue()
+                        .hasDefaultChannel());
             }
         });
 
@@ -169,7 +168,16 @@ public class Streams implements Initializable, ConsoleListener {
             }
             stopStream();
 
-        } else if (output.contains("Writing stream to output")) {
+        } else if (output.contains("Failed to start player")) {
+            stopStream();
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    streamButton.setText("Invalid media player");
+                }
+            });
+
+        } else if (output.contains("Writing stream")) {
             updateState(StreamState.ACTIVE);
         }
     }
@@ -260,14 +268,14 @@ public class Streams implements Initializable, ConsoleListener {
             @Override
             public void run() {
                 streamButton.setText(mStreamState.getLabel());
-
-                final String newCssClass = newState.getCssClass();
-                if (!newCssClass.equals(oldCssClass)) {
-                    setCssClass(streamButton, oldCssClass, false);
-                    setCssClass(streamButton, newCssClass, true);
-                }
             }
         });
+
+        final String newCssClass = newState.getCssClass();
+        if (!newCssClass.equals(oldCssClass)) {
+            ControllerHelper.setCssClass(streamButton, oldCssClass, false);
+            ControllerHelper.setCssClass(streamButton, newCssClass, true);
+        }
     }
 
     /**
@@ -277,34 +285,7 @@ public class Streams implements Initializable, ConsoleListener {
      *            True iff the input value is valid
      */
     private synchronized void setCustomChannelValid(final boolean valid) {
-        // Run in UI thread
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                setCssClass(channelCustomInput, "invalid", !valid);
-            }
-        });
-    }
-
-    /**
-     * Adds or removes a CSS class on an element.
-     *
-     * @param element
-     *            The element to change the CSS class of
-     * @param cssClass
-     *            The CSS class to add or remove
-     * @param enabled
-     *            True if the CSS class should be added, false for removal
-     */
-    private void setCssClass(final Node element, final String cssClass, final boolean enabled) {
-        final ObservableList<String> cssClasses = element.getStyleClass();
-        if (enabled) {
-            if (!cssClasses.contains(cssClass)) {
-                cssClasses.add(cssClass);
-            }
-        } else {
-            cssClasses.remove(cssClass);
-        }
+        ControllerHelper.setCssClass(channelCustomInput, "invalid", !valid);
     }
 
 }
