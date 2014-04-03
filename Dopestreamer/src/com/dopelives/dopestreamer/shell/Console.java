@@ -178,4 +178,11 @@ public class Console {
     public void addListener(final ConsoleListener listener) {
         mListeners.add(listener);
     }
+
+    /**
+     * @return The process ID of this console
+     */
+    public ProcessId getProcessId() {
+        return mProcessId;
+    }
 }

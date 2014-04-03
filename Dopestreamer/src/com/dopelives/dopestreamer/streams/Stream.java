@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
+import com.dopelives.dopestreamer.shell.ProcessId;
 import com.dopelives.dopestreamer.shell.Shell;
 
 /**
@@ -98,6 +99,13 @@ public class Stream {
      */
     public void addListener(final ConsoleListener listener) {
         mConsole.addListener(listener);
+    }
+
+    /**
+     * @return The process ID of the stream's console
+     */
+    public ProcessId getProcessId() {
+        return mConsole.getProcessId();
     }
 
 }
