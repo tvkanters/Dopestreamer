@@ -13,7 +13,7 @@ import com.dopelives.dopestreamer.shell.Shell;
 public class Environment {
 
     /** The current version without prefix */
-    public static final String VERSION = "0.3";
+    public static final String VERSION = "1.0";
 
     /** The absolute path to the folder containing the GUI resources */
     public static final String RESOURCE_FOLDER = "/com/dopelives/dopestreamer/res/";
