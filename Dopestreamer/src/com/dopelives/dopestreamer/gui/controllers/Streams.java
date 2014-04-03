@@ -4,6 +4,8 @@ import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -36,6 +38,9 @@ import com.dopelives.dopestreamer.streams.StreamServiceManager;
  */
 public class Streams implements Initializable, ConsoleListener {
 
+    /** The amount of time in milliseconds before buffering times out */
+    private static final int BUFFERING_TIMEOUT = 5 * 1000;
+
     @FXML
     private RadioButton channelDefault;
     @FXML
@@ -48,6 +53,11 @@ public class Streams implements Initializable, ConsoleListener {
     private ComboBox<Quality> qualitySelection;
     @FXML
     private Button streamButton;
+
+    /** The timer used for buffering timeouts */
+    private final Timer mBufferingTimer = new Timer();
+    /** The timer task used for buffering timeouts */
+    private TimerTask mBufferingTimeout;
 
     /** The current state of the main stream */
     private StreamState mStreamState;
@@ -158,6 +168,7 @@ public class Streams implements Initializable, ConsoleListener {
     public synchronized void onConsoleOutput(final ProcessId processId, final String output) {
         if (output.contains("Opening stream")) {
             updateState(StreamState.BUFFERING);
+            startBufferingTimeout();
 
         } else if (output.contains("Waiting for streams")) {
             updateState(StreamState.WAITING);
@@ -176,6 +187,9 @@ public class Streams implements Initializable, ConsoleListener {
                     streamButton.setText("Invalid media player");
                 }
             });
+
+        } else if (output.contains("Starting player")) {
+            stopBufferingTimeout();
 
         } else if (output.contains("Writing stream")) {
             updateState(StreamState.ACTIVE);
@@ -202,7 +216,8 @@ public class Streams implements Initializable, ConsoleListener {
     }
 
     /**
-     * Starts the stream based on the user preferences and transitions to the connecting state.
+     * Starts the stream based on the user preferences and transitions to the connecting state. Will restart the stream
+     * if it was already running.
      */
     private synchronized void startStream() {
         final StreamService selectedStreamService = streamServiceSelection.getValue();
@@ -210,10 +225,7 @@ public class Streams implements Initializable, ConsoleListener {
         final Quality quality = qualitySelection.getValue();
 
         // Clean up if needed
-        if (mStream != null) {
-            mStream.stop();
-            mStream = null;
-        }
+        stopStreamConsole();
 
         // Pick a default or custom channel
         if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
@@ -248,8 +260,41 @@ public class Streams implements Initializable, ConsoleListener {
      */
     private synchronized void stopStream() {
         updateState(StreamState.INACTIVE);
-        mStream.stop();
-        mStream = null;
+        stopStreamConsole();
+    }
+
+    /**
+     * Stops the console of the stream, if it was opened.
+     */
+    private synchronized void stopStreamConsole() {
+        if (mStream != null) {
+            mStream.stop();
+            mStream = null;
+        }
+    }
+
+    /**
+     * Starts the timeout for buffering. Will try to restart the stream after the timeout.
+     */
+    private synchronized void startBufferingTimeout() {
+        mBufferingTimeout = new TimerTask() {
+            @Override
+            public void run() {
+                // Only stop the stream, it will be automatically restarted
+                stopStreamConsole();
+            }
+        };
+        mBufferingTimer.schedule(mBufferingTimeout, BUFFERING_TIMEOUT);
+    }
+
+    /**
+     * Stops the buffering timeout, preventing it from restarting the stream.
+     */
+    private synchronized void stopBufferingTimeout() {
+        if (mBufferingTimeout != null) {
+            mBufferingTimeout.cancel();
+            mBufferingTimer.purge();
+        }
     }
 
     /**
@@ -259,8 +304,9 @@ public class Streams implements Initializable, ConsoleListener {
      *            The stream state to transition to
      */
     public synchronized void updateState(final StreamState newState) {
-        final String oldCssClass = (mStreamState != null ? mStreamState.getCssClass() : null);
+        stopBufferingTimeout();
 
+        final String oldCssClass = (mStreamState != null ? mStreamState.getCssClass() : null);
         mStreamState = newState;
 
         // Run in UI thread
