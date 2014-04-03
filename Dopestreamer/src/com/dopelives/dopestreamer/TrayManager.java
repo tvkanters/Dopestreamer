@@ -7,6 +7,8 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javafx.application.Platform;
 
@@ -36,16 +38,18 @@ public class TrayManager {
             sTrayIcon = new TrayIcon(new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER
                     + "dopestreamer_small.png")).getImage(), Environment.TITLE);
 
-            // Open the main window upon double clicking the tray icon
-            sTrayIcon.addActionListener(new ActionListener() {
+            // Open the main window upon clicking the tray icon
+            sTrayIcon.addMouseListener(new MouseAdapter() {
                 @Override
-                public void actionPerformed(final ActionEvent e) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            StageManager.show();
-                        }
-                    });
+                public void mouseClicked(final MouseEvent e) {
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                StageManager.show();
+                            }
+                        });
+                    }
                 }
             });
 
