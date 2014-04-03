@@ -32,7 +32,7 @@
     <VBox prefHeight="10" />
     <TextField  fx:id="playerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30" />
     <VBox prefHeight="10" />
-    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save logs to file" />
+    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save console output to file" />
 
 
 </VBox>
