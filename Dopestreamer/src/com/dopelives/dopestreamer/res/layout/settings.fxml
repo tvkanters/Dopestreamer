@@ -26,13 +26,13 @@
 
     
     <VBox prefHeight="20" />
-    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
+    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on app launch" />
     <VBox prefHeight="10" />
     <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
     <VBox prefHeight="10" />
     <TextField  fx:id="playerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30" />
     <VBox prefHeight="10" />
-    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save output to file" />
+    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save logs to file" />
 
 
 </VBox>
