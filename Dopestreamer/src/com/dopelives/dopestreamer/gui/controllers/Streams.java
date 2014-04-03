@@ -207,7 +207,9 @@ public class Streams implements Initializable, ConsoleListener {
             case BUFFERING:
             case ACTIVE:
                 // The user didn't cancel streaming, so try starting the stream again
-                startStream();
+                if (mStream == null) {
+                    startStream();
+                }
                 break;
 
             default:
