@@ -284,6 +284,7 @@ public class Streams implements Initializable, ConsoleListener {
             public void run() {
                 // Only stop the stream, it will be automatically restarted
                 stopStreamConsole();
+                startStream();
             }
         };
         mBufferingTimer.schedule(mBufferingTimeout, BUFFERING_TIMEOUT);
