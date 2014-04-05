@@ -207,7 +207,7 @@ public class Streams implements Initializable, ConsoleListener {
             case BUFFERING:
             case ACTIVE:
                 // The user didn't cancel streaming, so try starting the stream again
-                if (processId.equals(mStream.getProcessId())) {
+                if (mStream != null && processId.equals(mStream.getProcessId())) {
                     startStream();
                 }
                 break;
