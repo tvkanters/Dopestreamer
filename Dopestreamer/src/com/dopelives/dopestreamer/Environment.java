@@ -31,6 +31,7 @@ public class Environment {
 
     public static void main(final String[] args) {
         System.setOut(new PrintStream(sOutputSpy));
+        System.setErr(new PrintStream(sOutputSpy));
 
         TrayManager.show();
 
