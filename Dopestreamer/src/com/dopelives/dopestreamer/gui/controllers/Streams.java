@@ -179,7 +179,8 @@ public class Streams implements Initializable, ConsoleListener {
             }
             stopStream();
 
-        } else if (output.contains("Failed to start player")) {
+        } else if (output.contains("Failed to start player")
+                || output.contains("The default player (VLC) does not seem to be installed.")) {
             stopStream();
             Platform.runLater(new Runnable() {
                 @Override
