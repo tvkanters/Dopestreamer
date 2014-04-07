@@ -30,6 +30,8 @@ public class Settings implements Initializable {
     @FXML
     private CheckBox showInTrayToggle;
     @FXML
+    private CheckBox startMinimisedToggle;
+    @FXML
     private TextField playerLocation;
     @FXML
     private Button saveOutputButton;
@@ -37,11 +39,10 @@ public class Settings implements Initializable {
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
 
-        // Check the auto-start preference
+        // Set the checkbox preferences
         autoStartToggle.setSelected(Pref.AUTO_START.getBoolean());
-
-        // Check the minimise-to-tray preference
         showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
+        startMinimisedToggle.setSelected(Pref.START_MINIMISED.getBoolean());
 
         // Set text, prompt text and tooltip of player location field
         final String playerLocationInfo = "Path to custom media player";
@@ -65,6 +66,11 @@ public class Settings implements Initializable {
         } else {
             TrayManager.hide();
         }
+    }
+
+    @FXML
+    public void onStartMinimisedToggle() {
+        Pref.START_MINIMISED.put(startMinimisedToggle.isSelected());
     }
 
     @FXML

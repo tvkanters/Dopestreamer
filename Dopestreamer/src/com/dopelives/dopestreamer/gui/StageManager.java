@@ -54,7 +54,17 @@ public class StageManager extends Application {
         sStage.xProperty().addListener(new PositionListener(Pref.WINDOW_X));
         sStage.yProperty().addListener(new PositionListener(Pref.WINDOW_Y));
 
-        show();
+        // Open the window but minimise if preferred by user
+        if (Pref.START_MINIMISED.getBoolean()) {
+            if (!Pref.SHOW_IN_TRAY.getBoolean()) {
+                sStage.setIconified(true);
+                loadWindowPosition();
+                sStage.show();
+            }
+
+        } else {
+            show();
+        }
     }
 
     /**

@@ -22,7 +22,9 @@ public enum Pref {
     /** The enum constant of the last quality used */
     LAST_QUALITY("lastquality", "BEST"),
     /** The location of the media player to use */
-    PLAYER_LOCATION("playerlocation", "");
+    PLAYER_LOCATION("playerlocation", ""),
+    /** Boolean type indication whether or not the window should start minimised */
+    START_MINIMISED("startminimised", false);
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
