@@ -57,4 +57,18 @@
 	<Button fx:id="streamButton" onAction="#onStreamButtonClicked"
 		prefWidth="260" prefHeight="50" />
 
+
+	<Label text="Topic info" />
+	<VBox fx:id="topicActive" managed="false" visible="false">
+		<HBox>
+			<Text text="Streamer: " />
+			<Text fx:id="streamerInfo" />
+		</HBox>
+		<HBox>
+			<Text text="Game: " />
+			<Text fx:id="gameInfo" />
+		</HBox>
+	</VBox>
+    <Text fx:id="topicInactive" text="No streamer active" />
+
 </VBox>

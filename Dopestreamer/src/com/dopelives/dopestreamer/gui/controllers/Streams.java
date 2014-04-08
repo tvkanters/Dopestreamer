@@ -12,12 +12,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Pref;
@@ -26,6 +28,8 @@ import com.dopelives.dopestreamer.gui.combobox.QualityCell;
 import com.dopelives.dopestreamer.gui.combobox.StreamServiceCell;
 import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.streams.Stream;
+import com.dopelives.dopestreamer.streams.StreamInfo;
+import com.dopelives.dopestreamer.streams.StreamInfo.StreamInfoListener;
 import com.dopelives.dopestreamer.streams.StreamListener;
 import com.dopelives.dopestreamer.streams.StreamManager;
 import com.dopelives.dopestreamer.streams.StreamService;
@@ -34,7 +38,7 @@ import com.dopelives.dopestreamer.streams.StreamServiceManager;
 /**
  * The controller for the streams screen.
  */
-public class Streams implements Initializable, StreamListener {
+public class Streams implements Initializable, StreamListener, StreamInfoListener {
 
     @FXML
     private RadioButton channelDefault;
@@ -48,6 +52,14 @@ public class Streams implements Initializable, StreamListener {
     private ComboBox<Quality> qualitySelection;
     @FXML
     private Button streamButton;
+    @FXML
+    private Node topicActive;
+    @FXML
+    private Node topicInactive;
+    @FXML
+    private Text streamerInfo;
+    @FXML
+    private Text gameInfo;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -122,9 +134,14 @@ public class Streams implements Initializable, StreamListener {
             }
         });
 
+        // Update to the right stream state
         final StreamManager streamManager = StreamManager.getInstance();
         streamManager.addListener(this);
         onStateUpdated(streamManager, null, streamManager.getStreamState());
+
+        // Update the stream info
+        StreamInfo.addListener(this);
+        StreamInfo.startRequestInterval();
     }
 
     @FXML
@@ -152,6 +169,7 @@ public class Streams implements Initializable, StreamListener {
             case WAITING:
             case BUFFERING:
             case ACTIVE:
+                StreamInfo.requestRefresh();
                 streamManager.stopStream();
                 break;
 
@@ -168,6 +186,7 @@ public class Streams implements Initializable, StreamListener {
         switch (newState) {
             case CONNECTING:
                 setCustomChannelValid(true);
+                StreamInfo.requestRefresh();
                 break;
 
             default:
@@ -206,6 +225,41 @@ public class Streams implements Initializable, StreamListener {
             @Override
             public void run() {
                 streamButton.setText("Invalid media player");
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStreamInfoUpdated(final String streamer, final String game) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                streamerInfo.setText(streamer);
+                gameInfo.setText(game);
+
+                topicActive.setVisible(true);
+                topicActive.setManaged(true);
+                topicInactive.setVisible(false);
+                topicInactive.setManaged(false);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStreamInfoRemoved() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                topicActive.setVisible(false);
+                topicActive.setManaged(false);
+                topicInactive.setVisible(true);
+                topicInactive.setManaged(true);
             }
         });
     }
