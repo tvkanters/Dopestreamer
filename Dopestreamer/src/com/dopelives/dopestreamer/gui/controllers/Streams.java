@@ -4,8 +4,6 @@ import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -26,20 +24,17 @@ import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.gui.combobox.QualityCell;
 import com.dopelives.dopestreamer.gui.combobox.StreamServiceCell;
-import com.dopelives.dopestreamer.shell.ConsoleListener;
-import com.dopelives.dopestreamer.shell.ProcessId;
 import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.streams.Stream;
+import com.dopelives.dopestreamer.streams.StreamListener;
+import com.dopelives.dopestreamer.streams.StreamManager;
 import com.dopelives.dopestreamer.streams.StreamService;
 import com.dopelives.dopestreamer.streams.StreamServiceManager;
 
 /**
  * The controller for the streams screen.
  */
-public class Streams implements Initializable, ConsoleListener {
-
-    /** The amount of time in milliseconds before buffering times out */
-    private static final int BUFFERING_TIMEOUT = 5 * 1000;
+public class Streams implements Initializable, StreamListener {
 
     @FXML
     private RadioButton channelDefault;
@@ -53,16 +48,6 @@ public class Streams implements Initializable, ConsoleListener {
     private ComboBox<Quality> qualitySelection;
     @FXML
     private Button streamButton;
-
-    /** The timer used for buffering timeouts */
-    private final Timer mBufferingTimer = new Timer();
-    /** The timer task used for buffering timeouts */
-    private TimerTask mBufferingTimeout;
-
-    /** The current state of the main stream */
-    private StreamState mStreamState;
-    /** The currently active stream */
-    private Stream mStream;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -137,195 +122,92 @@ public class Streams implements Initializable, ConsoleListener {
             }
         });
 
-        // Check the auto-start preference
-        if (Pref.AUTO_START.getBoolean()) {
-            startStream();
-        } else {
-            updateState(StreamState.INACTIVE);
-        }
+        final StreamManager streamManager = StreamManager.getInstance();
+        streamManager.addListener(this);
+        onStateUpdated(streamManager, null, streamManager.getStreamState());
     }
 
     @FXML
     protected synchronized void onStreamButtonClicked(final ActionEvent event) {
-        switch (mStreamState) {
+        final StreamManager streamManager = StreamManager.getInstance();
+
+        switch (streamManager.getStreamState()) {
             case INACTIVE:
-                startStream();
+                final StreamService selectedStreamService = streamServiceSelection.getValue();
+                final Quality quality = qualitySelection.getValue();
+
+                // Pick a default or custom channel
+                if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
+                    streamManager.startStream(selectedStreamService, quality);
+                } else {
+                    try {
+                        streamManager.startStream(selectedStreamService, channelCustomInput.getText(), quality);
+                    } catch (final InvalidParameterException ex) {
+                        setCustomChannelValid(false);
+                    }
+                }
                 break;
 
             case CONNECTING:
             case WAITING:
             case BUFFERING:
             case ACTIVE:
-                stopStream();
+                streamManager.stopStream();
                 break;
 
             default:
-                throw new IllegalStateException("Unknown state: " + mStreamState);
+                throw new IllegalStateException("Unknown state: " + streamManager.getStreamState());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public synchronized void onConsoleOutput(final ProcessId processId, final String output) {
-        if (output.contains("Opening stream")) {
-            updateState(StreamState.BUFFERING);
-            startBufferingTimeout();
-
-        } else if (output.contains("Waiting for streams")) {
-            updateState(StreamState.WAITING);
-
-        } else if (output.contains("Unable to open URL")) {
-            if (channelCustom.isSelected()) {
-                setCustomChannelValid(false);
-            }
-            stopStream();
-
-        } else if (output.contains("Failed to start player")
-                || output.contains("The default player (VLC) does not seem to be installed.")) {
-            stopStream();
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    streamButton.setText("Invalid media player");
-                }
-            });
-
-        } else if (output.contains("Starting player")) {
-            stopBufferingTimeout();
-
-        } else if (output.contains("Writing stream")) {
-            updateState(StreamState.ACTIVE);
-        }
-    }
-
-    @Override
-    public synchronized void onConsoleStop(final ProcessId processId) {
-        switch (mStreamState) {
-            case INACTIVE:
-                break;
-
+    public void onStateUpdated(final StreamManager streamManager, final StreamState oldState, final StreamState newState) {
+        switch (newState) {
             case CONNECTING:
-            case WAITING:
-            case BUFFERING:
-            case ACTIVE:
-                // The user didn't cancel streaming, so try starting the stream again
-                if (mStream != null && processId.equals(mStream.getProcessId())) {
-                    startStream();
-                }
+                setCustomChannelValid(true);
                 break;
 
             default:
-                throw new IllegalStateException("Unknown state: " + mStreamState);
         }
-    }
-
-    /**
-     * Starts the stream based on the user preferences and transitions to the connecting state. Will restart the stream
-     * if it was already running.
-     */
-    private synchronized void startStream() {
-        final StreamService selectedStreamService = streamServiceSelection.getValue();
-        final String channel;
-        final Quality quality = qualitySelection.getValue();
-
-        // Clean up if needed
-        stopStreamConsole();
-
-        // Pick a default or custom channel
-        if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
-            channel = "";
-            mStream = new Stream(selectedStreamService, quality);
-        } else {
-            channel = channelCustomInput.getText();
-            try {
-                mStream = new Stream(selectedStreamService, channel, quality);
-            } catch (final InvalidParameterException ex) {
-                setCustomChannelValid(false);
-            }
-        }
-
-        if (mStream != null) {
-            // Start the stream
-            setCustomChannelValid(true);
-            updateState(StreamState.CONNECTING);
-
-            mStream.addListener(this);
-            mStream.start();
-
-            // Save the stream settings
-            Pref.LAST_CHANNEL.put(channel);
-            Pref.LAST_STREAM_SERVICE.put(selectedStreamService.getKey());
-            Pref.LAST_QUALITY.put(quality.toString());
-        }
-    }
-
-    /**
-     * Stops the active stream and transitions to the inactive state.
-     */
-    private synchronized void stopStream() {
-        updateState(StreamState.INACTIVE);
-        stopStreamConsole();
-    }
-
-    /**
-     * Stops the console of the stream, if it was opened.
-     */
-    private synchronized void stopStreamConsole() {
-        if (mStream != null) {
-            mStream.stop();
-            mStream = null;
-        }
-    }
-
-    /**
-     * Starts the timeout for buffering. Will try to restart the stream after the timeout.
-     */
-    private synchronized void startBufferingTimeout() {
-        mBufferingTimeout = new TimerTask() {
-            @Override
-            public void run() {
-                // Only stop the stream, it will be automatically restarted
-                stopStreamConsole();
-                startStream();
-            }
-        };
-        mBufferingTimer.schedule(mBufferingTimeout, BUFFERING_TIMEOUT);
-    }
-
-    /**
-     * Stops the buffering timeout, preventing it from restarting the stream.
-     */
-    private synchronized void stopBufferingTimeout() {
-        if (mBufferingTimeout != null) {
-            mBufferingTimeout.cancel();
-            mBufferingTimer.purge();
-        }
-    }
-
-    /**
-     * Transitions to the given state and updates GUI components.
-     *
-     * @param newState
-     *            The stream state to transition to
-     */
-    public synchronized void updateState(final StreamState newState) {
-        stopBufferingTimeout();
-
-        final String oldCssClass = (mStreamState != null ? mStreamState.getCssClass() : null);
-        mStreamState = newState;
 
         // Run in UI thread
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                streamButton.setText(mStreamState.getLabel());
+                streamButton.setText(newState.getLabel());
             }
         });
 
-        final String newCssClass = newState.getCssClass();
-        if (!newCssClass.equals(oldCssClass)) {
-            ControllerHelper.setCssClass(streamButton, oldCssClass, false);
-            ControllerHelper.setCssClass(streamButton, newCssClass, true);
+        if (oldState != null) {
+            ControllerHelper.setCssClass(streamButton, oldState.getCssClass(), false);
         }
+        ControllerHelper.setCssClass(streamButton, newState.getCssClass(), true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onInvalidChannel(final Stream stream) {
+        if (channelCustom.isSelected()) {
+            setCustomChannelValid(false);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onInvalidMediaPlayer(final Stream stream) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                streamButton.setText("Invalid media player");
+            }
+        });
     }
 
     /**

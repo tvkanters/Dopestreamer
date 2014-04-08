@@ -23,6 +23,13 @@ public class Stream {
     /** The console that the stream runs in */
     private final Console mConsole;
 
+    /** The service the that is streamed */
+    private final StreamService mStreamService;
+    /** The channel started on the service */
+    private final String mChannel;
+    /** The quality the stream is shown in */
+    private final Quality mQuality;
+
     /**
      * Starts a stream for the given channel at the service.
      *
@@ -41,6 +48,10 @@ public class Stream {
         if (!sChannelMatcher.matcher(channel).find()) {
             throw new InvalidParameterException("Channel cannot be empty");
         }
+
+        mStreamService = streamService;
+        mChannel = channel;
+        mQuality = quality;
 
         // Prepare Livestreamer command
         final Shell shell = Shell.getInstance();
@@ -106,6 +117,27 @@ public class Stream {
      */
     public ProcessId getProcessId() {
         return mConsole.getProcessId();
+    }
+
+    /**
+     * @return The service the that is streamed
+     */
+    public StreamService getStreamService() {
+        return mStreamService;
+    }
+
+    /**
+     * @return The channel started on the service
+     */
+    public String getChannel() {
+        return mChannel;
+    }
+
+    /**
+     * @return The quality the stream is shown in
+     */
+    public Quality getQuality() {
+        return mQuality;
     }
 
 }

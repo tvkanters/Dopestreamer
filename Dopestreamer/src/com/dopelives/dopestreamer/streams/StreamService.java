@@ -9,16 +9,6 @@ import com.dopelives.dopestreamer.Environment;
  */
 public abstract class StreamService {
 
-    /** The icon to show next to this service's label */
-    private final Image mIcon;
-
-    /**
-     * Prepares the stream service that can be selected and started to provide streams.
-     */
-    protected StreamService() {
-        mIcon = new Image(Environment.IMAGE_FOLDER + getIconUrl());
-    }
-
     /**
      * @return The key to make to this service, shouldn't be changed during refactoring and must be unique
      */
@@ -33,7 +23,7 @@ public abstract class StreamService {
      * @return The icon to show next to this service's label
      */
     public Image getIcon() {
-        return mIcon;
+        return new Image(Environment.IMAGE_FOLDER + getIconUrl());
     }
 
     /**

@@ -6,6 +6,7 @@ import javafx.application.Application;
 
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.shell.Shell;
+import com.dopelives.dopestreamer.streams.StreamManager;
 
 /**
  * The initialiser and general environment manager.
@@ -34,6 +35,10 @@ public class Environment {
         System.setErr(new PrintStream(sOutputSpy));
 
         TrayManager.show();
+
+        if (Pref.AUTO_START.getBoolean()) {
+            StreamManager.getInstance().restartLastStream();
+        }
 
         Application.launch(StageManager.class, args);
     }

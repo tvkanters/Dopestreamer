@@ -46,6 +46,23 @@ public class StreamServiceManager {
     }
 
     /**
+     * Finds the stream service with the given key.
+     * 
+     * @param key
+     *            The key to search for
+     *
+     * @return The stream service with matching key or null if it wasn't found
+     */
+    public static StreamService getStreamServiceByKey(final String key) {
+        for (final StreamService streamService : sStreamServices) {
+            if (streamService.getKey().equals(key)) {
+                return streamService;
+            }
+        }
+        return null;
+    }
+
+    /**
      * This class is static-only.
      */
     private StreamServiceManager() {}

@@ -8,6 +8,8 @@ public interface ConsoleListener {
     /**
      * Called when the console retrieves output from the executed command. Called for each line.
      *
+     * @param processId
+     *            The PID of the stopped process
      * @param output
      *            The console output
      */
