@@ -15,11 +15,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Pref;
@@ -57,9 +57,9 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @FXML
     private Node topicInactive;
     @FXML
-    private Text streamerInfo;
+    private Label streamerInfo;
     @FXML
-    private Text gameInfo;
+    private Label gameInfo;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {

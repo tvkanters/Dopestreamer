@@ -67,3 +67,12 @@
     -fx-effect: innershadow(three-pass-box, rgba(0.0,0.0,0.0,0.2), 1.5, 0.0, 0.0, 1.0);
     -fx-effect: dropshadow(three-pass-box, rgba(0.0,0.0,0.0,0.2), 2.5, 0.0, 0.0, 1.5);
 }
+
+
+.streamInfo {
+    -fx-font-size: 14.0px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #474;
+    -fx-label-padding: 0;
+    -fx-effect: innershadow(three-pass-box, #000, 0,0,0,0);
+}
