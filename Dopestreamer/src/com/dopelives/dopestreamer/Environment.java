@@ -34,7 +34,7 @@ public class Environment {
         System.setOut(new PrintStream(sOutputSpy));
         System.setErr(new PrintStream(sOutputSpy));
 
-        TrayManager.show();
+        TrayManager.getInstance().show();
 
         if (Pref.AUTO_START.getBoolean()) {
             StreamManager.getInstance().restartLastStream();
@@ -47,7 +47,7 @@ public class Environment {
      * Closes the JVM and its child processes.
      */
     public static void exit() {
-        TrayManager.hide();
+        TrayManager.getInstance().hide();
 
         final Shell shell = Shell.getInstance();
         shell.killProcessTree(shell.getJvmProcessId());

@@ -123,7 +123,7 @@ public class StageManager extends Application {
         @Override
         public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
                 final Boolean newValue) {
-            if (newValue.booleanValue() && TrayManager.isInTray()) {
+            if (newValue.booleanValue() && TrayManager.getInstance().isInTray()) {
                 sStage.hide();
             }
         }

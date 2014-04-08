@@ -62,9 +62,9 @@ public class Settings implements Initializable {
         Pref.SHOW_IN_TRAY.put(showInTray);
 
         if (showInTray) {
-            TrayManager.show();
+            TrayManager.getInstance().show();
         } else {
-            TrayManager.hide();
+            TrayManager.getInstance().hide();
         }
     }
 

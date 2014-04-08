@@ -15,31 +15,54 @@ import javafx.application.Platform;
 import javax.swing.ImageIcon;
 
 import com.dopelives.dopestreamer.gui.StageManager;
+import com.dopelives.dopestreamer.gui.StreamState;
+import com.dopelives.dopestreamer.streams.Stream;
+import com.dopelives.dopestreamer.streams.StreamListener;
+import com.dopelives.dopestreamer.streams.StreamManager;
 
 /**
  * Handles tray icon related functionality.
  */
-public class TrayManager {
+public class TrayManager implements StreamListener {
+
+    /** The singleton tray manager */
+    private static final TrayManager sInstance = new TrayManager();
+
+    /** The popup to show when streams are active */
+    private final PopupMenu mPopupActive = new PopupMenu();
+    /** The popup to show when streams are inactive */
+    private final PopupMenu mPopupInactive = new PopupMenu();
 
     /** The tray icon to show in the tray */
-    private static TrayIcon sTrayIcon;
-
+    private TrayIcon mTrayIcon;
     /** Whether or not the tray icon is in the tray */
-    private static boolean sInTray = false;
+    private boolean mInTray = false;
+
+    /**
+     * @return The singleton tray manager.
+     */
+    public static TrayManager getInstance() {
+        return sInstance;
+    }
+
+    /**
+     * This is a singleton.
+     */
+    private TrayManager() {}
 
     /**
      * Retrieves the tray icon and constructs it if needed.
      *
      * @return The Dopestreamer tray icon
      */
-    private static TrayIcon getTrayIcon() {
-        if (sTrayIcon == null) {
+    private TrayIcon getTrayIcon() {
+        if (mTrayIcon == null) {
             // Construct the tray icon
-            sTrayIcon = new TrayIcon(new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER
+            mTrayIcon = new TrayIcon(new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER
                     + "dopestreamer_small.png")).getImage(), Environment.TITLE);
 
             // Open the main window upon clicking the tray icon
-            sTrayIcon.addMouseListener(new MouseAdapter() {
+            mTrayIcon.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(final MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
@@ -53,21 +76,50 @@ public class TrayManager {
                 }
             });
 
-            // Create the right click menu of the tray icon
-            final PopupMenu popup = new PopupMenu();
-            final MenuItem exitItem = new MenuItem("Exit");
-            exitItem.addActionListener(new ActionListener() {
+            // Prepare right click popup menus
+            final MenuItem stopStreamItem = new MenuItem("Stop stream");
+            stopStreamItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(final ActionEvent e) {
-                    hide();
+                    StreamManager.getInstance().stopStream();
+                }
+            });
+            mPopupActive.add(stopStreamItem);
+
+            final MenuItem activeExitItem = new MenuItem("Exit");
+            activeExitItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent e) {
                     Environment.exit();
                 }
             });
-            popup.add(exitItem);
-            sTrayIcon.setPopupMenu(popup);
+            mPopupActive.add(activeExitItem);
+
+            final MenuItem startStreamItem = new MenuItem("Restart last stream");
+            startStreamItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    StreamManager.getInstance().restartLastStream();
+                }
+            });
+            mPopupInactive.add(startStreamItem);
+
+            final MenuItem inactiveExitItem = new MenuItem("Exit");
+            inactiveExitItem.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(final ActionEvent e) {
+                    Environment.exit();
+                }
+            });
+            mPopupInactive.add(inactiveExitItem);
+
+            // Create the right click menu of the tray icon
+            final StreamManager streamManager = StreamManager.getInstance();
+            streamManager.addListener(this);
+            onStateUpdated(streamManager, null, streamManager.getStreamState());
         }
 
-        return sTrayIcon;
+        return mTrayIcon;
     }
 
     /**
@@ -75,8 +127,8 @@ public class TrayManager {
      *
      * @return True iff the tray icon is now in the tray
      */
-    public static synchronized boolean show() {
-        if (sInTray) {
+    public synchronized boolean show() {
+        if (mInTray) {
             return true;
         }
         if (!Pref.SHOW_IN_TRAY.getBoolean() || !SystemTray.isSupported()) {
@@ -85,7 +137,7 @@ public class TrayManager {
 
         try {
             SystemTray.getSystemTray().add(getTrayIcon());
-            sInTray = true;
+            mInTray = true;
             return true;
 
         } catch (final AWTException ex) {
@@ -97,22 +149,54 @@ public class TrayManager {
     /**
      * Hides the tray icon if it was in the tray.
      */
-    public static synchronized void hide() {
-        if (sInTray) {
-            SystemTray.getSystemTray().remove(sTrayIcon);
-            sInTray = false;
+    public synchronized void hide() {
+        if (mInTray) {
+            SystemTray.getSystemTray().remove(mTrayIcon);
+            mInTray = false;
         }
     }
 
     /**
      * @return True iff the tray icon is shown in the tray
      */
-    public static synchronized boolean isInTray() {
-        return sInTray;
+    public synchronized boolean isInTray() {
+        return mInTray;
     }
 
     /**
-     * This is a static-only class.
+     * {@inheritDoc}
+     *
+     * Updates the popup menu based on the stream state.
      */
-    private TrayManager() {}
+    @Override
+    public void onStateUpdated(final StreamManager streamManager, final StreamState oldState, final StreamState newState) {
+        switch (newState) {
+            case INACTIVE:
+                mTrayIcon.setPopupMenu(mPopupInactive);
+                break;
+
+            case CONNECTING:
+            case BUFFERING:
+            case WAITING:
+            case ACTIVE:
+                mTrayIcon.setPopupMenu(mPopupActive);
+                break;
+
+            default:
+                throw new IllegalStateException("Unknown state: " + newState);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onInvalidChannel(final Stream stream) {}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onInvalidMediaPlayer(final Stream stream) {}
+
 }
