@@ -18,7 +18,7 @@ public class Stream {
     private static final int RETRY_DELAY = 2;
 
     /** The regex that will match valid channels */
-    private static final Pattern sChannelMatcher = Pattern.compile("^[a-zA-Z0-9_-]+$");
+    private static final Pattern sChannelMatcher = Pattern.compile("^[a-zA-Z0-9/_-]+$");
 
     /** The console that the stream runs in */
     private final Console mConsole;
