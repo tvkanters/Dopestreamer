@@ -46,7 +46,7 @@ public abstract class StreamService {
     }
 
     /**
-     * @return The default channel to start for this service when a channel isn't provided
+     * @return The default channel to start for this service when a channel isn't provided or null if there isn't any
      */
     public String getDefaultChannel() {
         return null;

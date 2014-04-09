@@ -30,14 +30,14 @@
 
 
 	<HBox>
-		<VBox prefWidth="160">
+		<VBox prefWidth="170">
 			<Label text="Stream service" />
-			<ComboBox fx:id="streamServiceSelection" prefWidth="150"
+			<ComboBox fx:id="streamServiceSelection" prefWidth="160"
 				prefHeight="30" />
 		</VBox>
 		<VBox>
 			<Label text="Quality" />
-			<ComboBox fx:id="qualitySelection" prefWidth="100"
+			<ComboBox fx:id="qualitySelection" prefWidth="90"
 				prefHeight="30" />
 		</VBox>
 	</HBox>
