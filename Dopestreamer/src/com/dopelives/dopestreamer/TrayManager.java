@@ -1,6 +1,7 @@
 package com.dopelives.dopestreamer;
 
 import java.awt.AWTException;
+import java.awt.Image;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
@@ -27,6 +28,10 @@ public class TrayManager implements StreamListener {
 
     /** The singleton tray manager */
     private static final TrayManager sInstance = new TrayManager();
+
+    private static final Image sIconInactive = loadImage("dopestreamer_small_grey.png");
+    private static final Image sIconBusy = loadImage("dopestreamer_small_yellow.png");
+    private static final Image sIconActive = loadImage("dopestreamer_small.png");
 
     /** The popup to show when streams are active */
     private final PopupMenu mPopupActive = new PopupMenu();
@@ -58,8 +63,7 @@ public class TrayManager implements StreamListener {
     private TrayIcon getTrayIcon() {
         if (mTrayIcon == null) {
             // Construct the tray icon
-            mTrayIcon = new TrayIcon(new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER
-                    + "dopestreamer_small.png")).getImage(), Environment.TITLE);
+            mTrayIcon = new TrayIcon(sIconInactive, Environment.TITLE);
 
             // Open the main window upon clicking the tray icon
             mTrayIcon.addMouseListener(new MouseAdapter() {
@@ -172,13 +176,19 @@ public class TrayManager implements StreamListener {
     public void onStateUpdated(final StreamManager streamManager, final StreamState oldState, final StreamState newState) {
         switch (newState) {
             case INACTIVE:
+                mTrayIcon.setImage(sIconInactive);
                 mTrayIcon.setPopupMenu(mPopupInactive);
                 break;
 
             case CONNECTING:
             case BUFFERING:
             case WAITING:
+                mTrayIcon.setImage(sIconBusy);
+                mTrayIcon.setPopupMenu(mPopupActive);
+                break;
+
             case ACTIVE:
+                mTrayIcon.setImage(sIconActive);
                 mTrayIcon.setPopupMenu(mPopupActive);
                 break;
 
@@ -198,5 +208,9 @@ public class TrayManager implements StreamListener {
      */
     @Override
     public void onInvalidMediaPlayer(final Stream stream) {}
+
+    private static Image loadImage(final String filename) {
+        return new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER + filename)).getImage();
+    }
 
 }
