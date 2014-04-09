@@ -35,4 +35,12 @@ public interface StreamListener {
      */
     void onInvalidMediaPlayer(final Stream stream);
 
+    /**
+     * Called when Livestreamer appears to be outdated.
+     *
+     * @param stream
+     *            The stream that encountered the error
+     */
+    void onInvalidLivestreamer(final Stream stream);
+
 }

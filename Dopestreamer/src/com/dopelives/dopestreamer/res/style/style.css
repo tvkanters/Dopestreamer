@@ -52,6 +52,7 @@
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
     -fx-alignment: center;
+    -fx-padding: 5.0px;
     -fx-cursor: hand;
 }
 #streamButton.inactive {

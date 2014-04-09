@@ -134,19 +134,31 @@ public class StreamManager implements ConsoleListener {
      */
     @Override
     public synchronized void onConsoleOutput(final ProcessId processId, final String output) {
+        // Starting to buffer
         if (output.contains("Opening stream")) {
             updateState(StreamState.BUFFERING);
             startBufferingTimeout();
 
+            // No stream active at the moment, so waiting for it to start
         } else if (output.contains("Waiting for streams")) {
             updateState(StreamState.WAITING);
 
+            // Invalid channel name
         } else if (output.contains("Unable to open URL")) {
             for (final StreamListener listener : mListeners) {
                 listener.onInvalidChannel(mStream);
             }
             stopStream();
 
+            // Opening the media player
+        } else if (output.contains("Starting player")) {
+            stopBufferingTimeout();
+
+            // Streaming started
+        } else if (output.contains("Writing stream")) {
+            updateState(StreamState.ACTIVE);
+
+            // Media player not found
         } else if (output.contains("Failed to start player")
                 || output.contains("The default player (VLC) does not seem to be installed.")) {
             stopStream();
@@ -154,12 +166,14 @@ public class StreamManager implements ConsoleListener {
                 listener.onInvalidMediaPlayer(mStream);
             }
 
-        } else if (output.contains("Starting player")) {
-            stopBufferingTimeout();
-
-        } else if (output.contains("Writing stream")) {
-            updateState(StreamState.ACTIVE);
+            // Livestreamer is outdated
+        } else if (output.contains("livestreamer: error: unrecognized arguments")) {
+            stopStream();
+            for (final StreamListener listener : mListeners) {
+                listener.onInvalidLivestreamer(mStream);
+            }
         }
+
     }
 
     /**

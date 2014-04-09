@@ -233,6 +233,19 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * {@inheritDoc}
      */
     @Override
+    public void onInvalidLivestreamer(final Stream stream) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                streamButton.setText("Livestreamer outdated");
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onStreamInfoUpdated(final String streamer, final String game) {
         Platform.runLater(new Runnable() {
             @Override

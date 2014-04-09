@@ -29,8 +29,11 @@ public class TrayManager implements StreamListener {
     /** The singleton tray manager */
     private static final TrayManager sInstance = new TrayManager();
 
+    /** The tray icon image for when no stream is active */
     private static final Image sIconInactive = loadImage("dopestreamer_small_grey.png");
+    /** The tray icon image for when streams are being loaded */
     private static final Image sIconBusy = loadImage("dopestreamer_small_yellow.png");
+    /** The tray icon image for when a stream is active */
     private static final Image sIconActive = loadImage("dopestreamer_small.png");
 
     /** The popup to show when streams are active */
@@ -209,6 +212,20 @@ public class TrayManager implements StreamListener {
     @Override
     public void onInvalidMediaPlayer(final Stream stream) {}
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onInvalidLivestreamer(final Stream stream) {}
+
+    /**
+     * Loads an image based on the filename.
+     *
+     * @param filename
+     *            The filename of the image to load
+     *
+     * @return The image
+     */
     private static Image loadImage(final String filename) {
         return new ImageIcon(StageManager.class.getResource(Environment.IMAGE_FOLDER + filename)).getImage();
     }
