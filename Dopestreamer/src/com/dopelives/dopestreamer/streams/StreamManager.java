@@ -52,7 +52,6 @@ public class StreamManager implements ConsoleListener {
      *             Thrown when the channel is invalid
      */
     private synchronized void startStream(final Stream stream) throws InvalidParameterException {
-
         // Clean up
         stopStreamConsole();
         mStream = stream;
@@ -66,7 +65,7 @@ public class StreamManager implements ConsoleListener {
         // Save the stream settings
         final StreamService streamService = mStream.getStreamService();
         String channel = mStream.getChannel();
-        if (streamService.getDefaultChannel().equals(channel)) {
+        if (channel.equals(streamService.getDefaultChannel())) {
             channel = "";
         }
         Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
