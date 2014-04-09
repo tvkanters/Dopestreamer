@@ -10,6 +10,8 @@ import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
+import com.dopelives.dopestreamer.streams.services.StreamService;
+import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 
 /**
  * A manager for stream related tasks and state management.

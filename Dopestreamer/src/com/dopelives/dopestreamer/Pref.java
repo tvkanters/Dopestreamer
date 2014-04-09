@@ -21,6 +21,8 @@ public enum Pref {
     LAST_STREAM_SERVICE("laststreamservice", "hitbox"),
     /** The enum constant of the last quality used */
     LAST_QUALITY("lastquality", "BEST"),
+    /** The key of the selected default media player or an empty string for a custom media player */
+    DEFAULT_PLAYER("defaultplayer", ""),
     /** The location of the media player to use */
     PLAYER_LOCATION("playerlocation", ""),
     /** Boolean type indication whether or not the window should start minimised */

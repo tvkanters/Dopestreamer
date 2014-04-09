@@ -30,10 +30,10 @@ import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.streams.Stream;
 import com.dopelives.dopestreamer.streams.StreamInfo;
 import com.dopelives.dopestreamer.streams.StreamInfo.StreamInfoListener;
+import com.dopelives.dopestreamer.streams.services.StreamService;
+import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 import com.dopelives.dopestreamer.streams.StreamListener;
 import com.dopelives.dopestreamer.streams.StreamManager;
-import com.dopelives.dopestreamer.streams.StreamService;
-import com.dopelives.dopestreamer.streams.StreamServiceManager;
 
 /**
  * The controller for the streams screen.

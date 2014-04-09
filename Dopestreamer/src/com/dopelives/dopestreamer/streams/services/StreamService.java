@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer.streams;
+package com.dopelives.dopestreamer.streams.services;
 
 import javafx.scene.image.Image;
 
@@ -10,7 +10,7 @@ import com.dopelives.dopestreamer.Environment;
 public abstract class StreamService {
 
     /**
-     * @return The key to make to this service, shouldn't be changed during refactoring and must be unique
+     * @return The key for this service, shouldn't be changed during refactoring and must be unique
      */
     public abstract String getKey();
 

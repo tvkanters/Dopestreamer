@@ -8,6 +8,9 @@ import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
 import com.dopelives.dopestreamer.shell.Shell;
+import com.dopelives.dopestreamer.streams.players.MediaPlayer;
+import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
+import com.dopelives.dopestreamer.streams.services.StreamService;
 
 /**
  * A Console wrapper specifically for streams.
@@ -63,8 +66,15 @@ public class Stream {
             command += " " + additionalArguments.trim();
         }
 
-        // Add custom player location, if any
-        final String playerLocation = Pref.PLAYER_LOCATION.getString();
+        // Add a custom player location, if any
+        String playerLocation = null;
+        final MediaPlayer mediaPlayer = MediaPlayerManager.getMediaPlayerByKey(Pref.DEFAULT_PLAYER.getString());
+        if (mediaPlayer != null) {
+            playerLocation = mediaPlayer.getPath();
+        }
+        if (playerLocation == null) {
+            playerLocation = Pref.PLAYER_LOCATION.getString();
+        }
         if (!playerLocation.equals("")) {
             command += " -p \"" + playerLocation + "\"";
         }
@@ -73,7 +83,6 @@ public class Stream {
         command += " " + streamService.getUrl() + channel + " " + quality.getCommand();
 
         mConsole = shell.createConsole(command);
-
     }
 
     /**

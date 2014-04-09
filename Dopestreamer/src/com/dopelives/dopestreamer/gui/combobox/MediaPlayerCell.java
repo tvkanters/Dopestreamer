@@ -2,15 +2,15 @@ package com.dopelives.dopestreamer.gui.combobox;
 
 import javafx.scene.image.ImageView;
 
-import com.dopelives.dopestreamer.streams.services.StreamService;
+import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 
 /**
  * A combo box cell that shows the label and icons of stream services.
  */
-public class StreamServiceCell extends ComboBoxCell<StreamService> {
+public class MediaPlayerCell extends ComboBoxCell<MediaPlayer> {
 
     @Override
-    public void updateItem(final StreamService item, final boolean empty) {
+    public void updateItem(final MediaPlayer item, final boolean empty) {
         super.updateItem(item, empty);
 
         if (item == null) {

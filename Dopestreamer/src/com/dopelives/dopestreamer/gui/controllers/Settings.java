@@ -4,24 +4,34 @@ import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
+import com.dopelives.dopestreamer.gui.combobox.MediaPlayerCell;
+import com.dopelives.dopestreamer.streams.players.MediaPlayer;
+import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 
 public class Settings implements Initializable {
 
@@ -32,7 +42,11 @@ public class Settings implements Initializable {
     @FXML
     private CheckBox startMinimisedToggle;
     @FXML
-    private TextField playerLocation;
+    private ComboBox<MediaPlayer> mediaPlayerSelection;
+    @FXML
+    private VBox mediaPlayerLocationWrapper;
+    @FXML
+    private TextField mediaPlayerLocation;
     @FXML
     private Button saveOutputButton;
 
@@ -44,11 +58,43 @@ public class Settings implements Initializable {
         showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
         startMinimisedToggle.setSelected(Pref.START_MINIMISED.getBoolean());
 
-        // Set text, prompt text and tooltip of player location field
-        final String playerLocationInfo = "Path to custom media player";
-        playerLocation.setPromptText(playerLocationInfo);
-        playerLocation.setTooltip(new Tooltip(playerLocationInfo));
-        playerLocation.setText(Pref.PLAYER_LOCATION.getString());
+        // Add media players to the combo box
+        final List<MediaPlayer> mediaPlayers = MediaPlayerManager.getMediaPlayers();
+        mediaPlayerSelection.getItems().addAll(mediaPlayers);
+
+        // Update the custom media player input field based on the selected media player
+        mediaPlayerSelection.valueProperty().addListener(new ChangeListener<MediaPlayer>() {
+            @Override
+            public void changed(final ObservableValue<? extends MediaPlayer> observable, final MediaPlayer oldValue,
+                    final MediaPlayer newValue) {
+                final boolean customPlayer = newValue.getKey().equals("");
+                mediaPlayerLocationWrapper.setVisible(customPlayer);
+                mediaPlayerLocationWrapper.setManaged(customPlayer);
+
+                Pref.DEFAULT_PLAYER.put(newValue.getKey());
+            }
+        });
+
+        // Select the stored last media player
+        final String selectedStreamServiceKey = Pref.DEFAULT_PLAYER.getString();
+        for (int i = 0; i < mediaPlayers.size(); ++i) {
+            if (mediaPlayers.get(i).getKey().equals(selectedStreamServiceKey)) {
+                mediaPlayerSelection.getSelectionModel().select(i);
+                break;
+            }
+        }
+
+        // Make the media players look nice within the combo box
+        mediaPlayerSelection.setButtonCell(new MediaPlayerCell());
+        mediaPlayerSelection.setCellFactory(new Callback<ListView<MediaPlayer>, ListCell<MediaPlayer>>() {
+            @Override
+            public ListCell<MediaPlayer> call(final ListView<MediaPlayer> param) {
+                return new MediaPlayerCell();
+            }
+        });
+
+        // Set text of player location field
+        mediaPlayerLocation.setText(Pref.PLAYER_LOCATION.getString());
     }
 
     @FXML
@@ -96,11 +142,11 @@ public class Settings implements Initializable {
     @FXML
     public void onPlayerLocationChanged(final KeyEvent keyEvent) {
         if (keyEvent.getCode() == KeyCode.ENTER) {
-            playerLocation.getParent().requestFocus();
+            mediaPlayerLocation.getParent().requestFocus();
             return;
         }
 
-        final String input = playerLocation.getText();
+        final String input = mediaPlayerLocation.getText();
         if (input.equals("420")) {
             for (final Screen screen : Screen.values()) {
                 screen.getNode().getStylesheets().add(Environment.STYLE_FOLDER + "420.css");
@@ -117,7 +163,7 @@ public class Settings implements Initializable {
             inputValid = inputFile.exists() && !inputFile.isDirectory();
         }
 
-        ControllerHelper.setCssClass(playerLocation, "invalid", !inputValid);
+        ControllerHelper.setCssClass(mediaPlayerLocation, "invalid", !inputValid);
         if (inputValid) {
             Pref.PLAYER_LOCATION.put(input);
         }

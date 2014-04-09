@@ -25,15 +25,24 @@
     <fx:include source="header.fxml" />
 
     
-    <VBox prefHeight="20" />
+    <Label text="General" />
     <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on app launch" />
     <VBox prefHeight="10" />
     <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
     <VBox prefHeight="10" />
     <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start Dopestreamer minimised" />
-    <VBox prefHeight="10" />
-    <TextField  fx:id="playerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30" />
-    <VBox prefHeight="10" />
+    
+    
+    <Label text="Media player" />
+	<ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
+	<VBox fx:id="mediaPlayerLocationWrapper">
+	    <VBox prefHeight="5" />
+		<TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
+		      promptText="Path to custom media player" />
+	</VBox>
+    
+    
+    <Label text="Debugging" />
     <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save console output to file" />
 
 

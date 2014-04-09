@@ -32,25 +32,21 @@
 	<HBox>
 		<VBox prefWidth="170">
 			<Label text="Stream service" />
-			<ComboBox fx:id="streamServiceSelection" prefWidth="160"
-				prefHeight="30" />
+			<ComboBox fx:id="streamServiceSelection" prefWidth="160" prefHeight="30" />
 		</VBox>
 		<VBox>
 			<Label text="Quality" />
-			<ComboBox fx:id="qualitySelection" prefWidth="90"
-				prefHeight="30" />
+			<ComboBox fx:id="qualitySelection" prefWidth="90" prefHeight="30" />
 		</VBox>
 	</HBox>
 
 
 	<Label text="Channel" />
-	<RadioButton fx:id="channelDefault" selected="true" text="Dopelives"
-		toggleGroup="$channelGroup" />
+	<RadioButton fx:id="channelDefault" selected="true" text="Dopelives" toggleGroup="$channelGroup" />
 	<VBox prefHeight="5" />
 	<HBox alignment="CENTER_LEFT">
 		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
-		<TextField fx:id="channelCustomInput" promptText="Enter a channel name"
-			prefHeight="30" />
+		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefHeight="30" />
 	</HBox>
 
 

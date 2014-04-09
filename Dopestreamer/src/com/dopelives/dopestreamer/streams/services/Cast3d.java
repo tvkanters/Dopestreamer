@@ -1,6 +1,5 @@
 package com.dopelives.dopestreamer.streams.services;
 
-import com.dopelives.dopestreamer.streams.StreamService;
 
 /**
  * The service for Cast3d streams.
