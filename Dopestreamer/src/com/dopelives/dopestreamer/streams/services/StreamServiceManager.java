@@ -18,6 +18,7 @@ public class StreamServiceManager {
         register(new Hitbox());
         register(new Livestream());
         register(new Twitch());
+        register(new Ustream());
         register(new Movie());
     }
 
@@ -40,7 +41,7 @@ public class StreamServiceManager {
 
     /**
      * Finds the stream service with the given key.
-     * 
+     *
      * @param key
      *            The key to search for
      *
