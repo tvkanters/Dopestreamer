@@ -33,6 +33,8 @@ public class StreamManager implements ConsoleListener {
     private final Timer mBufferingTimer = new Timer();
     /** The timer task used for buffering timeouts */
     private TimerTask mBufferingTimeout;
+    /** The amount of consecutive buffering attempts have been performed */
+    private int mBufferingAttempts = 0;
 
     /** The listeners that will receive updates of stream changes */
     private final List<StreamListener> mListeners = new LinkedList<>();
@@ -125,6 +127,7 @@ public class StreamManager implements ConsoleListener {
      * Stops the active stream and transitions to the inactive state.
      */
     public synchronized void stopStream() {
+        mBufferingAttempts = 0;
         updateState(StreamState.INACTIVE);
         stopStreamConsole();
     }
@@ -243,7 +246,7 @@ public class StreamManager implements ConsoleListener {
                 restartLastStream();
             }
         };
-        mBufferingTimer.schedule(mBufferingTimeout, BUFFERING_TIMEOUT);
+        mBufferingTimer.schedule(mBufferingTimeout, ++mBufferingAttempts * BUFFERING_TIMEOUT);
     }
 
     /**
