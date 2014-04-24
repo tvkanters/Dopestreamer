@@ -20,6 +20,7 @@ public class StreamServiceManager {
         register(new Twitch());
         register(new Ustream());
         register(new Movie());
+        register(new Xphome());
     }
 
     /**
