@@ -34,7 +34,7 @@ public class Xphome extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "rtmp://vacker.me/live/";
+        return "rtmp://vacker.me/";
     }
 
     /**
@@ -42,7 +42,7 @@ public class Xphome extends StreamService {
      */
     @Override
     public String getDefaultChannel() {
-        return "live";
+        return "live/live";
     }
 
 }
