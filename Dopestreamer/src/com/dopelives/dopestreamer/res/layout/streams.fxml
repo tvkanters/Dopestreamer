@@ -53,6 +53,13 @@
 	<VBox prefHeight="20" />
 	<Button fx:id="streamButton" onAction="#onStreamButtonClicked"
 		prefWidth="260" prefHeight="50" />
+		
+    <VBox prefHeight="10" />
+    <CheckBox fx:id="gameModeToggle" onAction="#onGameModeToggle" text="Game mode">
+	    <tooltip>
+	        <Tooltip text="Prevents automatic stream restarts"/>
+	    </tooltip>
+    </CheckBox>
 
 
 	<Label text="Topic info" />

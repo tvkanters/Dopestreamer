@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -30,10 +31,10 @@ import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.streams.Stream;
 import com.dopelives.dopestreamer.streams.StreamInfo;
 import com.dopelives.dopestreamer.streams.StreamInfo.StreamInfoListener;
-import com.dopelives.dopestreamer.streams.services.StreamService;
-import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 import com.dopelives.dopestreamer.streams.StreamListener;
 import com.dopelives.dopestreamer.streams.StreamManager;
+import com.dopelives.dopestreamer.streams.services.StreamService;
+import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 
 /**
  * The controller for the streams screen.
@@ -60,6 +61,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     private Label streamerInfo;
     @FXML
     private Label gameInfo;
+    @FXML
+    private CheckBox gameModeToggle;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -133,6 +136,9 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 return new QualityCell();
             }
         });
+
+        // Set checkbox preferences
+        gameModeToggle.setSelected(Pref.GAME_MODE.getBoolean());
 
         // Update to the right stream state
         final StreamManager streamManager = StreamManager.getInstance();
@@ -285,6 +291,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     private synchronized void setCustomChannelValid(final boolean valid) {
         ControllerHelper.setCssClass(channelCustomInput, "invalid", !valid);
+    }
+
+    @FXML
+    private void onGameModeToggle() {
+        Pref.GAME_MODE.put(gameModeToggle.isSelected());
     }
 
 }

@@ -192,10 +192,17 @@ public class StreamManager implements ConsoleListener {
             case INACTIVE:
                 break;
 
+            case ACTIVE:
+                // In game mode, don't attempt to restart the stream
+                if (Pref.GAME_MODE.getBoolean()) {
+                    stopStream();
+                }
+
+                // Fall-through
+
             case CONNECTING:
             case WAITING:
             case BUFFERING:
-            case ACTIVE:
                 // The user didn't cancel streaming, so try starting the stream again
                 if (mStream != null && processId.equals(mStream.getProcessId())) {
                     restartLastStream();
