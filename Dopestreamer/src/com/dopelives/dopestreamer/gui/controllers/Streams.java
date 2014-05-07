@@ -88,23 +88,20 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         final List<StreamService> streamServices = StreamServiceManager.getStreamServices();
         streamServiceSelection.getItems().addAll(streamServices);
 
-        // Indicate unavailable streams
+        // Indicate unavailable streams and update quality options
         streamServiceSelection.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
                 ControllerHelper.setCssClass(channelDefault, "unavailable", !streamServiceSelection.getValue()
                         .hasDefaultChannel());
+                updateQualityOptions();
             }
         });
 
         // Select the stored last stream service
-        final String selectedStreamServiceKey = Pref.LAST_STREAM_SERVICE.getString();
-        for (int i = 0; i < streamServices.size(); ++i) {
-            if (streamServices.get(i).getKey().equals(selectedStreamServiceKey)) {
-                streamServiceSelection.getSelectionModel().select(i);
-                break;
-            }
-        }
+        final StreamService selectedService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
+                .getString());
+        streamServiceSelection.getSelectionModel().select(selectedService);
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new StreamServiceCell());
@@ -115,20 +112,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
             }
         });
 
-        // Add qualities to the combo box
-        final Quality[] qualities = Quality.values();
-        qualitySelection.getItems().addAll(qualities);
-
-        // Select the stored last quality
-        final String selectedQualityKey = Pref.LAST_QUALITY.getString();
-        for (int i = 0; i < qualities.length; ++i) {
-            if (qualities[i].toString().equals(selectedQualityKey)) {
-                qualitySelection.getSelectionModel().select(i);
-                break;
-            }
-        }
-
-        // Make the qualities look nice within the combo box
+        // Prepare the quality combo box
+        updateQualityOptions();
         qualitySelection.setButtonCell(new QualityCell());
         qualitySelection.setCellFactory(new Callback<ListView<Quality>, ListCell<Quality>>() {
             @Override
@@ -156,19 +141,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         switch (streamManager.getStreamState()) {
             case INACTIVE:
-                final StreamService selectedStreamService = streamServiceSelection.getValue();
-                final Quality quality = qualitySelection.getValue();
-
-                // Pick a default or custom channel
-                if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
-                    streamManager.startStream(selectedStreamService, quality);
-                } else {
-                    try {
-                        streamManager.startStream(selectedStreamService, channelCustomInput.getText(), quality);
-                    } catch (final InvalidParameterException ex) {
-                        setCustomChannelValid(false);
-                    }
-                }
+                startStream();
                 break;
 
             case CONNECTING:
@@ -185,6 +158,26 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     }
 
     /**
+     * Uses the GUI input to start a stream.
+     */
+    private void startStream() {
+        final StreamManager streamManager = StreamManager.getInstance();
+        final StreamService selectedStreamService = streamServiceSelection.getValue();
+        final Quality quality = qualitySelection.getValue();
+
+        // Pick a default or custom channel
+        if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
+            streamManager.startStream(selectedStreamService, quality);
+        } else {
+            try {
+                streamManager.startStream(selectedStreamService, channelCustomInput.getText(), quality);
+            } catch (final InvalidParameterException ex) {
+                setCustomChannelValid(false);
+            }
+        }
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -192,6 +185,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         switch (newState) {
             case CONNECTING:
                 setCustomChannelValid(true);
+                setQualityValid(true);
                 StreamInfo.requestRefresh();
                 break;
 
@@ -220,6 +214,14 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         if (channelCustom.isSelected()) {
             setCustomChannelValid(false);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onInvalidQuality(final Stream stream) {
+        setQualityValid(false);
     }
 
     /**
@@ -293,9 +295,51 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         ControllerHelper.setCssClass(channelCustomInput, "invalid", !valid);
     }
 
+    /**
+     * Defines whether or not the quality is valid or not. Will update the GUI appropriately.
+     *
+     * @param valid
+     *            True iff the input quality is valid
+     */
+    private synchronized void setQualityValid(final boolean valid) {
+        ControllerHelper.setCssClass(qualitySelection, "invalid", !valid);
+    }
+
     @FXML
     private void onGameModeToggle() {
         Pref.GAME_MODE.put(gameModeToggle.isSelected());
+    }
+
+    /**
+     * Updates the shown quality options based on the selected stream service.
+     */
+    private void updateQualityOptions() {
+        // Check what the old selection is
+        final String selectedQualityLabel;
+        if (qualitySelection.getItems().size() > 0) {
+            selectedQualityLabel = qualitySelection.getValue().getLabel();
+        } else {
+            selectedQualityLabel = Quality.valueOf(Pref.LAST_QUALITY.getString()).getLabel();
+        }
+
+        // Add qualities to the combo box
+        final List<Quality> qualities = streamServiceSelection.getValue().getQualities();
+        qualitySelection.getItems().setAll(qualities);
+
+        // Select the last chosen quality
+        boolean selected = false;
+        for (int i = 0; i < qualities.size(); ++i) {
+            if (qualities.get(i).getLabel().equals(selectedQualityLabel)) {
+                qualitySelection.getSelectionModel().select(i);
+                selected = true;
+                break;
+            }
+        }
+
+        // Select the first option if the selected one isn't available for this service
+        if (!selected) {
+            qualitySelection.getSelectionModel().select(0);
+        }
     }
 
 }

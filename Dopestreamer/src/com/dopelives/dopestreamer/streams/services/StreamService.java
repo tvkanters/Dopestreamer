@@ -1,8 +1,12 @@
 package com.dopelives.dopestreamer.streams.services;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javafx.scene.image.Image;
 
 import com.dopelives.dopestreamer.Environment;
+import com.dopelives.dopestreamer.streams.Quality;
 
 /**
  * The class for a stream service that can be selected and started to provide streams.
@@ -39,6 +43,20 @@ public abstract class StreamService {
     public abstract String getUrl();
 
     /**
+     * Retrieves the details of a stream service, channel and quality to connect through Livestreamer.
+     *
+     * @param channel
+     *            The channel to connect to
+     * @param quality
+     *            The quality to show the stream in
+     *
+     * @return The details to connect through Livestreamer in the format <url>/<channel> <quality>
+     */
+    public String getConnectionDetails(final String channel, final Quality quality) {
+        return getUrl() + channel + " " + quality;
+    }
+
+    /**
      * @return True iff the service has a default (Dopelives) channel
      */
     public boolean hasDefaultChannel() {
@@ -50,6 +68,24 @@ public abstract class StreamService {
      */
     public String getDefaultChannel() {
         return null;
+    }
+
+    /**
+     * @return The qualities available for this channel
+     */
+    public List<Quality> getQualities() {
+        final List<Quality> qualities = new LinkedList<>();
+        qualities.add(Quality.BEST);
+        qualities.addAll(getServiceSpecificQualities());
+        qualities.add(Quality.WORST);
+        return qualities;
+    }
+
+    /**
+     * @return The qualities specific to this channel order from best to worst
+     */
+    protected List<Quality> getServiceSpecificQualities() {
+        return new LinkedList<>();
     }
 
 }

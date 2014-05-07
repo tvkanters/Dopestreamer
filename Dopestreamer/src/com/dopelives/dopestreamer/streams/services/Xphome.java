@@ -1,7 +1,7 @@
 package com.dopelives.dopestreamer.streams.services;
 
 /**
- * The service for Twitch streams.
+ * The service for Xphome streams.
  */
 public class Xphome extends StreamService {
 
@@ -18,7 +18,7 @@ public class Xphome extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Xphome";
+        return "Vacker.me";
     }
 
     /**

@@ -80,7 +80,7 @@ public class Stream {
         }
 
         // Add channel information
-        command += " " + streamService.getUrl() + channel + " " + quality.getCommand();
+        command += " " + streamService.getConnectionDetails(channel, quality);
 
         mConsole = shell.createConsole(command);
     }

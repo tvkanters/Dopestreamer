@@ -155,6 +155,13 @@ public class StreamManager implements ConsoleListener {
             }
             stopStream();
 
+            // Invalid quality for chosen channel
+        } else if (output.contains("error: The specified stream(s) '")) {
+            for (final StreamListener listener : mListeners) {
+                listener.onInvalidQuality(mStream);
+            }
+            stopStream();
+
             // Opening the media player
         } else if (output.contains("Starting player")) {
             stopBufferingTimeout();

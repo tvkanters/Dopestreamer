@@ -210,6 +210,12 @@ public class TrayManager implements StreamListener {
      * {@inheritDoc}
      */
     @Override
+    public void onInvalidQuality(final Stream stream) {}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onInvalidMediaPlayer(final Stream stream) {}
 
     /**

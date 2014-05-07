@@ -28,6 +28,14 @@ public interface StreamListener {
     void onInvalidChannel(final Stream stream);
 
     /**
+     * Called when the chosen quality for a stream was not available for the given channel.
+     *
+     * @param stream
+     *            The stream that has the invalid quality
+     */
+    void onInvalidQuality(final Stream stream);
+
+    /**
      * Called when the given (or default) media player could not be used by Livestreamer.
      *
      * @param stream

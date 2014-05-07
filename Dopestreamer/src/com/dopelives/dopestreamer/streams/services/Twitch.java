@@ -1,5 +1,9 @@
 package com.dopelives.dopestreamer.streams.services;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import com.dopelives.dopestreamer.streams.Quality;
 
 /**
  * The service for Twitch streams.
@@ -44,6 +48,18 @@ public class Twitch extends StreamService {
     @Override
     public String getDefaultChannel() {
         return "dopelives";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected List<Quality> getServiceSpecificQualities() {
+        final List<Quality> qualities = new LinkedList<>();
+        qualities.add(Quality.HIGH);
+        qualities.add(Quality.MEDIUM);
+        qualities.add(Quality.LOW);
+        return qualities;
     }
 
 }

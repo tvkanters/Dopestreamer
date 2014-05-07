@@ -36,7 +36,11 @@
 		</VBox>
 		<VBox>
 			<Label text="Quality" />
-			<ComboBox fx:id="qualitySelection" prefWidth="90" prefHeight="30" />
+			<ComboBox fx:id="qualitySelection" prefWidth="90" prefHeight="30">
+		        <tooltip>
+		            <Tooltip text="Depending on the stream, not all listed qualities might be available" />
+		        </tooltip>
+	        </ComboBox>
 		</VBox>
 	</HBox>
 
@@ -46,7 +50,7 @@
 	<VBox prefHeight="5" />
 	<HBox alignment="CENTER_LEFT">
 		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
-		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefHeight="30" />
+		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefWidth="235" prefHeight="30" />
 	</HBox>
 
 
@@ -57,7 +61,7 @@
     <VBox prefHeight="10" />
     <CheckBox fx:id="gameModeToggle" onAction="#onGameModeToggle" text="Game mode">
 	    <tooltip>
-	        <Tooltip text="Prevents automatic stream restarts"/>
+	        <Tooltip text="Prevents automatic stream restarts" />
 	    </tooltip>
     </CheckBox>
 
