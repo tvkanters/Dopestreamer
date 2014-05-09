@@ -1,5 +1,6 @@
 package com.dopelives.dopestreamer;
 
+import java.io.File;
 import java.io.PrintStream;
 
 import javafx.application.Application;
@@ -26,6 +27,10 @@ public class Environment {
     public static final String STYLE_FOLDER = RESOURCE_FOLDER + "style/";
     /** The application's title */
     public static final String TITLE = "Dopestreamer";
+    /** The directory of the executable file running Dopestreamer */
+    public static final String EXE_DIR = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
+            .getPath()).getParentFile().toString()
+            + File.separator;
 
     /** Remembers all output for logging purposes */
     private static final OutputSpy sOutputSpy = new OutputSpy(System.out);

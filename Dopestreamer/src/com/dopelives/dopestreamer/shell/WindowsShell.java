@@ -3,6 +3,7 @@ package com.dopelives.dopestreamer.shell;
 import java.io.File;
 import java.lang.reflect.Field;
 
+import com.dopelives.dopestreamer.Environment;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
@@ -58,10 +59,15 @@ public class WindowsShell extends Shell {
     public String getAdditionalLivestreamerArguments() {
         String additionalArguments = "";
 
-        // Add the rtfmdump argument if the file is found next to the JAR
-        final File rtmpdumpCheck = new File("rtmpdump.exe");
+        // Add the RTMPdump argument if the file is found next to the JAR
+        File rtmpdumpCheck = new File("rtmpdump.exe");
         if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
             additionalArguments += " -r ./rtmpdump.exe";
+        } else {
+            rtmpdumpCheck = new File(Environment.EXE_DIR + "rtmpdump.exe");
+            if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
+                additionalArguments += " -r \"" + Environment.EXE_DIR + "rtmpdump.exe\"";
+            }
         }
 
         return additionalArguments;

@@ -123,7 +123,8 @@ public class Settings implements Initializable {
     public void onSaveOutput() {
         saveOutputButton.setDisable(true);
 
-        final String filename = new SimpleDateFormat("'dopelog-'yyyyMMddhhmmss'.txt'").format(new Date());
+        final String filename = Environment.EXE_DIR
+                + new SimpleDateFormat("'dopelog-'yyyyMMddhhmmss'.txt'").format(new Date());
         Environment.getOutputSpy().writeToFile(filename);
 
         new Timer().schedule(new TimerTask() {

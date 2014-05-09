@@ -3,6 +3,8 @@ package com.dopelives.dopestreamer.shell;
 import java.io.File;
 import java.lang.reflect.Field;
 
+import com.dopelives.dopestreamer.Environment;
+
 /**
  * A class for OS X-specific shell functionality.
  */
@@ -61,10 +63,15 @@ public class OSXShell extends Shell {
     public String getAdditionalLivestreamerArguments() {
         String additionalArguments = "";
 
-        // Add the rtfmdump argument if the file is found next to the JAR
-        final File rtmpdumpCheck = new File("rtmpdump");
+        // Add the RTMPdump argument if the file is found next to the JAR
+        File rtmpdumpCheck = new File("rtmpdump");
         if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
             additionalArguments += " -r ./rtmpdump";
+        } else {
+            rtmpdumpCheck = new File(Environment.EXE_DIR + "rtmpdump");
+            if (rtmpdumpCheck.exists() && !rtmpdumpCheck.isDirectory()) {
+                additionalArguments += " -r \"" + Environment.EXE_DIR + "rtmpdump\"";
+            }
         }
 
         return additionalArguments;

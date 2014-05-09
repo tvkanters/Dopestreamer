@@ -1,8 +1,10 @@
 package com.dopelives.dopestreamer.streams;
 
+import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
 
+import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
@@ -58,7 +60,21 @@ public class Stream {
 
         // Prepare Livestreamer command
         final Shell shell = Shell.getInstance();
-        String command = "livestreamer -l debug --retry-streams " + RETRY_DELAY;
+        String command;
+
+        // Check if there's a bundled Livestreamer installation
+        File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer.exe");
+        if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
+            command = "\"" + Environment.EXE_DIR + "livestreamer.exe\"";
+        } else {
+            livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
+            if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
+                command = "\"" + Environment.EXE_DIR + "livestreamer\"";
+            } else {
+                command = "livestreamer";
+            }
+        }
+        command += " -l debug --retry-streams " + RETRY_DELAY;
 
         // Add OS specific arguments
         final String additionalArguments = shell.getAdditionalLivestreamerArguments();
