@@ -17,10 +17,10 @@ public class StreamServiceManager {
         register(new Bambuser());
         register(new Hitbox());
         register(new Livestream());
+        register(new Restream());
         register(new Twitch());
         register(new Ustream());
         register(new Xphome());
-        register(new Restream());
     }
 
     /**
