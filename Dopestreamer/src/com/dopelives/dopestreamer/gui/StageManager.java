@@ -150,9 +150,7 @@ public class StageManager extends Application {
         @Override
         public void changed(final ObservableValue<? extends Number> observable, final Number oldValue,
                 final Number newValue) {
-            if (newValue.intValue() >= 0) {
-                mPref.put(newValue.intValue());
-            }
+            mPref.put(newValue.intValue());
         }
     }
 }
