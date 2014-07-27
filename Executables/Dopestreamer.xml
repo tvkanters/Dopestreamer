@@ -19,5 +19,6 @@
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
+    <opt>-Dprism.dirtyopts=false</opt>
   </jre>
 </launch4jConfig>
