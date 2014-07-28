@@ -16,7 +16,8 @@ public class StreamServiceManager {
         register(new Afreeca());
         register(new Bambuser());
         register(new Hitbox());
-        register(new Livestream());
+        register(new LivestreamNew());
+        register(new LivestreamOld());
         register(new Restream());
         register(new Twitch());
         register(new Ustream());
