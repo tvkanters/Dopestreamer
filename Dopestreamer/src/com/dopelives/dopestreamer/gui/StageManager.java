@@ -150,7 +150,10 @@ public class StageManager extends Application {
         @Override
         public void changed(final ObservableValue<? extends Number> observable, final Number oldValue,
                 final Number newValue) {
-            mPref.put(newValue.intValue());
+            // Prevent minimising from resetting the position
+            if (newValue.intValue() != -32000) {
+                mPref.put(newValue.intValue());
+            }
         }
     }
 }
