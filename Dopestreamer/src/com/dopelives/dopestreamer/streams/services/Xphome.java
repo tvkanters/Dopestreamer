@@ -18,7 +18,7 @@ public class Xphome extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Vacker.me";
+        return "Vacker";
     }
 
     /**
@@ -34,7 +34,7 @@ public class Xphome extends StreamService {
      */
     @Override
     public String getUrl() {
-        return "rtmp://vacker.me/";
+        return "rtmp://vacker.tv/";
     }
 
     /**
