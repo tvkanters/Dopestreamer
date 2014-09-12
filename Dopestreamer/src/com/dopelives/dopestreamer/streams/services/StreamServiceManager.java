@@ -19,6 +19,7 @@ public class StreamServiceManager {
         register(new LivestreamNew());
         register(new LivestreamOld());
         register(new Restream());
+//        register(new Streamup());
         register(new Twitch());
         register(new Ustream());
         register(new Xphome());
