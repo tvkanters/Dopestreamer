@@ -21,6 +21,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Pref;
@@ -73,6 +75,32 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                     final Boolean newValue) {
                 if (newValue) {
                     channelCustom.setSelected(true);
+                }
+            }
+        });
+
+        // Start stream when pressing ENTER in the channel input box
+        channelCustomInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(final KeyEvent key) {
+                if (key.getCode().equals(KeyCode.ENTER)) {
+                    final StreamManager streamManager = StreamManager.getInstance();
+                    switch (streamManager.getStreamState()) {
+                        case INACTIVE:
+                            break;
+
+                        case CONNECTING:
+                        case WAITING:
+                        case BUFFERING:
+                        case ACTIVE:
+                            StreamInfo.requestRefresh();
+                            streamManager.stopStream();
+                            break;
+
+                        default:
+                            throw new IllegalStateException("Unknown state: " + streamManager.getStreamState());
+                    }
+                    startStream();
                 }
             }
         });
