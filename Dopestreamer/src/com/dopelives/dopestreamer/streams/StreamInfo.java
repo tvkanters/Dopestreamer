@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import com.dopelives.dopestreamer.Audio;
 import com.dopelives.dopestreamer.Pref;
+import com.dopelives.dopestreamer.gui.StreamState;
 
 /**
  * A static helper class for getting stream info from the IRC topic.
@@ -29,6 +30,8 @@ public class StreamInfo {
     /** The pattern used to match active streams */
     private static final Pattern sTopicPattern = Pattern.compile("^(.+) is playing (.+)$");
 
+    /** Whether or not the initial update is processing */
+    private static boolean initialUpdate = true;
     /** Whether or not a stream is currently active */
     private static boolean sStreamActive = false;
     /** The last detected streamer */
@@ -67,11 +70,15 @@ public class StreamInfo {
                             sStreamer = streamer;
                             sGame = game;
 
+                            // Notify all listeners of a change in stream info
                             for (final StreamInfoListener listener : sListeners) {
                                 listener.onStreamInfoUpdated(sStreamer, sGame);
                             }
 
-                            if (Pref.NOTIFICATIONS.getBoolean()) {
+                            // Notify the user if he wants and if a stream isn't already active
+                            if (Pref.NOTIFICATIONS.getBoolean()
+                                    && StreamManager.getInstance().getStreamState() == StreamState.INACTIVE
+                                    && !initialUpdate) {
                                 Audio.playNotification();
                             }
                         }
@@ -87,6 +94,8 @@ public class StreamInfo {
                         }
                     }
                 }
+
+                initialUpdate = false;
 
             } catch (final IOException ex) {
                 System.out.println("Couldn't fetch stream info");
