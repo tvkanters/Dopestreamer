@@ -1,5 +1,7 @@
 package com.dopelives.dopestreamer.streams.services;
 
+import com.dopelives.dopestreamer.streams.Quality;
+
 /**
  * The service for Xphome streams.
  */
@@ -43,6 +45,18 @@ public class Xphome extends StreamService {
     @Override
     public String getDefaultChannel() {
         return "live/live";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getConnectionDetails(String channel, final Quality quality) {
+        if (!channel.contains("/")) {
+            channel = channel + "/" + channel;
+        }
+
+        return super.getConnectionDetails(channel, quality);
     }
 
 }

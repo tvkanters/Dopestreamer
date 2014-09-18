@@ -50,7 +50,7 @@ public abstract class StreamService {
      * @param quality
      *            The quality to show the stream in
      *
-     * @return The details to connect through Livestreamer in the format <url>/<channel> <quality>
+     * @return The details to connect through Livestreamer in the format {url}/{channel} {quality}
      */
     public String getConnectionDetails(final String channel, final Quality quality) {
         return getUrl() + channel + " " + quality;
