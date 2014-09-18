@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
+import com.dopelives.dopestreamer.Audio;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StageManager;
 
@@ -17,6 +18,7 @@ public class Header implements Initializable {
     @FXML
     public void onHomeClicked() {
         StageManager.getScreenmanager().setScreen(Screen.STREAMS);
+        Audio.playNotification();
     }
 
     @FXML

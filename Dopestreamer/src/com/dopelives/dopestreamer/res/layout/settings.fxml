@@ -31,6 +31,8 @@
     <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
     <VBox prefHeight="10" />
     <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start Dopestreamer minimised" />
+    <VBox prefHeight="10" />
+    <CheckBox fx:id="notificationToggle" onAction="#onNotificationToggle" text="Notifications when streams start" />
     
     
     <Label text="Media player" />

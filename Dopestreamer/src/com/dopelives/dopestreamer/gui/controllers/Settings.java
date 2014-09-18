@@ -42,6 +42,8 @@ public class Settings implements Initializable {
     @FXML
     private CheckBox startMinimisedToggle;
     @FXML
+    private CheckBox notificationToggle;
+    @FXML
     private ComboBox<MediaPlayer> mediaPlayerSelection;
     @FXML
     private VBox mediaPlayerLocationWrapper;
@@ -57,6 +59,7 @@ public class Settings implements Initializable {
         autoStartToggle.setSelected(Pref.AUTO_START.getBoolean());
         showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
         startMinimisedToggle.setSelected(Pref.START_MINIMISED.getBoolean());
+        notificationToggle.setSelected(Pref.NOTIFICATIONS.getBoolean());
 
         // Add media players to the combo box
         final List<MediaPlayer> mediaPlayers = MediaPlayerManager.getMediaPlayers();
@@ -120,6 +123,11 @@ public class Settings implements Initializable {
     }
 
     @FXML
+    public void onNotificationToggle() {
+        Pref.NOTIFICATIONS.put(notificationToggle.isSelected());
+    }
+
+    @FXML
     public void onSaveOutput() {
         saveOutputButton.setDisable(true);
 
@@ -168,7 +176,6 @@ public class Settings implements Initializable {
         if (inputValid) {
             Pref.PLAYER_LOCATION.put(input);
         }
-
     }
 
 }

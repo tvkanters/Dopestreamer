@@ -12,6 +12,9 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.dopelives.dopestreamer.Audio;
+import com.dopelives.dopestreamer.Pref;
+
 /**
  * A static helper class for getting stream info from the IRC topic.
  */
@@ -66,6 +69,10 @@ public class StreamInfo {
 
                             for (final StreamInfoListener listener : sListeners) {
                                 listener.onStreamInfoUpdated(sStreamer, sGame);
+                            }
+
+                            if (Pref.NOTIFICATIONS.getBoolean()) {
+                                Audio.playNotification();
                             }
                         }
 

@@ -28,7 +28,9 @@ public enum Pref {
     /** Boolean type indication whether or not the window should start minimised */
     START_MINIMISED("startminimised", false),
     /** Whether or not streams should be restarted after dying */
-    GAME_MODE("gamemode", false);
+    GAME_MODE("gamemode", false),
+    /** Whether or not topic changes that indicate a starting stream should notify the user */
+    NOTIFICATIONS("notifications", false);
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());

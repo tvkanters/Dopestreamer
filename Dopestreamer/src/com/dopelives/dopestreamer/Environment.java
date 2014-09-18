@@ -25,6 +25,8 @@ public class Environment {
     public static final String IMAGE_FOLDER = RESOURCE_FOLDER + "images/";
     /** The absolute path to the folder containing the GUI CSS resources */
     public static final String STYLE_FOLDER = RESOURCE_FOLDER + "style/";
+    /** The absolute path to the folder containing the audio resources */
+    public static final String AUDIO_FOLDER = RESOURCE_FOLDER + "audio/";
     /** The application's title */
     public static final String TITLE = "Dopestreamer";
     /** The directory of the executable file running Dopestreamer */
