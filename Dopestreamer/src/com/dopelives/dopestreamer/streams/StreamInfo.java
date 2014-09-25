@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -54,7 +55,8 @@ public class StreamInfo {
             try {
                 // Check the newest stream info
                 final URLConnection connection = new URL(INFO_URL).openConnection();
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
+                        Charset.forName("UTF-8")));
                 final String result = reader.readLine();
                 reader.close();
 
