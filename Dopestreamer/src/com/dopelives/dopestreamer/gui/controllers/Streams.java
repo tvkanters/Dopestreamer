@@ -130,6 +130,12 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         final StreamService selectedService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
                 .getString());
         streamServiceSelection.getSelectionModel().select(selectedService);
+        // Make sure a value is selected
+        if (streamServiceSelection.getValue() == null) {
+            final StreamService defaultService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
+                    .getDefaultString());
+            streamServiceSelection.getSelectionModel().select(defaultService);
+        }
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new StreamServiceCell());

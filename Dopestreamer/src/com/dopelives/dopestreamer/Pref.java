@@ -123,6 +123,33 @@ public enum Pref {
     }
 
     /**
+     * Retrieves a default preference value.
+     *
+     * @return The default value
+     */
+    public boolean getDefaultBoolean() {
+        return mDefaultBoolean;
+    }
+
+    /**
+     * Retrieves a default preference value.
+     *
+     * @return The default value
+     */
+    public int getDefaultInt() {
+        return mDefaultInt;
+    }
+
+    /**
+     * Retrieves a default preference value.
+     *
+     * @return The default value
+     */
+    public String getDefaultString() {
+        return mDefaultString;
+    }
+
+    /**
      * Resets the value to the default.
      */
     public void reset() {
