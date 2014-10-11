@@ -44,6 +44,8 @@ public class Settings implements Initializable {
     @FXML
     private CheckBox notificationToggle;
     @FXML
+    private CheckBox notificationDingdongToggle;
+    @FXML
     private ComboBox<MediaPlayer> mediaPlayerSelection;
     @FXML
     private VBox mediaPlayerLocationWrapper;
@@ -60,6 +62,7 @@ public class Settings implements Initializable {
         showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
         startMinimisedToggle.setSelected(Pref.START_MINIMISED.getBoolean());
         notificationToggle.setSelected(Pref.NOTIFICATIONS.getBoolean());
+        notificationDingdongToggle.setSelected(Pref.NOTIFICATION_DINGDONG.getBoolean());
 
         // Add media players to the combo box
         final List<MediaPlayer> mediaPlayers = MediaPlayerManager.getMediaPlayers();
@@ -125,6 +128,11 @@ public class Settings implements Initializable {
     @FXML
     public void onNotificationToggle() {
         Pref.NOTIFICATIONS.put(notificationToggle.isSelected());
+    }
+
+    @FXML
+    public void onNotificationDingdongToggle() {
+        Pref.NOTIFICATION_DINGDONG.put(notificationDingdongToggle.isSelected());
     }
 
     @FXML

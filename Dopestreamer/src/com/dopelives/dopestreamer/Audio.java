@@ -18,7 +18,7 @@ public class Audio {
      * Plays a notification sound.
      */
     public static void playNotification() {
-        playSound("notification.wav");
+        playSound(Pref.NOTIFICATION_DINGDONG.getBoolean() ? "dingdong.wav" : "notification.wav");
     }
 
     /**

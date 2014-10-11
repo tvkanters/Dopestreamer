@@ -33,6 +33,8 @@
     <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start Dopestreamer minimised" />
     <VBox prefHeight="10" />
     <CheckBox fx:id="notificationToggle" onAction="#onNotificationToggle" text="Notifications when streams start" />
+    <VBox prefHeight="10" />
+    <CheckBox fx:id="notificationDingdongToggle" onAction="#onNotificationDingdongToggle" text="Tanzenkat DINGDONG notifications" />
     
     
     <Label text="Media player" />

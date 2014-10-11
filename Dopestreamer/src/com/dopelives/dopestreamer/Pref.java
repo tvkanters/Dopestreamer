@@ -30,7 +30,9 @@ public enum Pref {
     /** Whether or not streams should be restarted after dying */
     GAME_MODE("gamemode", false),
     /** Whether or not topic changes that indicate a starting stream should notify the user */
-    NOTIFICATIONS("notifications", false);
+    NOTIFICATIONS("notifications", false),
+    /** Whether or not topic changes should use ding dong as sound */
+    NOTIFICATION_DINGDONG("notificationdingdong", false);
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
