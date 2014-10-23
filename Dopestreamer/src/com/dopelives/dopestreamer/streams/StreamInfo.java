@@ -32,7 +32,7 @@ public class StreamInfo {
     private static final Pattern sTopicPattern = Pattern.compile("^(.+) is playing (.+)$");
 
     /** Whether or not the initial update is processing */
-    private static boolean initialUpdate = true;
+    private static boolean sInitialUpdate = true;
     /** Whether or not a stream is currently active */
     private static boolean sStreamActive = false;
     /** The last detected streamer */
@@ -80,7 +80,7 @@ public class StreamInfo {
                             // Notify the user if he wants and if a stream isn't already active
                             if (Pref.NOTIFICATIONS.getBoolean()
                                     && StreamManager.getInstance().getStreamState() == StreamState.INACTIVE
-                                    && !initialUpdate) {
+                                    && !sInitialUpdate) {
                                 Audio.playNotification();
                             }
                         }
@@ -97,7 +97,7 @@ public class StreamInfo {
                     }
                 }
 
-                initialUpdate = false;
+                sInitialUpdate = false;
 
             } catch (final IOException ex) {
                 System.out.println("Couldn't fetch stream info");
