@@ -56,4 +56,28 @@ public class Restream extends Xphome {
         return super.getConnectionDetails(channel, quality);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isConnectPossible(final String channel) {
+        return super.isChannelPossible(channel.equals("default") ? "restream" : channel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isChannelPossible(final String channel) {
+        switch (channel) {
+            case "default":
+            case "restream/restream":
+            case "restream_low/restream_low":
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
 }
