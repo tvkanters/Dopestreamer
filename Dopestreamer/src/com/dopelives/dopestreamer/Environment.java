@@ -8,6 +8,8 @@ import javafx.application.Application;
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.StreamManager;
+import com.dopelives.dopestreamer.util.OutputSpy;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * The initialiser and general environment manager.

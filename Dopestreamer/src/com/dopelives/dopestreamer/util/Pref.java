@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer;
+package com.dopelives.dopestreamer.util;
 
 import java.util.prefs.Preferences;
 

@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer;
+package com.dopelives.dopestreamer.util;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

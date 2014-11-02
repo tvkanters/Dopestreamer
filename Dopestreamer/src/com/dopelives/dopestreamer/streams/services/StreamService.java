@@ -88,4 +88,30 @@ public abstract class StreamService {
         return new LinkedList<>();
     }
 
+    /**
+     * Checks if it's worth attempting to connect to the stream service. Returns true by default but can be overridden
+     * to add conditional returns.
+     *
+     * @param channel
+     *            The channel to connect to
+     *
+     * @return True if a connection attempt to the service can be made
+     */
+    public boolean isConnectPossible(final String channel) {
+        return true;
+    }
+
+    /**
+     * Checks if a channel may exist on to the stream service. Returns true by default but can be overridden to add
+     * conditional returns.
+     *
+     * @param channel
+     *            The channel to connect to
+     *
+     * @return False if the channel does not exist
+     */
+    public boolean isChannelPossible(final String channel) {
+        return true;
+    }
+
 }

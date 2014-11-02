@@ -14,8 +14,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import com.dopelives.dopestreamer.Environment;
-import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.TrayManager;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * Handles the main window's stage. May only be opened once.

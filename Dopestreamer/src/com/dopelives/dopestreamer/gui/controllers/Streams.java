@@ -25,7 +25,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Callback;
 
-import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.gui.combobox.QualityCell;
 import com.dopelives.dopestreamer.gui.combobox.StreamServiceCell;
@@ -37,6 +36,7 @@ import com.dopelives.dopestreamer.streams.StreamListener;
 import com.dopelives.dopestreamer.streams.StreamManager;
 import com.dopelives.dopestreamer.streams.services.StreamService;
 import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * The controller for the streams screen.

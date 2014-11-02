@@ -26,12 +26,12 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Environment;
-import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.combobox.MediaPlayerCell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
+import com.dopelives.dopestreamer.util.Pref;
 
 public class Settings implements Initializable {
 

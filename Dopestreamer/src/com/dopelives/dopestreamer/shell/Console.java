@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -78,7 +79,9 @@ public class Console {
      * Forcefully stops the running process.
      */
     public void stop() {
-        Shell.getInstance().killProcessTree(mProcessId);
+        if (mProcessId != null) {
+            Shell.getInstance().killProcessTree(mProcessId);
+        }
     }
 
     /**
@@ -180,9 +183,23 @@ public class Console {
     }
 
     /**
+     * @return The listeners that will receive the call-backs
+     */
+    public Collection<ConsoleListener> getListeners() {
+        return Collections.unmodifiableCollection(mListeners);
+    }
+
+    /**
      * @return The process ID of this console
      */
     public ProcessId getProcessId() {
         return mProcessId;
+    }
+
+    /**
+     * @return True iff the console process is running
+     */
+    public boolean isRunning() {
+        return mRunning;
     }
 }

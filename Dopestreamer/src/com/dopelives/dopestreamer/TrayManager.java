@@ -20,6 +20,7 @@ import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.streams.Stream;
 import com.dopelives.dopestreamer.streams.StreamListener;
 import com.dopelives.dopestreamer.streams.StreamManager;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * Handles tray icon related functionality.

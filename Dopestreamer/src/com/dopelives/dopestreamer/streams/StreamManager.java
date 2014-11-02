@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
 import com.dopelives.dopestreamer.streams.services.StreamService;
 import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * A manager for stream related tasks and state management.
@@ -58,13 +58,11 @@ public class StreamManager implements ConsoleListener {
     private synchronized void startStream(final Stream stream) throws InvalidParameterException {
         // Clean up
         stopStreamConsole();
+
+        // Prepare the stream
         mStream = stream;
-
-        // Start the stream
-        updateState(StreamState.CONNECTING);
-
         mStream.addListener(this);
-        mStream.start();
+        updateState(StreamState.CONNECTING);
 
         // Save the stream settings
         final StreamService streamService = mStream.getStreamService();
@@ -75,6 +73,9 @@ public class StreamManager implements ConsoleListener {
         Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
         Pref.LAST_CHANNEL.put(channel);
         Pref.LAST_QUALITY.put(mStream.getQuality().toString());
+
+        // Start the stream
+        mStream.start();
     }
 
     /**

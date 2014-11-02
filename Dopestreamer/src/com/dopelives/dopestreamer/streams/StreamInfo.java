@@ -1,11 +1,5 @@
 package com.dopelives.dopestreamer.streams;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -13,9 +7,10 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.dopelives.dopestreamer.Audio;
-import com.dopelives.dopestreamer.Pref;
 import com.dopelives.dopestreamer.gui.StreamState;
+import com.dopelives.dopestreamer.util.Audio;
+import com.dopelives.dopestreamer.util.HttpHelper;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * A static helper class for getting stream info from the IRC topic.
@@ -52,56 +47,46 @@ public class StreamInfo {
     private static final Runnable sUpdater = new Runnable() {
         @Override
         public void run() {
-            try {
-                // Check the newest stream info
-                final URLConnection connection = new URL(INFO_URL).openConnection();
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(),
-                        Charset.forName("UTF-8")));
-                final String result = reader.readLine();
-                reader.close();
+            // Check the newest stream info
+            final String result = HttpHelper.getContent(INFO_URL);
+            if (result != null) {
+                final Matcher matcher = sTopicPattern.matcher(result.trim());
+                if (matcher.find()) {
+                    // Stream info found, see if it needs to be updated
+                    final String streamer = matcher.group(1);
+                    final String game = matcher.group(2);
 
-                if (result != null) {
-                    final Matcher matcher = sTopicPattern.matcher(result.trim());
-                    if (matcher.find()) {
-                        // Stream info found, see if it needs to be updated
-                        final String streamer = matcher.group(1);
-                        final String game = matcher.group(2);
+                    if (!sStreamActive || !sStreamer.equals(streamer) || !sGame.equals(game)) {
+                        sStreamActive = true;
+                        sStreamer = streamer;
+                        sGame = game;
 
-                        if (!sStreamActive || !sStreamer.equals(streamer) || !sGame.equals(game)) {
-                            sStreamActive = true;
-                            sStreamer = streamer;
-                            sGame = game;
-
-                            // Notify all listeners of a change in stream info
-                            for (final StreamInfoListener listener : sListeners) {
-                                listener.onStreamInfoUpdated(sStreamer, sGame);
-                            }
-
-                            // Notify the user if he wants and if a stream isn't already active
-                            if (Pref.NOTIFICATIONS.getBoolean()
-                                    && StreamManager.getInstance().getStreamState() == StreamState.INACTIVE
-                                    && !sInitialUpdate) {
-                                Audio.playNotification();
-                            }
+                        // Notify all listeners of a change in stream info
+                        for (final StreamInfoListener listener : sListeners) {
+                            listener.onStreamInfoUpdated(sStreamer, sGame);
                         }
 
-                    } else {
-                        // No stream info found
-                        if (sStreamActive) {
-                            sStreamActive = false;
+                        // Notify the user if he wants and if a stream isn't already active
+                        if (Pref.NOTIFICATIONS.getBoolean()
+                                && StreamManager.getInstance().getStreamState() == StreamState.INACTIVE
+                                && !sInitialUpdate) {
+                            Audio.playNotification();
+                        }
+                    }
 
-                            for (final StreamInfoListener listener : sListeners) {
-                                listener.onStreamInfoRemoved();
-                            }
+                } else {
+                    // No stream info found
+                    if (sStreamActive) {
+                        sStreamActive = false;
+
+                        for (final StreamInfoListener listener : sListeners) {
+                            listener.onStreamInfoRemoved();
                         }
                     }
                 }
-
-                sInitialUpdate = false;
-
-            } catch (final IOException ex) {
-                System.out.println("Couldn't fetch stream info");
             }
+
+            sInitialUpdate = false;
         }
     };
 

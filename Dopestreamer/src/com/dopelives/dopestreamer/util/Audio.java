@@ -1,4 +1,4 @@
-package com.dopelives.dopestreamer;
+package com.dopelives.dopestreamer.util;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -8,6 +8,8 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
+
+import com.dopelives.dopestreamer.Environment;
 
 /**
  * A class that manages everything audio related.
