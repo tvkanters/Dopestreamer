@@ -150,7 +150,8 @@ public class StreamManager implements ConsoleListener {
             updateState(StreamState.WAITING);
 
             // Invalid channel name
-        } else if (output.contains("Unable to open URL") && !output.contains("Failed to open segment")) {
+        } else if (output.contains("Unable to open URL") && !output.contains("Failed to open segment")
+                && !output.contains("Failed to reload playlist")) {
             for (final StreamListener listener : mListeners) {
                 listener.onInvalidChannel(mStream);
             }
