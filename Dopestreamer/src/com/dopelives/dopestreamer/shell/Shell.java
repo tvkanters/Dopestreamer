@@ -108,18 +108,6 @@ public abstract class Shell {
     }
 
     /**
-     * Creates a console that can execute shell commands in the current OS.
-     *
-     * @param command
-     *            The command to execute
-     *
-     * @return The console that can execute the command
-     */
-    public Console createConsole(final String command) {
-        return new Console(getProcessBuilder(command));
-    }
-
-    /**
      * Creates a process builder for the given command.
      *
      * @param command
@@ -127,7 +115,7 @@ public abstract class Shell {
      *
      * @return The process builder to execute the command
      */
-    protected abstract ProcessBuilder getProcessBuilder(String command);
+    public abstract ProcessBuilder getProcessBuilder(String command);
 
     /**
      * Forcefully stops the process with the given PID and its child processes.

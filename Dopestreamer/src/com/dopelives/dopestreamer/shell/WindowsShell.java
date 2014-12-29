@@ -40,7 +40,7 @@ public class WindowsShell extends Shell {
      * {@inheritDoc}
      */
     @Override
-    protected ProcessBuilder getProcessBuilder(final String command) {
+    public ProcessBuilder getProcessBuilder(final String command) {
         return new ProcessBuilder("cmd", "/C", command);
     }
 

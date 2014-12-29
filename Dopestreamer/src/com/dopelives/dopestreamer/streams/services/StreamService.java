@@ -114,4 +114,14 @@ public abstract class StreamService {
         return true;
     }
 
+    /**
+     * Checks if a custom channel can be requested. Returns true by default but can be overridden to add conditional
+     * returns.
+     *
+     * @return True iff the user may enter a custom channel
+     */
+    public boolean allowsCustomChannels() {
+        return true;
+    }
+
 }

@@ -120,8 +120,20 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         streamServiceSelection.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(final ActionEvent event) {
-                ControllerHelper.setCssClass(channelDefault, "unavailable", !streamServiceSelection.getValue()
-                        .hasDefaultChannel());
+                final StreamService streamService = streamServiceSelection.getValue();
+                final boolean disableDefault = !streamService.hasDefaultChannel();
+                final boolean disableCustom = !streamService.allowsCustomChannels();
+
+                channelDefault.setDisable(disableDefault);
+                channelCustom.setDisable(disableCustom);
+                channelCustomInput.setDisable(disableCustom);
+
+                if (disableDefault) {
+                    channelCustom.setSelected(true);
+                } else if (disableCustom) {
+                    channelDefault.setSelected(true);
+                }
+
                 updateQualityOptions();
             }
         });

@@ -57,7 +57,7 @@ public class Stream {
 
             // Start stream if it hasn't been cancelled yet
             if (!mStopping) {
-                mConsole.start();
+                mConsole.start(buildCommand());
             }
         }
     });
@@ -85,6 +85,27 @@ public class Stream {
         mChannel = channel;
         mQuality = quality;
 
+        mConsole = new Console();
+    }
+
+    /**
+     * Starts a stream for the default channel at the given service.
+     *
+     * @param streamService
+     *            The service to start
+     * @param quality
+     *            The quality to show the stream in
+     */
+    public Stream(final StreamService streamService, final Quality quality) {
+        this(streamService, streamService.getDefaultChannel(), quality);
+    }
+
+    /**
+     * Constructs the console command needed to run the stream.
+     *
+     * @return The console command within a process builder
+     */
+    private ProcessBuilder buildCommand() {
         // Prepare Livestreamer command
         final Shell shell = Shell.getInstance();
         String command;
@@ -123,21 +144,9 @@ public class Stream {
         }
 
         // Add channel information
-        command += " " + streamService.getConnectionDetails(channel, quality);
+        command += " " + mStreamService.getConnectionDetails(mChannel, mQuality);
 
-        mConsole = shell.createConsole(command);
-    }
-
-    /**
-     * Starts a stream for the default channel at the given service.
-     *
-     * @param streamService
-     *            The service to start
-     * @param quality
-     *            The quality to show the stream in
-     */
-    public Stream(final StreamService streamService, final Quality quality) {
-        this(streamService, streamService.getDefaultChannel(), quality);
+        return shell.getProcessBuilder(command);
     }
 
     /**

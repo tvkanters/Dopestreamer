@@ -14,12 +14,13 @@ public class StreamServiceManager {
 
     static {
         register(new Afreeca());
+        register(new Autoswitch());
         register(new Bambuser());
         register(new Hitbox());
         register(new LivestreamNew());
         register(new LivestreamOld());
         register(new Restream());
-//        register(new Streamup());
+        // register(new Streamup());
         register(new Twitch());
         register(new Ustream());
         register(new Xphome());
