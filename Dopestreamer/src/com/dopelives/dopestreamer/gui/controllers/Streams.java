@@ -148,7 +148,9 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         // Select the stored last stream service
         final StreamService selectedService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
                 .getString());
-        streamServiceSelection.getSelectionModel().select(selectedService);
+        if (streamServices.contains(selectedService)) {
+            streamServiceSelection.getSelectionModel().select(selectedService);
+        }
         // Make sure a value is selected
         if (streamServiceSelection.getValue() == null) {
             final StreamService defaultService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE

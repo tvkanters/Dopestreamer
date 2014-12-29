@@ -73,11 +73,16 @@ public class StreamServiceManager {
      * @return The stream service with matching key or null if it wasn't found
      */
     public static StreamService getStreamServiceByKey(final String key) {
+        if (sAutoswitch.getKey().equals(key)) {
+            return sAutoswitch;
+        }
+
         for (final StreamService streamService : sStreamServices) {
             if (streamService.getKey().equals(key)) {
                 return streamService;
             }
         }
+
         return null;
     }
 
