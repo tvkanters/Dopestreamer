@@ -79,7 +79,12 @@ public class Twitch extends StreamService {
         }
 
         final JSONObject json = new JSONObject(result);
-        return !json.isNull("stream");
+        if (json.isNull("stream")) {
+            System.out.println("Twitch channel not live: " + channel);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -93,7 +98,12 @@ public class Twitch extends StreamService {
         }
 
         final JSONObject json = new JSONObject(result);
-        return json.has("stream");
+        if (!json.has("stream")) {
+            System.out.println("Invalid Twitch channel: " + channel);
+            return false;
+        } else {
+            return true;
+        }
     }
 
 }

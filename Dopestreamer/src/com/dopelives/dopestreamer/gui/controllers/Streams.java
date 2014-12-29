@@ -65,6 +65,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     private Label gameInfo;
     @FXML
     private CheckBox gameModeToggle;
+    @FXML
+    private CheckBox autoswitchToggle;
+
+    /** Whether or not autoswitch is currently active */
+    private boolean autoswitchEnabled;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -135,6 +140,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 }
 
                 updateQualityOptions();
+
+                autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(streamService));
             }
         });
 
@@ -170,6 +177,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         // Set checkbox preferences
         gameModeToggle.setSelected(Pref.GAME_MODE.getBoolean());
+        autoswitchToggle.setSelected(Pref.AUTOSWITCH.getBoolean());
 
         // Update to the right stream state
         final StreamManager streamManager = StreamManager.getInstance();
@@ -207,13 +215,20 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * Uses the GUI input to start a stream.
      */
     private void startStream() {
+        autoswitchEnabled = false;
         final StreamManager streamManager = StreamManager.getInstance();
         final StreamService selectedStreamService = streamServiceSelection.getValue();
         final Quality quality = qualitySelection.getValue();
 
         // Pick a default or custom channel
         if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
-            streamManager.startStream(selectedStreamService, quality);
+            if (Pref.AUTOSWITCH.getBoolean()
+                    && StreamServiceManager.getAutoswitchServices().contains(selectedStreamService)) {
+                autoswitchEnabled = true;
+                streamManager.startStream(StreamServiceManager.getAutoswitch(), quality);
+            } else {
+                streamManager.startStream(selectedStreamService, quality);
+            }
         } else {
             try {
                 streamManager.startStream(selectedStreamService, channelCustomInput.getText(), quality);
@@ -235,7 +250,19 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 StreamInfo.requestRefresh();
                 break;
 
+            case BUFFERING:
+                if (autoswitchEnabled) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            streamServiceSelection.setValue(StreamServiceManager.getAutoswitch().getCurrentService());
+                        }
+                    });
+                }
+                break;
+
             default:
+                break;
         }
 
         // Run in UI thread
@@ -386,6 +413,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         if (!selected) {
             qualitySelection.getSelectionModel().select(0);
         }
+    }
+
+    @FXML
+    private void onAutoswitchToggle() {
+        Pref.AUTOSWITCH.put(autoswitchToggle.isSelected());
     }
 
 }

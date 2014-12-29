@@ -78,7 +78,7 @@ public class Stream {
     public Stream(final StreamService streamService, final String channel, final Quality quality)
             throws InvalidParameterException {
         if (!sChannelMatcher.matcher(channel).find()) {
-            throw new InvalidParameterException("Channel cannot be empty");
+            throw new InvalidParameterException("Invalid channel");
         }
 
         mStreamService = streamService;

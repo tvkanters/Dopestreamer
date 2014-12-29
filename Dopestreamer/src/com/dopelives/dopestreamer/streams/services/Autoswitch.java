@@ -1,8 +1,5 @@
 package com.dopelives.dopestreamer.streams.services;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.dopelives.dopestreamer.streams.Quality;
 
 /**
@@ -10,19 +7,8 @@ import com.dopelives.dopestreamer.streams.Quality;
  */
 public class Autoswitch extends StreamService {
 
-    /** The list of stream services to try */
-    private final List<StreamService> mServices = new ArrayList<>();
-
     /** The current service to use */
     private StreamService mCurrentService;
-
-    Autoswitch() {
-        mServices.add(new Hitbox());
-        mServices.add(new Xphome());
-        mServices.add(new Twitch());
-
-        mCurrentService = mServices.get(0);
-    }
 
     /**
      * {@inheritDoc}
@@ -61,6 +47,10 @@ public class Autoswitch extends StreamService {
      */
     @Override
     public String getDefaultChannel() {
+        if (mCurrentService == null) {
+            return "default";
+        }
+
         return mCurrentService.getDefaultChannel();
     }
 
@@ -81,7 +71,7 @@ public class Autoswitch extends StreamService {
      */
     @Override
     public boolean isConnectPossible(final String channel) {
-        for (final StreamService service : mServices) {
+        for (final StreamService service : StreamServiceManager.getAutoswitchServices()) {
             if (service.isConnectPossible(service.getDefaultChannel())) {
                 mCurrentService = service;
                 return true;
@@ -97,6 +87,13 @@ public class Autoswitch extends StreamService {
     @Override
     public boolean allowsCustomChannels() {
         return false;
+    }
+
+    /**
+     * @return The currently used stream service
+     */
+    public StreamService getCurrentService() {
+        return mCurrentService;
     }
 
 }

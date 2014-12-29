@@ -79,7 +79,12 @@ public class Hitbox extends StreamService {
         }
 
         final JSONObject json = new JSONObject(result);
-        return json.getInt("is_live") == 1;
+        if (json.getInt("is_live") != 1) {
+            System.out.println("Hitbox channel not live: " + channel);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -89,6 +94,7 @@ public class Hitbox extends StreamService {
     public boolean isChannelPossible(final String channel) {
         final String result = HttpHelper.getContent(STATS_URL + channel).trim();
         if (result == null || result.equals("[]")) {
+            System.out.println("Invalid Hitbox channel: " + channel);
             return false;
         }
 

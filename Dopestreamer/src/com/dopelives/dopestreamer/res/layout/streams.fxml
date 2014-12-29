@@ -46,7 +46,11 @@
 
 
 	<Label text="Channel" />
-	<RadioButton fx:id="channelDefault" selected="true" text="Dopelives" toggleGroup="$channelGroup" />
+    <HBox alignment="CENTER_LEFT">
+        <RadioButton fx:id="channelDefault" selected="true" text="Dopelives" toggleGroup="$channelGroup" />
+        <Pane HBox.hgrow="ALWAYS" />
+	    <CheckBox fx:id="autoswitchToggle" onAction="#onAutoswitchToggle" text="Autoswitch" />
+    </HBox>
 	<VBox prefHeight="5" />
 	<HBox alignment="CENTER_LEFT">
 		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />

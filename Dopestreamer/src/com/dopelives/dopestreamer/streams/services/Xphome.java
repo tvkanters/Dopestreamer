@@ -77,7 +77,12 @@ public class Xphome extends StreamService {
 
         final JSONObject json = new JSONObject(result);
         final JSONObject channelInfo = json.getJSONObject(trimChannel(channel));
-        return channelInfo != null && channelInfo.getBoolean("live");
+        if (channelInfo == null || !channelInfo.getBoolean("live")) {
+            System.out.println("Vacker channel not live: " + channel);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -91,7 +96,12 @@ public class Xphome extends StreamService {
         }
 
         final JSONObject json = new JSONObject(result);
-        return !json.isNull(trimChannel(channel));
+        if (json.isNull(trimChannel(channel))) {
+            System.out.println("Invalid Vacker channel: " + channel);
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**

@@ -14,11 +14,11 @@ public class HttpHelper {
 
     /**
      * Retrieves the content from a URL.
-     * 
+     *
      * @param url
      *            The URL to request
-     * 
-     * @return The contents
+     *
+     * @return The contents or null if the URL couldn't be read
      */
     public static String getContent(final String url) {
         final StringBuilder result = new StringBuilder();
@@ -32,7 +32,7 @@ public class HttpHelper {
             }
             reader.close();
         } catch (final IOException ex) {
-            ex.printStackTrace();
+            System.out.println("Could load URL " + url + ": " + ex.getClass());
             return null;
         }
 
