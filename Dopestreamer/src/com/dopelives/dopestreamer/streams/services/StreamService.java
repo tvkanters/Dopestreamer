@@ -103,7 +103,8 @@ public abstract class StreamService {
 
     /**
      * Checks if a channel may exist on to the stream service. Returns true by default but can be overridden to add
-     * conditional returns.
+     * conditional returns. Implementations of this function may use synchronised HTTP request so it's worth considering
+     * calling this method in a separate thread.
      *
      * @param channel
      *            The channel to connect to

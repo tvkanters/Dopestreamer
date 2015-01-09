@@ -153,16 +153,21 @@ public class Stream {
      * Starts the stream through Livestreamer. May only be called once.
      */
     public void start() {
-        // Check if the channel is a possibility
-        if (!mStreamService.isChannelPossible(mChannel)) {
-            // Channel isn't possible, act as if Livestreamer complained
-            for (final ConsoleListener listener : mConsole.getListeners()) {
-                listener.onConsoleOutput(mConsole.getProcessId(), "Unable to open URL");
-            }
-            return;
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Check if the channel is a possibility
+                if (!mStreamService.isChannelPossible(mChannel)) {
+                    // Channel isn't possible, act as if Livestreamer complained
+                    for (final ConsoleListener listener : mConsole.getListeners()) {
+                        listener.onConsoleOutput(mConsole.getProcessId(), "Unable to open URL");
+                    }
+                    return;
+                }
 
-        mConnectThread.start();
+                mConnectThread.start();
+            }
+        }).start();
     }
 
     /**
