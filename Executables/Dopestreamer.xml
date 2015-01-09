@@ -11,7 +11,7 @@
   <supportUrl>https://github.com/tvkanters/Dopestreamer</supportUrl>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
-  <icon>..\Icon\Dopestreamer.ico</icon>
+  <icon>..\Graphics\Dopestreamer.ico</icon>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
