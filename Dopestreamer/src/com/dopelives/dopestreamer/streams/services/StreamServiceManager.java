@@ -1,10 +1,8 @@
 package com.dopelives.dopestreamer.streams.services;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * A manager for all available stream services.
@@ -15,21 +13,29 @@ public class StreamServiceManager {
     private static final List<StreamService> sStreamServices = new LinkedList<>();
 
     /** The list of stream services to autoswitch to */
-    private static final Set<StreamService> sAutoswitchServices = new HashSet<>();
+    private static final List<StreamService> sAutoswitchServices = new LinkedList<>();
 
     /** The autoswitch service */
     private static final Autoswitch sAutoswitch = new Autoswitch();
 
     static {
+        final StreamService hitbox = new Hitbox();
+        final StreamService twitch = new Twitch();
+        final StreamService xphome = new Xphome();
+
         register(new Afreeca());
         register(new Bambuser());
-        register(new Hitbox(), true);
+        register(hitbox);
         register(new LivestreamNew());
         register(new LivestreamOld());
         register(new Restream());
-        register(new Twitch(), true);
+        register(twitch);
         register(new Ustream());
-        register(new Xphome(), true);
+        register(xphome);
+
+        registerAutoswitch(hitbox);
+        registerAutoswitch(xphome);
+        registerAutoswitch(twitch);
     }
 
     /**
@@ -39,22 +45,17 @@ public class StreamServiceManager {
      *            The stream service to register
      */
     private static void register(final StreamService streamService) {
-        register(streamService, false);
+        sStreamServices.add(streamService);
     }
 
     /**
-     * Registers a stream service for global use.
+     * Registers a stream service for autoswitch use.
      *
      * @param streamService
      *            The stream service to register
-     * @param autoswitch
-     *            Whether or not this server can be autoswitched to
      */
-    private static void register(final StreamService streamService, final boolean autoswitch) {
-        sStreamServices.add(streamService);
-        if (autoswitch) {
-            sAutoswitchServices.add(streamService);
-        }
+    private static void registerAutoswitch(final StreamService streamService) {
+        sAutoswitchServices.add(streamService);
     }
 
     /**
@@ -96,7 +97,7 @@ public class StreamServiceManager {
     /**
      * @return The autoswitch stream services
      */
-    public static Set<StreamService> getAutoswitchServices() {
+    public static List<StreamService> getAutoswitchServices() {
         return sAutoswitchServices;
     }
 
