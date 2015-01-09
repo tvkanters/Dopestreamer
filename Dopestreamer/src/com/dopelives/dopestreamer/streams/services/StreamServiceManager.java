@@ -21,7 +21,7 @@ public class StreamServiceManager {
     static {
         final StreamService hitbox = new Hitbox();
         final StreamService twitch = new Twitch();
-        final StreamService xphome = new Xphome();
+        final StreamService vacker = new Vacker();
 
         register(new Afreeca());
         register(new Bambuser());
@@ -31,10 +31,10 @@ public class StreamServiceManager {
         register(new Restream());
         register(twitch);
         register(new Ustream());
-        register(xphome);
+        register(vacker);
 
         registerAutoswitch(hitbox);
-        registerAutoswitch(xphome);
+        registerAutoswitch(vacker);
         registerAutoswitch(twitch);
     }
 

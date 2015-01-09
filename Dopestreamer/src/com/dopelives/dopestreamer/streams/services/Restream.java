@@ -3,9 +3,9 @@ package com.dopelives.dopestreamer.streams.services;
 import com.dopelives.dopestreamer.streams.Quality;
 
 /**
- * The service for Xphome restreams.
+ * The service for Vacker restreams.
  */
-public class Restream extends Xphome {
+public class Restream extends Vacker {
 
     /** The default Dopelives channel that will be changed based on the quality */
     private static final String DEFAULT_CHANNEL = "default";

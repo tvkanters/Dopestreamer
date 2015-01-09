@@ -6,9 +6,9 @@ import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.util.HttpHelper;
 
 /**
- * The service for Xphome streams.
+ * The service for Vacker streams.
  */
-public class Xphome extends StreamService {
+public class Vacker extends StreamService {
 
     /** The URL where the stream stats are shown */
     private static final String STATS_URL = "http://vacker.tv/infojson.php";
@@ -34,7 +34,7 @@ public class Xphome extends StreamService {
      */
     @Override
     protected String getIconUrl() {
-        return "dopestreamer_small.png";
+        return "vacker.png";
     }
 
     /**
