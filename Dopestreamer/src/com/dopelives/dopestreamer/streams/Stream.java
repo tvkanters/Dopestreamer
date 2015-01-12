@@ -20,7 +20,7 @@ import com.dopelives.dopestreamer.util.Pref;
 public class Stream {
 
     /** The delay in seconds at which the stream service should be polled */
-    private static final int RETRY_DELAY = 2;
+    public static final int RETRY_DELAY = 2;
 
     /** The regex that will match valid channels */
     private static final Pattern sChannelMatcher = Pattern.compile("^[a-zA-Z0-9/_-]+$");
@@ -43,7 +43,7 @@ public class Stream {
         public void run() {
             // Wait for streams to start until
             try {
-                while (!mStreamService.isConnectPossible(mChannel) && !mStopping) {
+                while (!mStopping && !mStreamService.isConnectPossible(mChannel)) {
                     // Act as if Livestreamer is waiting for streams
                     for (final ConsoleListener listener : mConsole.getListeners()) {
                         listener.onConsoleOutput(mConsole.getProcessId(), "Waiting for streams");
@@ -57,10 +57,22 @@ public class Stream {
 
             // Start stream if it hasn't been cancelled yet
             if (!mStopping) {
-                mConsole.start(buildCommand());
+                mConsole.start();
             }
         }
     });
+
+    /**
+     * Starts a stream for the default channel at the given service.
+     *
+     * @param streamService
+     *            The service to start
+     * @param quality
+     *            The quality to show the stream in
+     */
+    public Stream(final StreamService streamService, final Quality quality) {
+        this(streamService, streamService.getDefaultChannel(), quality);
+    }
 
     /**
      * Starts a stream for the given channel at the service.
@@ -85,27 +97,6 @@ public class Stream {
         mChannel = channel;
         mQuality = quality;
 
-        mConsole = new Console();
-    }
-
-    /**
-     * Starts a stream for the default channel at the given service.
-     *
-     * @param streamService
-     *            The service to start
-     * @param quality
-     *            The quality to show the stream in
-     */
-    public Stream(final StreamService streamService, final Quality quality) {
-        this(streamService, streamService.getDefaultChannel(), quality);
-    }
-
-    /**
-     * Constructs the console command needed to run the stream.
-     *
-     * @return The console command within a process builder
-     */
-    private ProcessBuilder buildCommand() {
         // Prepare Livestreamer command
         final Shell shell = Shell.getInstance();
         String command;
@@ -146,7 +137,7 @@ public class Stream {
         // Add channel information
         command += " " + mStreamService.getConnectionDetails(mChannel, mQuality);
 
-        return shell.getProcessBuilder(command);
+        mConsole = shell.createConsole(command);
     }
 
     /**
@@ -175,6 +166,7 @@ public class Stream {
      */
     public void stop() {
         mStopping = true;
+
         mConsole.stop();
     }
 

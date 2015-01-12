@@ -39,6 +39,15 @@ public class StreamManager implements ConsoleListener {
     /** The listeners that will receive updates of stream changes */
     private final List<StreamListener> mListeners = new LinkedList<>();
 
+    /** Whether or not the stream will autoswitch between channels */
+    private boolean mAutoswitchEnabled;
+    /** The index of the current autoswitch stream service */
+    private static int mCurrentAutoswitchIndex = -1;
+    /** The timer used to retry autoswitch services */
+    private static Timer mAutoswitchTimer = new Timer();
+    /** The timer task used to retry autoswitch services */
+    private static TimerTask mAutoswitchTimerTask = null;
+
     /**
      * @return The base stream manager to use for global streams
      */
@@ -47,35 +56,15 @@ public class StreamManager implements ConsoleListener {
     }
 
     /**
-     * Starts a stream based on the given parameters.
+     * Starts a stream based on the given parameters with the default channel for the given service.
      *
-     * @param stream
-     *            The stream to start
-     *
-     * @throws InvalidParameterException
-     *             Thrown when the channel is invalid
+     * @param streamService
+     *            The service to use (e.g., Hitbox)
+     * @param quality
+     *            The quality of the stream
      */
-    private synchronized void startStream(final Stream stream) throws InvalidParameterException {
-        // Clean up
-        stopStreamConsole();
-
-        // Prepare the stream
-        mStream = stream;
-        mStream.addListener(this);
-        updateState(StreamState.CONNECTING);
-
-        // Save the stream settings
-        final StreamService streamService = mStream.getStreamService();
-        String channel = mStream.getChannel();
-        if (channel.equals(streamService.getDefaultChannel())) {
-            channel = "";
-        }
-        Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
-        Pref.LAST_CHANNEL.put(channel);
-        Pref.LAST_QUALITY.put(mStream.getQuality().toString());
-
-        // Start the stream
-        mStream.start();
+    public synchronized void startStream(final StreamService streamService, final Quality quality) {
+        startStream(streamService, streamService.getDefaultChannel(), quality);
     }
 
     /**
@@ -93,34 +82,102 @@ public class StreamManager implements ConsoleListener {
      */
     public synchronized void startStream(final StreamService streamService, final String channel, final Quality quality)
             throws InvalidParameterException {
-        startStream(new Stream(streamService, channel, quality));
+        mAutoswitchEnabled = false;
+
+        // Clean up
+        stopStreamConsole();
+
+        // Prepare the stream
+        mStream = new Stream(streamService, channel, quality);
+        mStream.addListener(this);
+        updateState(StreamState.CONNECTING);
+
+        // Save the stream settings
+        Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
+        Pref.LAST_CHANNEL.put(channel.equals(streamService.getDefaultChannel()) ? "" : channel);
+        Pref.LAST_QUALITY.put(quality.toString());
+
+        // Start the stream
+        mStream.start();
     }
 
     /**
-     * Starts a stream based on the given parameters with the default channel for the given service.
+     * Starts a stream that automatically switches between available default channels.
      *
-     * @param streamService
-     *            The service to use (e.g., Hitbox)
      * @param quality
      *            The quality of the stream
      */
-    public synchronized void startStream(final StreamService streamService, final Quality quality) {
-        startStream(new Stream(streamService, quality));
+    public synchronized void startAutoswitch(final Quality quality) {
+        mAutoswitchEnabled = true;
+        boolean delay = false;
+
+        // Clean up
+        stopStreamConsole();
+
+        // Update state
+        if (mStreamState != StreamState.WAITING) {
+            updateState(StreamState.CONNECTING);
+        }
+
+        // Switch to the next stream service
+        ++mCurrentAutoswitchIndex;
+        if (mCurrentAutoswitchIndex == StreamServiceManager.getAutoswitchServices().size()) {
+            mCurrentAutoswitchIndex = 0;
+            delay = true;
+            updateState(StreamState.WAITING);
+        }
+
+        // Prepare the stream
+        final StreamService streamService = StreamServiceManager.getAutoswitchServices().get(mCurrentAutoswitchIndex);
+        mStream = new Stream(streamService, quality);
+        mStream.addListener(this);
+
+        // Save the stream settings
+        Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
+        Pref.LAST_CHANNEL.put("");
+        Pref.LAST_QUALITY.put(quality.toString());
+
+        // Start the stream
+        if (delay) {
+            mAutoswitchTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    mStream.start();
+                }
+            };
+            mAutoswitchTimer.schedule(mAutoswitchTimerTask, Stream.RETRY_DELAY * 1000);
+
+        } else {
+            mStream.start();
+        }
+    }
+
+    /**
+     * Resets the autoswitch rotation.
+     */
+    public synchronized void resetAutoswitch() {
+        mCurrentAutoswitchIndex = -1;
     }
 
     /**
      * Starts the stream based on the user preferences. Will restart the stream if it was already running.
      */
     public synchronized void restartLastStream() {
-        final StreamService streamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
-                .getString());
-        final String channel = Pref.LAST_CHANNEL.getString();
         final Quality quality = Quality.valueOf(Pref.LAST_QUALITY.getString());
 
-        if (channel.equals("")) {
-            startStream(streamService, quality);
+        if (Pref.AUTOSWITCH.getBoolean()) {
+            startAutoswitch(quality);
+
         } else {
-            startStream(streamService, channel, quality);
+            final StreamService streamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
+                    .getString());
+            final String channel = Pref.LAST_CHANNEL.getString();
+
+            if (channel.equals("")) {
+                startStream(streamService, quality);
+            } else {
+                startStream(streamService, channel, quality);
+            }
         }
     }
 
@@ -129,6 +186,10 @@ public class StreamManager implements ConsoleListener {
      */
     public synchronized void stopStream() {
         mBufferingAttempts = 0;
+        if (mAutoswitchTimerTask != null) {
+            mAutoswitchTimerTask.cancel();
+            mAutoswitchTimer.purge();
+        }
         updateState(StreamState.INACTIVE);
         stopStreamConsole();
     }
@@ -147,15 +208,29 @@ public class StreamManager implements ConsoleListener {
 
             // No stream active at the moment, so waiting for it to start
         } else if (output.contains("Waiting for streams")) {
-            updateState(StreamState.WAITING);
+            if (mAutoswitchEnabled) {
+                // Try the next stream service
+                stopStreamConsole();
+                restartLastStream();
+
+            } else {
+                updateState(StreamState.WAITING);
+            }
 
             // Invalid channel name
         } else if (output.contains("Unable to open URL") && !output.contains("Failed to open segment")
                 && !output.contains("Failed to reload playlist")) {
-            for (final StreamListener listener : mListeners) {
-                listener.onInvalidChannel(mStream);
+            if (mAutoswitchEnabled) {
+                // Try the next stream service
+                stopStreamConsole();
+                restartLastStream();
+
+            } else {
+                for (final StreamListener listener : mListeners) {
+                    listener.onInvalidChannel(mStream);
+                }
+                stopStream();
             }
-            stopStream();
 
             // Invalid quality for chosen channel
         } else if (output.contains("error: The specified stream(s) '")) {
@@ -205,6 +280,7 @@ public class StreamManager implements ConsoleListener {
                 // In game mode, don't attempt to restart the stream
                 if (Pref.GAME_MODE.getBoolean()) {
                     stopStream();
+                    break;
                 }
 
                 // Fall-through
@@ -213,7 +289,8 @@ public class StreamManager implements ConsoleListener {
             case WAITING:
             case BUFFERING:
                 // The user didn't cancel streaming, so try starting the stream again
-                if (mStream != null && processId.equals(mStream.getProcessId())) {
+                if (mStream != null && processId != null && processId.equals(mStream.getProcessId())) {
+                    System.out.println("Restarting stream");
                     restartLastStream();
                 }
                 break;
@@ -230,6 +307,10 @@ public class StreamManager implements ConsoleListener {
      *            The stream state to transition to
      */
     public synchronized void updateState(final StreamState newState) {
+        if (newState == mStreamState) {
+            return;
+        }
+
         stopBufferingTimeout();
 
         final StreamState oldState = mStreamState;
@@ -257,7 +338,6 @@ public class StreamManager implements ConsoleListener {
         mBufferingTimeout = new TimerTask() {
             @Override
             public void run() {
-                // Only stop the stream, it will be automatically restarted
                 stopStreamConsole();
                 restartLastStream();
             }
@@ -290,6 +370,13 @@ public class StreamManager implements ConsoleListener {
      */
     public void addListener(final StreamListener listener) {
         mListeners.add(listener);
+    }
+
+    /**
+     * @return The service currently used to stream
+     */
+    public StreamService getCurrentStreamService() {
+        return (mStream != null ? mStream.getStreamService() : null);
     }
 
 }

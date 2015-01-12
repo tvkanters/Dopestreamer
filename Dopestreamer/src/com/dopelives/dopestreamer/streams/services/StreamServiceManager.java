@@ -15,9 +15,6 @@ public class StreamServiceManager {
     /** The list of stream services to autoswitch to */
     private static final List<StreamService> sAutoswitchServices = new LinkedList<>();
 
-    /** The autoswitch service */
-    private static final Autoswitch sAutoswitch = new Autoswitch();
-
     static {
         final StreamService hitbox = new Hitbox();
         final StreamService twitch = new Twitch();
@@ -74,10 +71,6 @@ public class StreamServiceManager {
      * @return The stream service with matching key or null if it wasn't found
      */
     public static StreamService getStreamServiceByKey(final String key) {
-        if (sAutoswitch.getKey().equals(key)) {
-            return sAutoswitch;
-        }
-
         for (final StreamService streamService : sStreamServices) {
             if (streamService.getKey().equals(key)) {
                 return streamService;
@@ -85,13 +78,6 @@ public class StreamServiceManager {
         }
 
         return null;
-    }
-
-    /**
-     * @return The autoswitch stream service
-     */
-    public static Autoswitch getAutoswitch() {
-        return sAutoswitch;
     }
 
     /**

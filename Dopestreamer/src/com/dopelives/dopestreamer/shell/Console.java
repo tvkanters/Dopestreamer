@@ -22,7 +22,7 @@ public class Console {
     final private String mPrefix;
 
     /** The builder that can start the process */
-    private ProcessBuilder mBuilder;
+    private final ProcessBuilder mBuilder;
     /** The process in which the command is executed */
     private Process mProcess;
     /** The PID of the console process */
@@ -37,23 +37,26 @@ public class Console {
 
     /**
      * Starts a new console while executing the specified command within a shell.
+     *
+     * @param command
+     *            The command to execute
      */
-    public Console() {
+    /* default */Console(final ProcessBuilder builder) {
         // Keep track of which console we're using
         mPrefix = "[" + ++sConsoleCount + "] ";
+
+        mBuilder = builder;
+        mBuilder.redirectErrorStream(true);
     }
 
     /**
      * Executes the given command. May not be called while the process is already active.
      */
-    public void start(final ProcessBuilder builder) {
+    public void start() {
         if (mStarting || mRunning || mStopped) {
             throw new IllegalStateException("Console already executed");
         }
         mStarting = true;
-
-        mBuilder = builder;
-        mBuilder.redirectErrorStream(true);
 
         System.out.println(mPrefix + "START");
 

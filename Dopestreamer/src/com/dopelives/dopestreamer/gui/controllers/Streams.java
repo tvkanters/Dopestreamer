@@ -69,7 +69,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     private CheckBox autoswitchToggle;
 
     /** Whether or not autoswitch is currently active */
-    private boolean autoswitchEnabled;
+    private boolean mAutoswitchEnabled;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -217,7 +217,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * Uses the GUI input to start a stream.
      */
     private void startStream() {
-        autoswitchEnabled = false;
+        mAutoswitchEnabled = false;
         final StreamManager streamManager = StreamManager.getInstance();
         final StreamService selectedStreamService = streamServiceSelection.getValue();
         final Quality quality = qualitySelection.getValue();
@@ -226,8 +226,9 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
             if (Pref.AUTOSWITCH.getBoolean()
                     && StreamServiceManager.getAutoswitchServices().contains(selectedStreamService)) {
-                autoswitchEnabled = true;
-                streamManager.startStream(StreamServiceManager.getAutoswitch(), quality);
+                mAutoswitchEnabled = true;
+                streamManager.resetAutoswitch();
+                streamManager.startAutoswitch(quality);
             } else {
                 streamManager.startStream(selectedStreamService, quality);
             }
@@ -253,11 +254,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 break;
 
             case BUFFERING:
-                if (autoswitchEnabled) {
+                if (mAutoswitchEnabled) {
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
-                            streamServiceSelection.setValue(StreamServiceManager.getAutoswitch().getCurrentService());
+                            streamServiceSelection.setValue(streamManager.getCurrentStreamService());
                         }
                     });
                 }
