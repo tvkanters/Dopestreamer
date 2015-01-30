@@ -165,19 +165,19 @@ public class StreamManager implements ConsoleListener {
     public synchronized void restartLastStream() {
         final Quality quality = Quality.valueOf(Pref.LAST_QUALITY.getString());
 
-        if (Pref.AUTOSWITCH.getBoolean()) {
-            startAutoswitch(quality);
+        final StreamService streamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
+                .getString());
+        final String channel = Pref.LAST_CHANNEL.getString();
 
-        } else {
-            final StreamService streamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
-                    .getString());
-            final String channel = Pref.LAST_CHANNEL.getString();
-
-            if (channel.equals("")) {
-                startStream(streamService, quality);
+        if (channel.equals("")) {
+            if (Pref.AUTOSWITCH.getBoolean()) {
+                resetAutoswitch();
+                startAutoswitch(quality);
             } else {
-                startStream(streamService, channel, quality);
+                startStream(streamService, quality);
             }
+        } else {
+            startStream(streamService, channel, quality);
         }
     }
 
