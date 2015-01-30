@@ -171,7 +171,6 @@ public class StreamManager implements ConsoleListener {
 
         if (channel.equals("")) {
             if (Pref.AUTOSWITCH.getBoolean()) {
-                resetAutoswitch();
                 startAutoswitch(quality);
             } else {
                 startStream(streamService, quality);
@@ -205,6 +204,7 @@ public class StreamManager implements ConsoleListener {
         if (output.contains("Opening stream")) {
             updateState(StreamState.BUFFERING);
             startBufferingTimeout();
+            resetAutoswitch();
 
             // No stream active at the moment, so waiting for it to start
         } else if (output.contains("Waiting for streams")) {
