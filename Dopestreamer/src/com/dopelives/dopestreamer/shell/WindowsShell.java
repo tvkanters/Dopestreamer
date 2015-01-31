@@ -56,6 +56,29 @@ public class WindowsShell extends Shell {
      * {@inheritDoc}
      */
     @Override
+    public String getLivestreamerPath() {
+        String path = "";
+
+        // Check if there's a bundled Livestreamer installation
+        File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer.exe");
+        if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
+        	path = "\"" + Environment.EXE_DIR + "livestreamer.exe\"";
+        } else {
+            livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
+            if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
+            	path = "\"" + Environment.EXE_DIR + "livestreamer\"";
+            } else {
+            	path = "livestreamer";
+            }
+        }
+
+        return path;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getAdditionalLivestreamerArguments() {
         String additionalArguments = "";
 
