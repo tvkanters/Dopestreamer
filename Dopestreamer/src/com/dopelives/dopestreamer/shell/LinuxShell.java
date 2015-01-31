@@ -140,4 +140,36 @@ public class LinuxShell extends Shell {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isStartOnBootSupported() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isStartOnBootRegistered() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean registerStartOnBoot() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean unregisterStartOnBoot() {
+        return false;
+    }
+
 }

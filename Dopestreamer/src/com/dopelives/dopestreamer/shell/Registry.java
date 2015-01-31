@@ -41,17 +41,12 @@ public class Registry {
      * @param value
      *            The string value to add as the (Default) entry
      *
-     * @return True iff the operation was successful
+     * @return True iff the operation was executed
      */
     public static boolean addDefaultString(final String path, final String value) {
         final String command = "ADD " + path + " /f /ve /t REG_SZ /d \"" + value.replace("\"", "\\\"") + "\"";
 
-        if (!Shell.getInstance().executeAsAdministrator("reg.exe", command)) {
-            System.err.println("Failed to perform registry operation: " + command);
-            return false;
-        }
-
-        return true;
+        return executeRegModification(command);
     }
 
     /**
@@ -64,18 +59,13 @@ public class Registry {
      * @param value
      *            The value to assign
      *
-     * @return True iff the operation was successful
+     * @return True iff the operation was executed
      */
     public static boolean addString(final String path, final String key, final String value) {
         final String command = "ADD " + path + " /f /v \"" + key.replace("\"", "\\\"") + "\" /t REG_SZ /d \""
                 + value.replace("\"", "\\\"") + "\"";
 
-        if (!Shell.getInstance().executeAsAdministrator("reg.exe", command)) {
-            System.err.println("Failed to perform registry operation: " + command);
-            return false;
-        }
-
-        return true;
+        return executeRegModification(command);
     }
 
     /**
@@ -84,11 +74,40 @@ public class Registry {
      * @param path
      *            The path to delete
      *
-     * @return True iff the operation was successful
+     * @return True iff the operation was executed
      */
     public static boolean delete(final String path) {
         final String command = "DELETE " + path + " /f";
 
+        return executeRegModification(command);
+    }
+
+    /**
+     * Deletes a registry key. USE WITH EXTREME CAUTION!
+     *
+     * @param path
+     *            The path of the key
+     * @param key
+     *            The key to delete
+     *
+     * @return True iff the operation was executed
+     */
+    public static boolean delete(final String path, final String key) {
+        final String command = "DELETE " + path + " /v \"" + key.replace("\"", "\\\"") + "\" /f";
+
+        return executeRegModification(command);
+    }
+
+    /**
+     * Executes a registry command that modifies the registry as administrator.
+     *
+     * @param command
+     *            The command to execute
+     *
+     *
+     * @return True iff the operation was executed
+     */
+    private static boolean executeRegModification(final String command) {
         if (!Shell.getInstance().executeAsAdministrator("reg.exe", command)) {
             System.err.println("Failed to perform registry operation: " + command);
             return false;

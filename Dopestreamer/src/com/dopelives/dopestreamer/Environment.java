@@ -32,10 +32,11 @@ public class Environment {
     public static final String AUDIO_FOLDER = RESOURCE_FOLDER + "audio/";
     /** The application's title */
     public static final String TITLE = "Dopestreamer";
+    /** The location of the executable file running Dopestreamer */
+    public static final File EXE_FILE = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
+            .getPath());
     /** The directory of the executable file running Dopestreamer */
-    public static final String EXE_DIR = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
-            .getPath()).getParentFile().toString()
-            + File.separator;
+    public static final String EXE_DIR = EXE_FILE.getParentFile().toString() + File.separator;
 
     /** Remembers all output for logging purposes */
     private static final OutputSpy sOutputSpy = new OutputSpy(System.out);

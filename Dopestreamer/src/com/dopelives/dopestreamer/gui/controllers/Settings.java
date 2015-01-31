@@ -37,6 +37,10 @@ import com.dopelives.dopestreamer.util.Pref;
 public class Settings implements Initializable {
 
     @FXML
+    private CheckBox startOnBootToggle;
+    @FXML
+    private VBox startOnBootToggleWrapper;
+    @FXML
     private CheckBox autoStartToggle;
     @FXML
     private CheckBox showInTrayToggle;
@@ -61,16 +65,26 @@ public class Settings implements Initializable {
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
+        final Shell shell = Shell.getInstance();
 
         // Set the checkbox preferences
         autoStartToggle.setSelected(Pref.AUTO_START.getBoolean());
-        showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
         startMinimisedToggle.setSelected(Pref.START_MINIMISED.getBoolean());
+        showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
         notificationToggle.setSelected(Pref.NOTIFICATIONS.getBoolean());
         notificationDingdongToggle.setSelected(Pref.NOTIFICATION_DINGDONG.getBoolean());
 
+        // Set the start on boot checkbox
+        if (shell.isStartOnBootSupported()) {
+            if (shell.isStartOnBootRegistered()) {
+                startOnBootToggle.setSelected(true);
+            }
+        } else {
+            startOnBootToggleWrapper.setVisible(false);
+            startOnBootToggleWrapper.setManaged(false);
+        }
+
         // Set the protocol registration checkbox
-        final Shell shell = Shell.getInstance();
         if (shell.isCustomProtocolSupported()) {
             if (shell.isCustomProtocolRegistered()) {
                 protocolToggle.setSelected(true);
@@ -162,6 +176,21 @@ public class Settings implements Initializable {
             final boolean success = Shell.getInstance().unregisterCustomProtocol();
             if (!success) {
                 protocolToggle.setSelected(true);
+            }
+        }
+    }
+
+    @FXML
+    public void onStartOnBootToggle() {
+        if (startOnBootToggle.isSelected()) {
+            final boolean success = Shell.getInstance().registerStartOnBoot();
+            if (!success) {
+                startOnBootToggle.setSelected(false);
+            }
+        } else {
+            final boolean success = Shell.getInstance().unregisterStartOnBoot();
+            if (!success) {
+                startOnBootToggle.setSelected(true);
             }
         }
     }

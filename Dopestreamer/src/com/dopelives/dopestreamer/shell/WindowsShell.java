@@ -124,6 +124,33 @@ public class WindowsShell extends Shell {
     }
 
     /**
+     * @return The command for starting Dopestreamer
+     */
+    private String getDopestreamerCommand() {
+        // Get the Dopestreamer file location
+        final File dopestreamerFile = Environment.EXE_FILE;
+
+        // Check if the right Dopestreamer file was found
+        if (!dopestreamerFile.exists() || dopestreamerFile.isDirectory()) {
+            System.err.println("Dopestreamer path is invalid: " + dopestreamerFile);
+            return null;
+        }
+
+        // Get the command to start Dopestreamer
+        String command = "\"" + dopestreamerFile.getAbsolutePath() + "\"";
+        if (command.toLowerCase().endsWith(".jar\"")) {
+            // Find the location of javaw.exe
+            final String version = Registry.query("HKLM\\Software\\JavaSoft\\Java Runtime Environment",
+                    "CurrentVersion");
+            final String javaHome = Registry.query("HKLM\\Software\\JavaSoft\\Java Runtime Environment\\" + version,
+                    "JavaHome");
+            command = "\"" + javaHome + "\\bin\\javaw.exe\" -Dprism.dirtyopts=false -jar " + command;
+        }
+
+        return command;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -144,27 +171,12 @@ public class WindowsShell extends Shell {
      */
     @Override
     public boolean registerCustomProtocol() {
-        // Get the Dopestreamer file location
-        final File dopestreamerFile = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
-                .getPath());
-
-        // Check if the right Dopestreamer file was found
-        if (!dopestreamerFile.exists() || dopestreamerFile.isDirectory()) {
-            System.err.println("Dopestreamer path is invalid: " + dopestreamerFile);
+        final String dopestreamerCommand = getDopestreamerCommand();
+        if (dopestreamerCommand == null) {
             return false;
         }
 
-        // Get the command to start Dopestreamer
-        String command = dopestreamerFile.getAbsolutePath();
-        if (command.toLowerCase().endsWith(".jar")) {
-            // Find the location of javaw.exe
-            final String version = Registry.query("HKLM\\Software\\JavaSoft\\Java Runtime Environment",
-                    "CurrentVersion");
-            final String javaHome = Registry.query("HKLM\\Software\\JavaSoft\\Java Runtime Environment\\" + version,
-                    "JavaHome");
-            command = "\"" + javaHome + "\\bin\\javaw.exe\" -jar \"" + command + "\"";
-        }
-        command += " \"%1 best\"";
+        final String command = dopestreamerCommand + " \"%1 best\"";
 
         // Register livestreamer://
         if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\livestreamer", "URL:livestreamer protocol")) return false;
@@ -186,6 +198,48 @@ public class WindowsShell extends Shell {
     public boolean unregisterCustomProtocol() {
         if (!Registry.delete("HKEY_CLASSES_ROOT\\livestreamer")) return false;
         if (!Registry.delete("HKEY_CLASSES_ROOT\\rtmp")) return false;
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isStartOnBootSupported() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isStartOnBootRegistered() {
+        return Registry.query("HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Dopestreamer") != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean registerStartOnBoot() {
+        final String dopestreamerCommand = getDopestreamerCommand();
+        if (dopestreamerCommand == null) {
+            return false;
+        }
+
+        if (!Registry.addString("HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Dopestreamer",
+                dopestreamerCommand)) return false;
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean unregisterStartOnBoot() {
+        if (!Registry.delete("HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Dopestreamer")) return false;
 
         return true;
     }

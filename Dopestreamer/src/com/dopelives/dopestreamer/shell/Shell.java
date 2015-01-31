@@ -189,4 +189,28 @@ public abstract class Shell {
      */
     public abstract boolean unregisterCustomProtocol();
 
+    /**
+     * @return True iff the start on boot can be registered
+     */
+    public abstract boolean isStartOnBootSupported();
+
+    /**
+     * @return True iff the start on boot is registered
+     */
+    public abstract boolean isStartOnBootRegistered();
+
+    /**
+     * Registers start on boot in the registry.
+     *
+     * @return True iff the operation was successful
+     */
+    public abstract boolean registerStartOnBoot();
+
+    /**
+     * Unregisters start on boot in the registry.
+     *
+     * @return True iff the operation was successful
+     */
+    public abstract boolean unregisterStartOnBoot();
+
 }

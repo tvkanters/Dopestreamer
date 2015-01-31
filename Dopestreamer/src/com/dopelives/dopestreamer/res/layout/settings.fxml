@@ -28,18 +28,22 @@
     <ScrollPane minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" >
         <VBox minHeight="280" >
 		    <Label text="General" />
-		    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on app launch" />
+            <VBox fx:id="startOnBootToggleWrapper">
+                <CheckBox fx:id="startOnBootToggle" onAction="#onStartOnBootToggle" text="Start on Windows boot" />
+                <VBox prefHeight="2" />
+            </VBox>
+		    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on launch" />
 		    <VBox prefHeight="2" />
-		    <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
+		    <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start minimised" />
 		    <VBox prefHeight="2" />
-		    <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start Dopestreamer minimised" />
-		    <VBox prefHeight="2" />
+            <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
+            <VBox prefHeight="2" />
 		    <CheckBox fx:id="notificationToggle" onAction="#onNotificationToggle" text="Notifications when streams start" />
 		    <VBox prefHeight="2" />
 		    <CheckBox fx:id="notificationDingdongToggle" onAction="#onNotificationDingdongToggle" text="Tanzenkat DINGDONG notifications" />
             <VBox fx:id="protocolToggleWrapper">
-			    <VBox prefHeight="2" />
-	            <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support livestreamer:// and rtmp://" />
+                <VBox prefHeight="2" />
+                <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support livestreamer:// and rtmp://" />
             </VBox>
 		    
 		    <Label text="Media player" />
