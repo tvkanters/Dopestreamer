@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class Registry {
 
     /** A regex for parsing the query results */
-    private static final Pattern sQueryParser = Pattern.compile("^[^\n\r]*[\n\r] *[\\w()]+ +\\w+ +");
+    private static final Pattern sQueryParser = Pattern.compile("^[^\n\r]*[\n\r]+ *[\\w()]+ +\\w+ +");
 
     /**
      * Queries the registry for a value.
