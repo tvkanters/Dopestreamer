@@ -47,7 +47,7 @@ public class WindowsShell extends Shell {
         final Shell32X.SHELLEXECUTEINFO execInfo = new Shell32X.SHELLEXECUTEINFO();
         execInfo.lpFile = new WString(command);
         if (args != null) execInfo.lpParameters = new WString(args);
-        execInfo.nShow = Shell32X.SW_SHOWDEFAULT;
+        execInfo.nShow = Shell32X.SW_HIDE;
         execInfo.fMask = Shell32X.SEE_MASK_NOCLOSEPROCESS;
         execInfo.lpVerb = new WString("runas");
         final boolean success = Shell32X.INSTANCE.ShellExecuteEx(execInfo);
