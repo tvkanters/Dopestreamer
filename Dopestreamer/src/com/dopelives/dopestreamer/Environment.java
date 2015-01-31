@@ -43,35 +43,34 @@ public class Environment {
     public static void main(final String[] args) {
         System.setOut(new PrintStream(sOutputSpy));
         System.setErr(new PrintStream(sOutputSpy));
-		
-        //Livestreamer passthrough mode (all args are passed directly to Livestreamer)
+
+        // Livestreamer passthrough mode (all args are passed directly to Livestreamer)
         if (args.length > 0) {
-        	
-        	final Shell shell = Shell.getInstance();
+
+            final Shell shell = Shell.getInstance();
             String command = shell.getLivestreamerPath();
-        	
-            //concatenate arguments into one string
-			String livestreamerArgs = "";
-			for (int i=0; i<args.length; i++) {
-				livestreamerArgs += args[i] + " ";
-			}
-			
-			//strip the livestreamer protocol
-			if (livestreamerArgs.toLowerCase().startsWith("livestreamer://")) {
-				livestreamerArgs = livestreamerArgs.substring("livestreamer://".length());
-			}
-			else if (livestreamerArgs.toLowerCase().startsWith("livestreamer:")) {
-				livestreamerArgs = livestreamerArgs.substring("livestreamer:".length());
-			}
-	
-			command += " " + livestreamerArgs.trim();
-			
-			System.out.println("run: " + command);
-			
-			final Console console = shell.createConsole(command);
-			console.start();
-			
-			return;
+
+            // concatenate arguments into one string
+            String livestreamerArgs = "";
+            for (int i = 0; i < args.length; i++) {
+                livestreamerArgs += args[i] + " ";
+            }
+
+            // strip the livestreamer protocol
+            if (livestreamerArgs.toLowerCase().startsWith("livestreamer://")) {
+                livestreamerArgs = livestreamerArgs.substring("livestreamer://".length());
+            } else if (livestreamerArgs.toLowerCase().startsWith("livestreamer:")) {
+                livestreamerArgs = livestreamerArgs.substring("livestreamer:".length());
+            }
+
+            command += " " + livestreamerArgs.trim();
+
+            System.out.println("run: " + command);
+
+            final Console console = shell.createConsole(command);
+            console.start();
+
+            return;
         }
 
         TrayManager.getInstance().show();

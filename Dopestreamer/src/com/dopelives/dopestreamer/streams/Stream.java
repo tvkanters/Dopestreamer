@@ -1,10 +1,8 @@
 package com.dopelives.dopestreamer.streams;
 
-import java.io.File;
 import java.security.InvalidParameterException;
 import java.util.regex.Pattern;
 
-import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;

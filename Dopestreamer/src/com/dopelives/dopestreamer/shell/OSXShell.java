@@ -55,7 +55,7 @@ public class OSXShell extends Shell {
         // Close current process
         executeCommand("kill " + processId);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -66,13 +66,13 @@ public class OSXShell extends Shell {
         // Check if there's a bundled Livestreamer installation
         File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
         if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-        	path = "\"" + Environment.EXE_DIR + "livestreamer\"";
+            path = "\"" + Environment.EXE_DIR + "livestreamer\"";
         } else {
             livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
             if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-            	path = "\"" + Environment.EXE_DIR + "livestreamer\"";
+                path = "\"" + Environment.EXE_DIR + "livestreamer\"";
             } else {
-            	path = "livestreamer";
+                path = "livestreamer";
             }
         }
 
