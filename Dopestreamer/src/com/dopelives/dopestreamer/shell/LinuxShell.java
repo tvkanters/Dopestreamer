@@ -33,6 +33,14 @@ public class LinuxShell extends Shell {
      * {@inheritDoc}
      */
     @Override
+    public boolean executeAsAdministrator(final String command, final String args) {
+        throw new UnsupportedOperationException("Executing as administrator is not supported on *nix systems");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected ProcessBuilder getProcessBuilder(final String command) {
         return new ProcessBuilder(command.split(" +"));
     }
@@ -98,6 +106,38 @@ public class LinuxShell extends Shell {
         }
 
         return additionalArguments;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCustomProtocolSupported() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCustomProtocolRegistered() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean registerCustomProtocol() {
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean unregisterCustomProtocol() {
+        return false;
     }
 
 }

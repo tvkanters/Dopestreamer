@@ -31,6 +31,7 @@
 	<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
     <Text text="Simon Vacker (Xphome)" onMouseClicked="#onXphomeClicked" styleClass="link" />
     <Text text="Jimmy (did nothing wrong)" />
+    <Text text="Ari Vuollet (GoaLitiuM)" />
 
 	<Label text="Special thanks to" />
 	<Text text="The Dopelives community" onMouseClicked="#onDopelivesClicked" styleClass="link" />

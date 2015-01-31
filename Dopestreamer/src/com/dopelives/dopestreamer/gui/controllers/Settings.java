@@ -30,7 +30,6 @@ import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.combobox.MediaPlayerCell;
 import com.dopelives.dopestreamer.shell.Shell;
-import com.dopelives.dopestreamer.shell.WindowsShell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 import com.dopelives.dopestreamer.util.Pref;
@@ -48,7 +47,9 @@ public class Settings implements Initializable {
     @FXML
     private CheckBox notificationDingdongToggle;
     @FXML
-    private Button registerProtocolButton;
+    private CheckBox protocolToggle;
+    @FXML
+    private VBox protocolToggleWrapper;
     @FXML
     private ComboBox<MediaPlayer> mediaPlayerSelection;
     @FXML
@@ -67,6 +68,17 @@ public class Settings implements Initializable {
         startMinimisedToggle.setSelected(Pref.START_MINIMISED.getBoolean());
         notificationToggle.setSelected(Pref.NOTIFICATIONS.getBoolean());
         notificationDingdongToggle.setSelected(Pref.NOTIFICATION_DINGDONG.getBoolean());
+
+        // Set the protocol registration checkbox
+        final Shell shell = Shell.getInstance();
+        if (shell.isCustomProtocolSupported()) {
+            if (shell.isCustomProtocolRegistered()) {
+                protocolToggle.setSelected(true);
+            }
+        } else {
+            protocolToggleWrapper.setVisible(false);
+            protocolToggleWrapper.setManaged(false);
+        }
 
         // Add media players to the combo box
         final List<MediaPlayer> mediaPlayers = MediaPlayerManager.getMediaPlayers();
@@ -105,12 +117,6 @@ public class Settings implements Initializable {
 
         // Set text of player location field
         mediaPlayerLocation.setText(Pref.PLAYER_LOCATION.getString());
-
-        final Shell shell = Shell.getInstance();
-        final String results = shell.executeCommandForResult("REG QUERY HKEY_CLASSES_ROOT\\livestreamer /ve");
-        if (results.indexOf("ERROR") == -1) {
-            registerProtocolButton.setStyle("-fx-color: lightgreen");
-        }
     }
 
     @FXML
@@ -146,75 +152,17 @@ public class Settings implements Initializable {
     }
 
     @FXML
-    public void onSaveOutput() {
-        saveOutputButton.setDisable(true);
-
-        final String filename = Environment.EXE_DIR
-                + new SimpleDateFormat("'dopelog-'yyyyMMddhhmmss'.txt'").format(new Date());
-        Environment.getOutputSpy().writeToFile(filename);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        saveOutputButton.setDisable(false);
-                    }
-                });
+    public void onProtocolToggle() {
+        if (protocolToggle.isSelected()) {
+            final boolean success = Shell.getInstance().registerCustomProtocol();
+            if (!success) {
+                protocolToggle.setSelected(false);
             }
-        }, 1000);
-    }
-
-    @FXML
-    public void onRegisterProtocol() {
-        if (!(Shell.getInstance() instanceof WindowsShell)) {
-            return;
-        } // windows only :(
-
-        final File dopestreamerFile = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
-                .getPath());
-        String dopestreamerPath = dopestreamerFile.getAbsolutePath();
-        dopestreamerPath = dopestreamerPath.replace("\\", "\\\\");
-
-        if (dopestreamerPath.toLowerCase().endsWith(".jar")) {
-            dopestreamerPath = "java -jar " + dopestreamerPath;
-        } else if (!dopestreamerFile.exists() || dopestreamerFile.isDirectory()) {
-            System.out.println("Error: Dopestreamer path is invalid");
-            registerProtocolButton.setStyle("-fx-color: red");
-            return;
-        }
-
-        // register livestreamer and rtmp-protocols
-        final String[] commands = {
-                "REG ADD HKEY_CLASSES_ROOT\\livestreamer /f /ve /t REG_SZ /d \"URL:livestreamer protocol\"",
-                "REG ADD HKEY_CLASSES_ROOT\\livestreamer /f /v \"URL Protocol\" /t REG_SZ /d \"\"",
-                "REG ADD HKEY_CLASSES_ROOT\\livestreamer\\Shell\\Open\\Command /f /ve /t REG_SZ /d \""
-                        + dopestreamerPath + " \\\"%1 best\\\"\"",
-                "REG ADD HKEY_CLASSES_ROOT\\rtmp /f /ve /t REG_SZ /d \"URL:livestreamer protocol\"",
-                "REG ADD HKEY_CLASSES_ROOT\\rtmp /f /v \"URL Protocol\" /t REG_SZ /d \"\"",
-                "REG ADD HKEY_CLASSES_ROOT\\rtmp\\Shell\\Open\\Command /f /ve /t REG_SZ /d \"" + dopestreamerPath
-                        + " \\\"%1 best\\\"\"", };
-
-        boolean success = true;
-
-        // TODO: elevation prompt?
-        final Shell shell = Shell.getInstance();
-        for (int i = 0; i < commands.length; i++) {
-            final String results = shell.executeCommandForResult(commands[i]);
-
-            if (results.indexOf("ERROR") != -1) {
-                success = false;
-            }
-        }
-
-        // disable button if succeeded, or paint it red if failed
-        if (success) {
-            registerProtocolButton.setDisable(true);
-            registerProtocolButton.setStyle("-fx-color: lightgreen");
         } else {
-            registerProtocolButton.setStyle("-fx-color: red");
-            System.out.println("Error: Protocol registration failed, try again with elevation.");
+            final boolean success = Shell.getInstance().unregisterCustomProtocol();
+            if (!success) {
+                protocolToggle.setSelected(true);
+            }
         }
     }
 
@@ -246,6 +194,27 @@ public class Settings implements Initializable {
         if (inputValid) {
             Pref.PLAYER_LOCATION.put(input);
         }
+    }
+
+    @FXML
+    public void onSaveOutput() {
+        saveOutputButton.setDisable(true);
+
+        final String filename = Environment.EXE_DIR
+                + new SimpleDateFormat("'dopelog-'yyyyMMddhhmmss'.txt'").format(new Date());
+        Environment.getOutputSpy().writeToFile(filename);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        saveOutputButton.setDisable(false);
+                    }
+                });
+            }
+        }, 1000);
     }
 
 }

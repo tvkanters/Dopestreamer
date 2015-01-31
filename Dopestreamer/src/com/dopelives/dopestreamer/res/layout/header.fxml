@@ -13,26 +13,28 @@
 <HBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Header"
 	xmlns:fx="http://javafx.com/fxml">
 
-	<Text id="header" text="Dopestreamer" onMouseClicked="#onHomeClicked" />
-
-	<HBox alignment="CENTER_RIGHT" prefWidth="300">
-		<VBox styleClass="headerButton">
-			<ImageView onMouseClicked="#onAboutClicked">
-				<image>
-					<Image url="@../images/about.png" />
-				</image>
-			</ImageView>
-		</VBox>
-
-		<HBox prefWidth="5" />
-
-		<VBox styleClass="headerButton">
-			<ImageView onMouseClicked="#onSettingsClicked">
-				<image>
-					<Image url="@../images/settings.png" />
-				</image>
-			</ImageView>
-		</VBox>
+	<HBox maxWidth="260">
+		<Text id="header" text="Dopestreamer" onMouseClicked="#onHomeClicked" />
+	
+		<HBox alignment="CENTER_RIGHT" prefWidth="300">
+			<VBox styleClass="headerButton">
+				<ImageView onMouseClicked="#onAboutClicked">
+					<image>
+						<Image url="@../images/about.png" />
+					</image>
+				</ImageView>
+			</VBox>
+	
+			<HBox prefWidth="5" />
+	
+			<VBox styleClass="headerButton">
+				<ImageView onMouseClicked="#onSettingsClicked">
+					<image>
+						<Image url="@../images/settings.png" />
+					</image>
+				</ImageView>
+			</VBox>
+		</HBox>
 	</HBox>
 
 </HBox>

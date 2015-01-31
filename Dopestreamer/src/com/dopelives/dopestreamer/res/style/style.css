@@ -77,3 +77,16 @@
     -fx-label-padding: 0;
     -fx-effect: innershadow(three-pass-box, #000, 0,0,0,0);
 }
+
+ScrollPane {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+ScrollPane:focused {
+    -fx-background-insets: 0;
+}
+
+ScrollPane .corner {
+    -fx-background-insets: 0;
+}

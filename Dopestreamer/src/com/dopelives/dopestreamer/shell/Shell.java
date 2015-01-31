@@ -94,6 +94,18 @@ public abstract class Shell {
     }
 
     /**
+     * Executes a command as administrator.
+     *
+     * @param command
+     *            The command to execute
+     * @param args
+     *            The arguments to pass to the command
+     *
+     * @return True iff the command could be executed as administrator
+     */
+    public abstract boolean executeAsAdministrator(final String command, final String args);
+
+    /**
      * Executes the shell command given and waits for it to finish.
      *
      * @param command
@@ -138,13 +150,11 @@ public abstract class Shell {
     public abstract void killProcessTree(ProcessId processId);
 
     /**
-     * Finds the path to Livestreamer binaries.
+     * Finds the path to Livestreamer binary.
      *
-     * @return Full path to Livestreamer executable
+     * @return The full path to Livestreamer executable
      */
-    public String getLivestreamerPath() {
-        return "";
-    }
+    public abstract String getLivestreamerPath();
 
     /**
      * Can be overridden to append the arguments given to Livestreamer.
@@ -154,5 +164,29 @@ public abstract class Shell {
     public String getAdditionalLivestreamerArguments() {
         return "";
     }
+
+    /**
+     * @return True iff the livestreamer and RTMP protocols can be registered
+     */
+    public abstract boolean isCustomProtocolSupported();
+
+    /**
+     * @return True iff the livestreamer and RTMP protocols are registered
+     */
+    public abstract boolean isCustomProtocolRegistered();
+
+    /**
+     * Registers the livestreamer:// and rtmp:// protocol in the registry.
+     *
+     * @return True iff the operation was successful
+     */
+    public abstract boolean registerCustomProtocol();
+
+    /**
+     * Unregisters the livestreamer:// and rtmp:// protocol in the registry.
+     *
+     * @return True iff the operation was successful
+     */
+    public abstract boolean unregisterCustomProtocol();
 
 }

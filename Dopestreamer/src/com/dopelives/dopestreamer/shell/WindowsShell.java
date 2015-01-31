@@ -5,7 +5,10 @@ import java.lang.reflect.Field;
 
 import com.dopelives.dopestreamer.Environment;
 import com.sun.jna.Pointer;
+import com.sun.jna.Shell32X;
+import com.sun.jna.WString;
 import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.Kernel32Util;
 import com.sun.jna.platform.win32.WinNT;
 
 /**
@@ -34,6 +37,30 @@ public class WindowsShell extends Shell {
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             throw new RuntimeException("Could not retrieve PID", ex);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean executeAsAdministrator(final String command, final String args) {
+        final Shell32X.SHELLEXECUTEINFO execInfo = new Shell32X.SHELLEXECUTEINFO();
+        execInfo.lpFile = new WString(command);
+        if (args != null) execInfo.lpParameters = new WString(args);
+        execInfo.nShow = Shell32X.SW_SHOWDEFAULT;
+        execInfo.fMask = Shell32X.SEE_MASK_NOCLOSEPROCESS;
+        execInfo.lpVerb = new WString("runas");
+        final boolean success = Shell32X.INSTANCE.ShellExecuteEx(execInfo);
+
+        if (!success) {
+            final int lastError = Kernel32.INSTANCE.GetLastError();
+            final String errorMessage = Kernel32Util.formatMessageFromLastErrorCode(lastError);
+            System.err.println("Error performing elevation: " + lastError + ": " + errorMessage + " (apperror="
+                    + execInfo.hInstApp + ")");
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -96,4 +123,70 @@ public class WindowsShell extends Shell {
         return additionalArguments;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCustomProtocolSupported() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isCustomProtocolRegistered() {
+        return Registry.query("HKEY_CLASSES_ROOT\\livestreamer", "") != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean registerCustomProtocol() {
+        // Get the Dopestreamer file location
+        final File dopestreamerFile = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
+                .getPath());
+
+        // Check if the right Dopestreamer file was found
+        if (!dopestreamerFile.exists() || dopestreamerFile.isDirectory()) {
+            System.err.println("Dopestreamer path is invalid: " + dopestreamerFile);
+            return false;
+        }
+
+        // Get the command to start Dopestreamer
+        String command = dopestreamerFile.getAbsolutePath();
+        if (command.toLowerCase().endsWith(".jar")) {
+            // Find the location of javaw.exe
+            final String version = Registry.query("HKLM\\Software\\JavaSoft\\Java Runtime Environment",
+                    "CurrentVersion");
+            final String javaHome = Registry.query("HKLM\\Software\\JavaSoft\\Java Runtime Environment\\" + version,
+                    "JavaHome");
+            command = "\"" + javaHome + "\\bin\\javaw.exe\" -jar \"" + command + "\"";
+        }
+        command += " \"%1 best\"";
+
+        // Register livestreamer://
+        if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\livestreamer", "URL:livestreamer protocol")) return false;
+        if (!Registry.addString("HKEY_CLASSES_ROOT\\livestreamer", "URL Protocol", "")) return false;
+        if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\livestreamer\\Shell\\Open\\Command", command)) return false;
+
+        // Register rtmp://
+        if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\rtmp", "URL:livestreamer protocol")) return false;
+        if (!Registry.addString("HKEY_CLASSES_ROOT\\rtmp", "URL Protocol", "")) return false;
+        if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\rtmp\\Shell\\Open\\Command", command)) return false;
+
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean unregisterCustomProtocol() {
+        if (!Registry.delete("HKEY_CLASSES_ROOT\\livestreamer")) return false;
+        if (!Registry.delete("HKEY_CLASSES_ROOT\\rtmp")) return false;
+
+        return true;
+    }
 }

@@ -13,6 +13,7 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
 
 <VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Settings"
 	xmlns:fx="http://javafx.com/fxml" styleClass="root">
@@ -24,31 +25,35 @@
 
     <fx:include source="header.fxml" />
 
-    
-    <Label text="General" />
-    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on app launch" />
-    <VBox prefHeight="10" />
-    <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
-    <VBox prefHeight="10" />
-    <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start Dopestreamer minimised" />
-    <VBox prefHeight="10" />
-    <CheckBox fx:id="notificationToggle" onAction="#onNotificationToggle" text="Notifications when streams start" />
-    <VBox prefHeight="10" />
-    <CheckBox fx:id="notificationDingdongToggle" onAction="#onNotificationDingdongToggle" text="Tanzenkat DINGDONG notifications" />
-    <VBox prefHeight="10" />
-    <Button fx:id="registerProtocolButton" onAction="#onRegisterProtocol" text="Register livestreamer+rtmp protocols" />
-    
-    <Label text="Media player" />
-	<ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
-	<VBox fx:id="mediaPlayerLocationWrapper">
-	    <VBox prefHeight="5" />
-		<TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
-		      promptText="Path to custom media player" />
-	</VBox>
-    
-    
-    <Label text="Debugging" />
-    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save console output to file" />
+    <ScrollPane minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" >
+        <VBox minHeight="280" >
+		    <Label text="General" />
+		    <CheckBox fx:id="autoStartToggle" onAction="#onAutoStartToggle" text="Start stream on app launch" />
+		    <VBox prefHeight="2" />
+		    <CheckBox fx:id="showInTrayToggle" onAction="#onShowInTrayToggle" text="Show in tray" />
+		    <VBox prefHeight="2" />
+		    <CheckBox fx:id="startMinimisedToggle" onAction="#onStartMinimisedToggle" text="Start Dopestreamer minimised" />
+		    <VBox prefHeight="2" />
+		    <CheckBox fx:id="notificationToggle" onAction="#onNotificationToggle" text="Notifications when streams start" />
+		    <VBox prefHeight="2" />
+		    <CheckBox fx:id="notificationDingdongToggle" onAction="#onNotificationDingdongToggle" text="Tanzenkat DINGDONG notifications" />
+            <VBox fx:id="protocolToggleWrapper">
+			    <VBox prefHeight="2" />
+	            <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support livestreamer:// and rtmp://" />
+            </VBox>
+		    
+		    <Label text="Media player" />
+			<ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
+			<VBox fx:id="mediaPlayerLocationWrapper">
+			    <VBox prefHeight="2" />
+				<TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
+				      promptText="Path to custom media player" />
+			</VBox>
+		    
+		    <Label text="Debugging" />
+		    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save console output to file" />
+	    </VBox>
+    </ScrollPane>
 
 
 </VBox>

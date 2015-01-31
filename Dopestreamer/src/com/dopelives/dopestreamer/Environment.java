@@ -44,35 +44,13 @@ public class Environment {
         System.setOut(new PrintStream(sOutputSpy));
         System.setErr(new PrintStream(sOutputSpy));
 
-        // Livestreamer passthrough mode (all args are passed directly to Livestreamer)
+        // If arguments were provided, launch Livestreamer and exit
         if (args.length > 0) {
-
-            final Shell shell = Shell.getInstance();
-            String command = shell.getLivestreamerPath();
-
-            // concatenate arguments into one string
-            String livestreamerArgs = "";
-            for (int i = 0; i < args.length; i++) {
-                livestreamerArgs += args[i] + " ";
-            }
-
-            // strip the livestreamer protocol
-            if (livestreamerArgs.toLowerCase().startsWith("livestreamer://")) {
-                livestreamerArgs = livestreamerArgs.substring("livestreamer://".length());
-            } else if (livestreamerArgs.toLowerCase().startsWith("livestreamer:")) {
-                livestreamerArgs = livestreamerArgs.substring("livestreamer:".length());
-            }
-
-            command += " " + livestreamerArgs.trim();
-
-            System.out.println("run: " + command);
-
-            final Console console = shell.createConsole(command);
-            console.start();
-
+            handleArguments(args);
             return;
         }
 
+        // Boot the GUI and start the stream if needed
         TrayManager.getInstance().show();
 
         if (Pref.AUTO_START.getBoolean()) {
@@ -80,6 +58,28 @@ public class Environment {
         }
 
         Application.launch(StageManager.class, args);
+    }
+
+    /**
+     * Handles arguments if they were provided. Currently only supports launching Livestreamer as a protocol middle man.
+     *
+     * @param args
+     *            The command line arguments provided
+     */
+    private static void handleArguments(final String[] args) {
+        // Concatenate arguments into one string
+        String livestreamerArgs = "";
+        for (int i = 0; i < args.length; i++) {
+            livestreamerArgs += args[i] + " ";
+        }
+
+        // Strip the Livestreamer protocol
+        livestreamerArgs = livestreamerArgs.replaceAll("(?i)^livestreamer:(//?)", "");
+
+        // Start Livestreamer with the provided arguments
+        final Shell shell = Shell.getInstance();
+        final Console console = shell.createConsole(shell.getLivestreamerPath() + " " + livestreamerArgs.trim());
+        console.start();
     }
 
     /**
