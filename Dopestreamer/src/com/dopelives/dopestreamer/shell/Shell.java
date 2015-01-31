@@ -136,7 +136,16 @@ public abstract class Shell {
      *            The PID of the process tree root to stop
      */
     public abstract void killProcessTree(ProcessId processId);
-
+    
+    /**
+     * Finds the path to Livestreamer binaries.
+     *
+     * @return Full path to Livestreamer executable
+     */
+    public String getLivestreamerPath() {
+        return "";
+    }
+    
     /**
      * Can be overridden to append the arguments given to Livestreamer.
      *

@@ -99,20 +99,8 @@ public class Stream {
 
         // Prepare Livestreamer command
         final Shell shell = Shell.getInstance();
-        String command;
+        String command = shell.getLivestreamerPath();
 
-        // Check if there's a bundled Livestreamer installation
-        File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer.exe");
-        if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-            command = "\"" + Environment.EXE_DIR + "livestreamer.exe\"";
-        } else {
-            livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
-            if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-                command = "\"" + Environment.EXE_DIR + "livestreamer\"";
-            } else {
-                command = "livestreamer";
-            }
-        }
         command += " -l debug --retry-streams " + RETRY_DELAY;
 
         // Add OS specific arguments

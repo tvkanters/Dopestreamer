@@ -29,6 +29,9 @@ import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.combobox.MediaPlayerCell;
+import com.dopelives.dopestreamer.shell.Console;
+import com.dopelives.dopestreamer.shell.Shell;
+import com.dopelives.dopestreamer.shell.WindowsShell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 import com.dopelives.dopestreamer.util.Pref;
@@ -45,6 +48,8 @@ public class Settings implements Initializable {
     private CheckBox notificationToggle;
     @FXML
     private CheckBox notificationDingdongToggle;
+	@FXML
+    private Button registerProtocolButton;
     @FXML
     private ComboBox<MediaPlayer> mediaPlayerSelection;
     @FXML
@@ -101,6 +106,12 @@ public class Settings implements Initializable {
 
         // Set text of player location field
         mediaPlayerLocation.setText(Pref.PLAYER_LOCATION.getString());
+        
+        final Shell shell = Shell.getInstance();
+        String results = shell.executeCommandForResult("REG QUERY HKEY_CLASSES_ROOT\\livestreamer /ve");
+        if (results.indexOf("ERROR") == -1) {
+        	registerProtocolButton.setStyle("-fx-color: lightgreen");
+        }
     }
 
     @FXML
@@ -154,6 +165,56 @@ public class Settings implements Initializable {
                 });
             }
         }, 1000);
+    }
+	
+	@FXML
+    public void onRegisterProtocol() {
+        if (!(Shell.getInstance() instanceof WindowsShell)) { return; }		//windows only :(
+
+        File dopestreamerFile = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        String dopestreamerPath = dopestreamerFile.getAbsolutePath();
+        dopestreamerPath = dopestreamerPath.replace("\\", "\\\\");
+        
+        if (dopestreamerPath.toLowerCase().endsWith(".jar")) {
+        	dopestreamerPath = "java -jar " + dopestreamerPath;
+        }
+        else if (!dopestreamerFile.exists() || dopestreamerFile.isDirectory()) {
+        	System.out.println("Error: Dopestreamer path is invalid");
+        	registerProtocolButton.setStyle("-fx-color: red");
+        	return;
+        }
+        
+        //register livestreamer and rtmp-protocols
+        String[] commands = {
+        		"REG ADD HKEY_CLASSES_ROOT\\livestreamer /f /ve /t REG_SZ /d \"URL:livestreamer protocol\"",
+        		"REG ADD HKEY_CLASSES_ROOT\\livestreamer /f /v \"URL Protocol\" /t REG_SZ /d \"\"",
+        		"REG ADD HKEY_CLASSES_ROOT\\livestreamer\\Shell\\Open\\Command /f /ve /t REG_SZ /d \"" + dopestreamerPath + " \\\"%1 best\\\"\"",
+        		"REG ADD HKEY_CLASSES_ROOT\\rtmp /f /ve /t REG_SZ /d \"URL:livestreamer protocol\"",
+        		"REG ADD HKEY_CLASSES_ROOT\\rtmp /f /v \"URL Protocol\" /t REG_SZ /d \"\"",
+        		"REG ADD HKEY_CLASSES_ROOT\\rtmp\\Shell\\Open\\Command /f /ve /t REG_SZ /d \"" + dopestreamerPath + " \\\"%1 best\\\"\"",
+        };
+        
+        boolean success = true;
+        
+        //TODO: elevation prompt?
+        final Shell shell = Shell.getInstance();
+        for (int i=0; i<commands.length; i++) {
+        	String results = shell.executeCommandForResult(commands[i]);
+
+        	if (results.indexOf("ERROR") != -1) {
+        		success = false;
+        	}
+        }
+        
+        //disable button if succeeded, or paint it red if failed
+        if (success) {
+        	registerProtocolButton.setDisable(true);
+        	registerProtocolButton.setStyle("-fx-color: lightgreen");
+        }
+        else {
+        	registerProtocolButton.setStyle("-fx-color: red");
+        	System.out.println("Error: Protocol registration failed, try again with elevation.");
+        }
     }
 
     @FXML
