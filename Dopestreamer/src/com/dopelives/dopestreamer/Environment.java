@@ -74,7 +74,7 @@ public class Environment {
         }
 
         // Strip the Livestreamer protocol
-        livestreamerArgs = livestreamerArgs.replaceAll("(?i)^livestreamer:(//?)", "");
+        livestreamerArgs = livestreamerArgs.replaceAll("(?i)^livestreamer:(//)?", "");
 
         // Start Livestreamer with the provided arguments
         final Shell shell = Shell.getInstance();
