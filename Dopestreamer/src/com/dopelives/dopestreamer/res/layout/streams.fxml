@@ -15,8 +15,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.Group?>
 
-<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Streams"
-	xmlns:fx="http://javafx.com/fxml" styleClass="root">
+<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Streams" xmlns:fx="http://javafx.com/fxml"
+    fx:id="root" styleClass="root" onMousePressed="#clearFocus" focusTraversable="true">
 
 	<stylesheets>
 		<URL value="@../style/style.css" />

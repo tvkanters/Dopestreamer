@@ -44,6 +44,8 @@ import com.dopelives.dopestreamer.util.Pref;
 public class Streams implements Initializable, StreamListener, StreamInfoListener {
 
     @FXML
+    private Node root;
+    @FXML
     private RadioButton channelDefault;
     @FXML
     private RadioButton channelCustom;
@@ -421,6 +423,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @FXML
     private void onAutoswitchToggle() {
         Pref.AUTOSWITCH.put(autoswitchToggle.isSelected());
+    }
+
+    @FXML
+    private void clearFocus() {
+        root.requestFocus();
     }
 
 }
