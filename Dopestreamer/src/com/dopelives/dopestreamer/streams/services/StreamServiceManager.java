@@ -21,7 +21,6 @@ public class StreamServiceManager {
         final StreamService vacker = new Vacker();
 
         register(new Afreeca());
-        register(new Bambuser());
         register(hitbox);
         register(new LivestreamNew());
         register(new LivestreamOld());
