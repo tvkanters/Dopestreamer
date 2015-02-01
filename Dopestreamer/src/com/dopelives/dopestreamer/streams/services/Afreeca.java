@@ -1,6 +1,5 @@
 package com.dopelives.dopestreamer.streams.services;
 
-
 /**
  * The service for Afreeca streams.
  */
@@ -26,8 +25,8 @@ public class Afreeca extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "afreeca.png";
+    public String getIconUrl() {
+        return "services/afreeca.png";
     }
 
     /**

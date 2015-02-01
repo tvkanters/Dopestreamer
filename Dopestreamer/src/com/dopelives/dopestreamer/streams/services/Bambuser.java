@@ -1,6 +1,5 @@
 package com.dopelives.dopestreamer.streams.services;
 
-
 /**
  * The service for Bambuser streams.
  */
@@ -26,8 +25,8 @@ public class Bambuser extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "bambuser.png";
+    public String getIconUrl() {
+        return "services/bambuser.png";
     }
 
     /**

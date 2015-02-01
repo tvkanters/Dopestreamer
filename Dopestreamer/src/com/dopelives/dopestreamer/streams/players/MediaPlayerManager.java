@@ -15,9 +15,9 @@ public class MediaPlayerManager {
     static {
         sMediaPlayers.add(new Custom());
         register(new MpcHc());
-        register(new Vlc());
-        register(new Mpv());
         register(new Mplayer());
+        register(new Mpv());
+        register(new Vlc());
     }
 
     /**

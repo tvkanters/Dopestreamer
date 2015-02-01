@@ -45,17 +45,22 @@
                 <VBox prefHeight="2" />
                 <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support livestreamer:// and rtmp://" />
             </VBox>
-		    
-		    <Label text="Media player" />
-			<ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
-			<VBox fx:id="mediaPlayerLocationWrapper">
-			    <VBox prefHeight="2" />
-				<TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
-				      promptText="Path to custom media player" />
-			</VBox>
+            
+            <Label text="Media player" />
+            <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
+            <VBox fx:id="mediaPlayerLocationWrapper">
+                <VBox prefHeight="2" />
+                <TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
+                      promptText="Path to custom media player" />
+            </VBox>
+            
+            <Label text="Vacker server" />
+            <ComboBox fx:id="vackerServerSelection" prefWidth="260" prefHeight="30" />
 		    
 		    <Label text="Debugging" />
 		    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save console output to file" />
+           
+            <VBox prefHeight="20" />
 	    </VBox>
     </ScrollPane>
 

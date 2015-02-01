@@ -3,6 +3,7 @@ package com.dopelives.dopestreamer.gui.controllers;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -29,9 +30,11 @@ import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.combobox.MediaPlayerCell;
+import com.dopelives.dopestreamer.gui.combobox.VackerServerCell;
 import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
+import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Pref;
 
 public class Settings implements Initializable {
@@ -60,6 +63,8 @@ public class Settings implements Initializable {
     private VBox mediaPlayerLocationWrapper;
     @FXML
     private TextField mediaPlayerLocation;
+    @FXML
+    private ComboBox<Vacker.Server> vackerServerSelection;
     @FXML
     private Button saveOutputButton;
 
@@ -131,6 +136,31 @@ public class Settings implements Initializable {
 
         // Set text of player location field
         mediaPlayerLocation.setText(Pref.PLAYER_LOCATION.getString());
+
+        // Add Vacker servers to the combo box
+        final List<Vacker.Server> vackerServers = Arrays.asList(Vacker.Server.values());
+        vackerServerSelection.getItems().addAll(vackerServers);
+
+        // Update the Vacker server based on the selection
+        vackerServerSelection.valueProperty().addListener(new ChangeListener<Vacker.Server>() {
+            @Override
+            public void changed(final ObservableValue<? extends Vacker.Server> observable,
+                    final Vacker.Server oldValue, final Vacker.Server newValue) {
+                Pref.VACKER_SERVER.put(newValue.getKey());
+            }
+        });
+
+        // Select the preferred Vacker servers
+        vackerServerSelection.getSelectionModel().select(Vacker.Server.getSelected());
+
+        // Make the Vacker servers look nice within the combo box
+        vackerServerSelection.setButtonCell(new VackerServerCell());
+        vackerServerSelection.setCellFactory(new Callback<ListView<Vacker.Server>, ListCell<Vacker.Server>>() {
+            @Override
+            public ListCell<Vacker.Server> call(final ListView<Vacker.Server> param) {
+                return new VackerServerCell();
+            }
+        });
     }
 
     @FXML

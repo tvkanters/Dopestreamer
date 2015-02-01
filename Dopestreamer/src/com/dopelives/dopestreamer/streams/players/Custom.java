@@ -28,8 +28,8 @@ public class Custom extends MediaPlayer {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "console.png";
+    public String getIconUrl() {
+        return "players/console.png";
     }
 
     /**

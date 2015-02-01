@@ -3,10 +3,6 @@ package com.dopelives.dopestreamer.streams.players;
 import java.io.File;
 import java.util.List;
 
-import javafx.scene.image.Image;
-
-import com.dopelives.dopestreamer.Environment;
-
 /**
  * The class for a media player that will host the streams by being started by Livestreamer.
  */
@@ -23,16 +19,9 @@ public abstract class MediaPlayer {
     public abstract String getLabel();
 
     /**
-     * @return The icon to show next to this player's label
-     */
-    public Image getIcon() {
-        return new Image(Environment.IMAGE_FOLDER + getIconUrl());
-    }
-
-    /**
      * @return The URL for the icon to show next to this player's label, relative to the image path
      */
-    protected abstract String getIconUrl();
+    public abstract String getIconUrl();
 
     /**
      * @return The path where this player's executable is located or null if it wasn't found

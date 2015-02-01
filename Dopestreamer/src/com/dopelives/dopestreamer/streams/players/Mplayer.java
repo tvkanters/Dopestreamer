@@ -28,8 +28,8 @@ public class Mplayer extends MediaPlayer {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "mplayer.png";
+    public String getIconUrl() {
+        return "players/mplayer.png";
     }
 
     /**

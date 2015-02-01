@@ -25,8 +25,8 @@ public class LivestreamNew extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "livestream.png";
+    public String getIconUrl() {
+        return "services/livestream.png";
     }
 
     /**

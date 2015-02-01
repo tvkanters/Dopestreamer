@@ -3,9 +3,6 @@ package com.dopelives.dopestreamer.streams.services;
 import java.util.LinkedList;
 import java.util.List;
 
-import javafx.scene.image.Image;
-
-import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.streams.Quality;
 
 /**
@@ -24,21 +21,14 @@ public abstract class StreamService {
     public abstract String getLabel();
 
     /**
-     * @return The icon to show next to this service's label
-     */
-    public Image getIcon() {
-        return new Image(Environment.IMAGE_FOLDER + getIconUrl());
-    }
-
-    /**
      * @return The URL for the icon to show next to this service's label, relative to the image path
      */
-    protected abstract String getIconUrl();
+    public abstract String getIconUrl();
 
     /**
      * The URL that Livestreamer use to choose the correct stream service plug-in.
      *
-     * @return The URL in format <domain>.<tld>/(<channelpath>)?
+     * @return The URL in format {domain}.{tld}/({channelpath}/)?
      */
     public abstract String getUrl();
 

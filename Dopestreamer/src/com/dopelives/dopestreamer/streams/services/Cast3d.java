@@ -26,7 +26,7 @@ public class Cast3d extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
+    public String getIconUrl() {
         return "noimage.png";
     }
 

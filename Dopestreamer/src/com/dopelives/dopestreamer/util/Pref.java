@@ -34,7 +34,9 @@ public enum Pref {
     /** Whether or not topic changes should use ding dong as sound */
     NOTIFICATION_DINGDONG("notificationdingdong", false),
     /** Whether or not streams automatically switch to live Dopelives channels */
-    AUTOSWITCH("autoswitch", true);
+    AUTOSWITCH("autoswitch", true),
+    /** The Vacker server to use */
+    VACKER_SERVER("vackerserver", "");
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());

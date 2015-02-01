@@ -1,7 +1,9 @@
 package com.dopelives.dopestreamer.gui.combobox;
 
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.streams.services.StreamService;
 
 /**
@@ -18,6 +20,6 @@ public class StreamServiceCell extends ComboBoxCell<StreamService> {
         }
 
         setText(item.getLabel());
-        setGraphic(new ImageView(item.getIcon()));
+        setGraphic(new ImageView(new Image(Environment.IMAGE_FOLDER + item.getIconUrl())));
     }
 }

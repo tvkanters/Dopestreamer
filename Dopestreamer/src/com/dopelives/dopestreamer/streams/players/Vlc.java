@@ -28,8 +28,8 @@ public class Vlc extends MediaPlayer {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "vlc.png";
+    public String getIconUrl() {
+        return "players/vlc.png";
     }
 
     /**

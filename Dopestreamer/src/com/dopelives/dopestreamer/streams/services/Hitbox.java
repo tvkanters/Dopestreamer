@@ -30,8 +30,8 @@ public class Hitbox extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "hitbox.png";
+    public String getIconUrl() {
+        return "services/hitbox.png";
     }
 
     /**

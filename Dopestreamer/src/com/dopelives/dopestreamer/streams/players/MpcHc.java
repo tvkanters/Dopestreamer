@@ -28,8 +28,8 @@ public class MpcHc extends MediaPlayer {
      * {@inheritDoc}
      */
     @Override
-    protected String getIconUrl() {
-        return "mpchc.png";
+    public String getIconUrl() {
+        return "players/mpchc.png";
     }
 
     /**
