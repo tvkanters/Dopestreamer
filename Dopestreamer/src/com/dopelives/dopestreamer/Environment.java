@@ -8,6 +8,7 @@ import javafx.application.Application;
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.Shell;
+import com.dopelives.dopestreamer.streams.Stream;
 import com.dopelives.dopestreamer.streams.StreamManager;
 import com.dopelives.dopestreamer.util.OutputSpy;
 import com.dopelives.dopestreamer.util.Pref;
@@ -68,6 +69,20 @@ public class Environment {
      *            The command line arguments provided
      */
     private static void handleArguments(final String[] args) {
+        final Shell shell = Shell.getInstance();
+
+        // Construct the Livestreamer command
+        String command = shell.getLivestreamerPath();
+
+        // Add OS specific arguments
+        final String additionalArguments = shell.getAdditionalLivestreamerArguments();
+        if (!additionalArguments.equals("")) {
+            command += " " + additionalArguments.trim();
+        }
+
+        // Add a custom player location, if any
+        command += Stream.getMediaPlayerArgument();
+
         // Concatenate arguments into one string
         String livestreamerArgs = "";
         for (int i = 0; i < args.length; i++) {
@@ -75,11 +90,10 @@ public class Environment {
         }
 
         // Strip the Livestreamer protocol
-        livestreamerArgs = livestreamerArgs.replaceAll("(?i)^livestreamer:(//)?", "");
+        command += " " + livestreamerArgs.replaceAll("(?i)^livestreamer:(//)?", "").trim();
 
         // Start Livestreamer with the provided arguments
-        final Shell shell = Shell.getInstance();
-        final Console console = shell.createConsole(shell.getLivestreamerPath() + " " + livestreamerArgs.trim());
+        final Console console = shell.createConsole(command);
         console.start();
     }
 

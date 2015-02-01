@@ -108,22 +108,35 @@ public class Stream {
         }
 
         // Add a custom player location, if any
-        String playerLocation = null;
-        final MediaPlayer mediaPlayer = MediaPlayerManager.getMediaPlayerByKey(Pref.DEFAULT_PLAYER.getString());
-        if (mediaPlayer != null) {
-            playerLocation = mediaPlayer.getPath();
-        }
-        if (playerLocation == null) {
-            playerLocation = Pref.PLAYER_LOCATION.getString();
-        }
-        if (!playerLocation.equals("")) {
-            command += " -p \"" + playerLocation + "\"";
-        }
+        command += getMediaPlayerArgument();
 
         // Add channel information
         command += " " + mStreamService.getConnectionDetails(mChannel, mQuality);
 
         mConsole = shell.createConsole(command);
+    }
+
+    /**
+     * Checks if a media player argument should be added to the Livestreamer command and returns it if is
+     *
+     * @return The media player argument prefixed with a space or an empty string if it isn't needed
+     */
+    public static String getMediaPlayerArgument() {
+        String playerLocation = null;
+        final MediaPlayer mediaPlayer = MediaPlayerManager.getMediaPlayerByKey(Pref.DEFAULT_PLAYER.getString());
+        if (mediaPlayer != null) {
+            playerLocation = mediaPlayer.getPath();
+        }
+
+        if (playerLocation == null) {
+            playerLocation = Pref.PLAYER_LOCATION.getString();
+        }
+
+        if (!playerLocation.equals("")) {
+            return " -p \"" + playerLocation + "\"";
+        }
+
+        return "";
     }
 
     /**
