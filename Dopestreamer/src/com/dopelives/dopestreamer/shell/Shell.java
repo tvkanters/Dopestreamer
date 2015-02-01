@@ -150,9 +150,9 @@ public abstract class Shell {
     public abstract void killProcessTree(ProcessId processId);
 
     /**
-     * Finds the path to Livestreamer binary.
+     * Finds the path to the Livestreamer executable.
      *
-     * @return The full path to Livestreamer executable
+     * @return The full path to the Livestreamer executable
      */
     public abstract String getLivestreamerPath();
 

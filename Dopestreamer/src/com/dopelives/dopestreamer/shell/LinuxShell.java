@@ -72,16 +72,11 @@ public class LinuxShell extends Shell {
         String path = "";
 
         // Check if there's a bundled Livestreamer installation
-        File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
+        final File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
         if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
             path = "\"" + Environment.EXE_DIR + "livestreamer\"";
         } else {
-            livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
-            if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-                path = "\"" + Environment.EXE_DIR + "livestreamer\"";
-            } else {
-                path = "livestreamer";
-            }
+            path = "livestreamer";
         }
 
         return path;
