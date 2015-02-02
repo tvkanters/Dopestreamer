@@ -25,7 +25,7 @@
 
     <fx:include source="header.fxml" />
 
-    <ScrollPane minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED" >
+    <ScrollPane fx:id="scrollPane" minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
         <VBox minHeight="280" >
 		    <Label text="General" />
             <VBox fx:id="startOnBootToggleWrapper">

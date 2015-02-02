@@ -20,6 +20,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -38,6 +39,9 @@ import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Pref;
 
 public class Settings implements Initializable {
+
+    /** The factor to multiple the original scroll speed with */
+    private static final double SCROLL_SPEED = 3;
 
     @FXML
     private CheckBox startOnBootToggle;
@@ -67,6 +71,8 @@ public class Settings implements Initializable {
     private ComboBox<Vacker.Server> vackerServerSelection;
     @FXML
     private Button saveOutputButton;
+    @FXML
+    private ScrollPane scrollPane;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -159,6 +165,30 @@ public class Settings implements Initializable {
             @Override
             public ListCell<Vacker.Server> call(final ListView<Vacker.Server> param) {
                 return new VackerServerCell();
+            }
+        });
+
+        // Make the scroll speed not be painfully slow
+        scrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
+            /** The value set by this object to prevent recursive updates */
+            private double mSetValue = 0;
+
+            @Override
+            public void changed(final ObservableValue<? extends Number> observable, final Number oldVal,
+                    final Number newVal) {
+                final double oldValue = oldVal.doubleValue();
+                final double newValue = newVal.doubleValue();
+
+                // Recursive update detection
+                if (newValue == mSetValue) {
+                    return;
+                }
+
+                final double difference = newValue - oldValue;
+                mSetValue = Math.max(scrollPane.getVmin(),
+                        Math.min(scrollPane.getVmax(), newValue + difference * (SCROLL_SPEED - 1)));
+
+                scrollPane.vvalueProperty().set(mSetValue);
             }
         });
     }
