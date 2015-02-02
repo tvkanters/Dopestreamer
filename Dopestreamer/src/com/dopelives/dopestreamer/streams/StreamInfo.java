@@ -24,7 +24,7 @@ public class StreamInfo {
     private static final int REQUEST_INTERVAL = 5 * 1000;
 
     /** The pattern used to match active streams */
-    private static final Pattern sTopicPattern = Pattern.compile("^(.+) is playing (.+)$");
+    private static final Pattern sTopicParser = Pattern.compile("^(.+) is playing (.+)$");
 
     /** Whether or not the initial update is processing */
     private static boolean sInitialUpdate = true;
@@ -50,7 +50,7 @@ public class StreamInfo {
             // Check the newest stream info
             final String result = HttpHelper.getContent(INFO_URL);
             if (result != null) {
-                final Matcher matcher = sTopicPattern.matcher(result.trim());
+                final Matcher matcher = sTopicParser.matcher(result.trim());
                 if (matcher.find()) {
                     // Stream info found, see if it needs to be updated
                     final String streamer = matcher.group(1);

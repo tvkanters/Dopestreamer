@@ -1,5 +1,9 @@
 package com.dopelives.dopestreamer.streams.services;
 
+import java.security.InvalidParameterException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.json.JSONObject;
 
 import com.dopelives.dopestreamer.streams.Quality;
@@ -84,6 +88,9 @@ public class Vacker extends StreamService {
 
     /** The page where the stream statistics are shown, relative to the server URL */
     private static final String STATS_PAGE = "json.php";
+    /** A regex for parsing Vacker channels */
+    private static final Pattern sChannelParser = Pattern.compile("^([a-z]+)(_low)?(/[a-z]+(_low)?)?$",
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * {@inheritDoc}
@@ -122,21 +129,34 @@ public class Vacker extends StreamService {
      */
     @Override
     public String getDefaultChannel() {
-        return "live/live";
+        return "live";
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getConnectionDetails(String channel, final Quality quality) {
-        // TODO: Add support for live_low
-
-        if (!channel.contains("/")) {
-            channel = channel + "/" + channel;
+    public String getConnectionDetails(final String channel, final Quality quality) {
+        String parsedChannel = parseChannel(channel);
+        if (parsedChannel == null) {
+            throw new InvalidParameterException("Invalid channel: " + channel);
         }
 
-        return super.getConnectionDetails(channel, quality);
+        if (quality == Quality.WORST) {
+            switch (parsedChannel) {
+                case "live":
+                case "restream":
+                    parsedChannel += "_low";
+                    break;
+
+                default:
+                    // Only live and restream have low quality versions
+            }
+        }
+
+        parsedChannel += "/" + parsedChannel;
+
+        return super.getConnectionDetails(parsedChannel, quality);
     }
 
     /**
@@ -150,7 +170,7 @@ public class Vacker extends StreamService {
         }
 
         final JSONObject json = new JSONObject(result);
-        final JSONObject channelInfo = json.getJSONObject(trimChannel(channel));
+        final JSONObject channelInfo = json.getJSONObject(parseChannel(channel));
         if (channelInfo == null || !channelInfo.getBoolean("live")) {
             System.out.println("Vacker channel not live: " + channel);
             return false;
@@ -170,7 +190,7 @@ public class Vacker extends StreamService {
         }
 
         final JSONObject json = new JSONObject(result);
-        if (json.isNull(trimChannel(channel))) {
+        if (json.isNull(parseChannel(channel))) {
             System.out.println("Invalid Vacker channel: " + channel);
             return false;
         } else {
@@ -179,19 +199,20 @@ public class Vacker extends StreamService {
     }
 
     /**
-     * Trims the channel to a non-slash variant.
+     * Parses the channel to retrieve a non-slash variant without quality suffix.
      *
      * @param channel
-     *            The channel to string
+     *            The channel to parse
      *
-     * @return The trimmed channel
+     * @return The parsed channel name or null if the channel was invalid
      */
-    private String trimChannel(final String channel) {
-        final int index = channel.indexOf('/');
-        if (index >= 0) {
-            return channel.substring(0, index);
+    private String parseChannel(final String channel) {
+        final Matcher matcher = sChannelParser.matcher(channel);
+        if (!matcher.find()) {
+            return null;
         }
-        return channel;
+
+        return matcher.group(1);
     }
 
     /**
