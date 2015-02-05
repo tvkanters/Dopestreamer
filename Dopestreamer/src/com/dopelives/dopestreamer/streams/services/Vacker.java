@@ -63,6 +63,13 @@ public class Vacker extends StreamService {
         }
 
         /**
+         * @return The URL for the server info, in the format http://{country}.vacker.tv/json.php
+         */
+        public String getStatsUrl() {
+            return "http://" + getUrl() + "json.php";
+        }
+
+        /**
          * @return The URL for the icon to show next to this server's label, relative to the image path
          */
         public String getIconUrl() {
@@ -86,8 +93,6 @@ public class Vacker extends StreamService {
         }
     }
 
-    /** The page where the stream statistics are shown, relative to the server URL */
-    private static final String STATS_PAGE = "json.php";
     /** A regex for parsing Vacker channels */
     private static final Pattern sChannelParser = Pattern.compile("^([a-z]+)(_low)?(/[a-z]+(_low)?)?$",
             Pattern.CASE_INSENSITIVE);
@@ -164,7 +169,7 @@ public class Vacker extends StreamService {
      */
     @Override
     public boolean isConnectPossible(final String channel) {
-        final String result = HttpHelper.getContent(getStatsUrl());
+        final String result = HttpHelper.getContent(Server.getSelected().getStatsUrl());
         if (result == null) {
             return false;
         }
@@ -184,7 +189,7 @@ public class Vacker extends StreamService {
      */
     @Override
     public boolean isChannelPossible(final String channel) {
-        final String result = HttpHelper.getContent(getStatsUrl());
+        final String result = HttpHelper.getContent(Server.getSelected().getStatsUrl());
         if (result == null) {
             return false;
         }
@@ -213,13 +218,6 @@ public class Vacker extends StreamService {
         }
 
         return matcher.group(1);
-    }
-
-    /**
-     * @return The URL containing the server statistics
-     */
-    private String getStatsUrl() {
-        return "http://" + Server.getSelected().getUrl() + STATS_PAGE;
     }
 
 }

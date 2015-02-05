@@ -23,6 +23,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.gui.StreamState;
@@ -69,6 +70,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     private CheckBox gameModeToggle;
     @FXML
     private CheckBox autoswitchToggle;
+    @FXML
+    private Text viewerInfo;
 
     /** Whether or not autoswitch is currently active */
     private boolean mAutoswitchEnabled;
@@ -359,6 +362,19 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 topicActive.setManaged(false);
                 topicInactive.setVisible(true);
                 topicInactive.setManaged(true);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onViewerCountUpdated(final int viewerCount) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                viewerInfo.setText(Integer.toString(viewerCount));
             }
         });
     }

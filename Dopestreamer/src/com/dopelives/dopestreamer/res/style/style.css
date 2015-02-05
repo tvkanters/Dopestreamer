@@ -90,3 +90,7 @@ ScrollPane:focused {
 ScrollPane .corner {
     -fx-background-insets: 0;
 }
+
+.viewerCount {
+    -fx-padding: 21px 0 0 0;
+}

@@ -70,7 +70,19 @@
     </CheckBox>
 
 
-	<Label text="Topic info" />
+    <HBox alignment="BOTTOM_LEFT">
+        <Label text="Topic info" />
+        <Pane HBox.hgrow="ALWAYS" />
+        <HBox styleClass="viewerCount">
+	        <ImageView>
+	            <image>
+	                <Image url="@../images/viewercount.png" />
+	            </image>
+	        </ImageView>
+	        <HBox prefWidth="5" />
+	        <Text fx:id="viewerInfo" text="0" />
+        </HBox>
+    </HBox>
 	<VBox fx:id="topicActive" managed="false" visible="false">
 		<HBox>
 			<Text text="Streamer: " />
