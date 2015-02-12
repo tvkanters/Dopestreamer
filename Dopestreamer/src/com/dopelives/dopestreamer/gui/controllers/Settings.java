@@ -7,14 +7,17 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -24,6 +27,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 
@@ -73,6 +77,9 @@ public class Settings implements Initializable {
     private Button saveOutputButton;
     @FXML
     private ScrollPane scrollPane;
+
+    /** Whether or not the scroll bar is being dragged */
+    private boolean mIsDragging = false;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -179,8 +186,8 @@ public class Settings implements Initializable {
                 final double oldValue = oldVal.doubleValue();
                 final double newValue = newVal.doubleValue();
 
-                // Recursive update detection
-                if (newValue == mSetValue) {
+                // Recursive update and dragging detection
+                if (newValue == mSetValue || mIsDragging) {
                     return;
                 }
 
@@ -189,6 +196,29 @@ public class Settings implements Initializable {
                         Math.min(scrollPane.getVmax(), newValue + difference * (SCROLL_SPEED - 1)));
 
                 scrollPane.vvalueProperty().set(mSetValue);
+            }
+        });
+
+        // Prevent scroll bar dragging from twitching due to the scroll speed fix
+        scrollPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(final MouseEvent event) {
+                scrollPane.setOnMouseEntered(null);
+                final Set<Node> nodes = scrollPane.lookupAll(".scroll-bar .thumb");
+                for (final Node node : nodes) {
+                    node.setOnMousePressed(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(final MouseEvent event) {
+                            mIsDragging = true;
+                        }
+                    });
+                    node.setOnMouseReleased(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(final MouseEvent event) {
+                            mIsDragging = false;
+                        }
+                    });
+                }
             }
         });
     }
