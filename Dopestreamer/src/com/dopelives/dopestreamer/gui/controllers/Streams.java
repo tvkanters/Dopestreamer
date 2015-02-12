@@ -335,6 +335,19 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * {@inheritDoc}
      */
     @Override
+    public void onLivestreamerNotFound(final Stream stream) {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                streamButton.setText("Livestreamer not found");
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onStreamInfoUpdated(final String streamer, final String game) {
         Platform.runLater(new Runnable() {
             @Override

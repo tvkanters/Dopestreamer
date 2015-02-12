@@ -261,6 +261,13 @@ public class StreamManager implements ConsoleListener {
             for (final StreamListener listener : mListeners) {
                 listener.onInvalidLivestreamer(mStream);
             }
+
+            // Livestreamer isn't found
+        } else if (output.contains(" is not recognized as an internal or external command")) {
+            stopStream();
+            for (final StreamListener listener : mListeners) {
+                listener.onLivestreamerNotFound(mStream);
+            }
         }
 
     }

@@ -226,6 +226,12 @@ public class TrayManager implements StreamListener {
     public void onInvalidLivestreamer(final Stream stream) {}
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onLivestreamerNotFound(final Stream stream) {}
+
+    /**
      * Loads an image based on the filename.
      *
      * @param filename

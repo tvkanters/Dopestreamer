@@ -51,4 +51,12 @@ public interface StreamListener {
      */
     void onInvalidLivestreamer(final Stream stream);
 
+    /**
+     * Called when Livestreamer can't be found.
+     *
+     * @param stream
+     *            The stream that encountered the error
+     */
+    void onLivestreamerNotFound(final Stream stream);
+
 }
