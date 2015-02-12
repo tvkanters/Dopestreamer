@@ -10,17 +10,27 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 
 import com.dopelives.dopestreamer.Environment;
+import com.dopelives.dopestreamer.Updater;
 
 public class About implements Initializable {
 
     @FXML
     private Label version;
+    @FXML
+    private Text versionAvailable;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
         version.setText("Version " + Environment.VERSION);
+
+        final String latestVersion = Updater.getLatestVersion();
+        if (!latestVersion.equals(Environment.VERSION)) {
+            versionAvailable.setText("New version available: v" + latestVersion);
+            versionAvailable.setManaged(true);
+        }
     }
 
     @FXML
@@ -50,7 +60,7 @@ public class About implements Initializable {
 
     /**
      * Opens a given URL in the default browser.
-     * 
+     *
      * @param url
      *            The URL to open
      */

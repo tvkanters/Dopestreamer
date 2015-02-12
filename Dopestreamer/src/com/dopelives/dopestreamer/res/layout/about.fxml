@@ -25,7 +25,8 @@
 	<fx:include source="header.fxml" />
 
 
-	<Label fx:id="version" />
+    <Label fx:id="version" />
+    <Text fx:id="versionAvailable" managed="false" />
 
 	<Label text="Developed by" />
 	<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />

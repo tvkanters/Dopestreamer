@@ -18,7 +18,7 @@
 	
 		<HBox alignment="CENTER_RIGHT" prefWidth="300">
 			<VBox styleClass="headerButton">
-				<ImageView onMouseClicked="#onAboutClicked">
+				<ImageView fx:id="aboutButton" onMouseClicked="#onAboutClicked">
 					<image>
 						<Image url="@../images/about.png" />
 					</image>
