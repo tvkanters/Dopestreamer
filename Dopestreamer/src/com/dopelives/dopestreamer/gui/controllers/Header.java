@@ -25,7 +25,7 @@ public class Header implements Initializable {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (!Updater.getLatestVersion().equals(Environment.VERSION)) {
+                if (!Environment.VERSION.equals(Updater.getLatestVersion())) {
                     // If a new version is available, replace the icon
                     Platform.runLater(new Runnable() {
                         @Override

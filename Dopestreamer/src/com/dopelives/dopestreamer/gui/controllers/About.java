@@ -27,7 +27,7 @@ public class About implements Initializable {
         version.setText("Version " + Environment.VERSION);
 
         final String latestVersion = Updater.getLatestVersion();
-        if (!latestVersion.equals(Environment.VERSION)) {
+        if (!Environment.VERSION.equals(latestVersion)) {
             versionAvailable.setText("New update available: v" + latestVersion);
             versionAvailable.setManaged(true);
         }
