@@ -28,9 +28,14 @@ public class About implements Initializable {
 
         final String latestVersion = Updater.getLatestVersion();
         if (!latestVersion.equals(Environment.VERSION)) {
-            versionAvailable.setText("New version available: v" + latestVersion);
+            versionAvailable.setText("New update available: v" + latestVersion);
             versionAvailable.setManaged(true);
         }
+    }
+
+    @FXML
+    public void onVersionAvailableClicked() {
+        openUrl("https://github.com/tvkanters/Dopestreamer/releases");
     }
 
     @FXML

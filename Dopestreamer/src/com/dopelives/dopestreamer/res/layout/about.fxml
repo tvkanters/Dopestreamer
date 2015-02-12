@@ -26,7 +26,7 @@
 
 
     <Label fx:id="version" />
-    <Text fx:id="versionAvailable" managed="false" />
+    <Text fx:id="versionAvailable" managed="false" onMouseClicked="#onVersionAvailableClicked" styleClass="link" />
 
 	<Label text="Developed by" />
 	<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
