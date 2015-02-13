@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
 
-import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Updater;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StageManager;
@@ -25,7 +24,7 @@ public class Header implements Initializable {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if (!Environment.VERSION.equals(Updater.getLatestVersion())) {
+                if (Updater.isOutdated()) {
                     // If a new version is available, replace the icon
                     Platform.runLater(new Runnable() {
                         @Override

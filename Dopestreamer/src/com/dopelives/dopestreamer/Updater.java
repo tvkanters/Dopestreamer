@@ -46,6 +46,16 @@ public class Updater {
     }
 
     /**
+     * Checks if there the current version of Dopestreamer is outdated, based on the latest version on Github.
+     *
+     * @return True iff there is a newer version
+     */
+    public static boolean isOutdated() {
+        final String latestVersion = getLatestVersion();
+        return latestVersion != null && !latestVersion.equals(Environment.VERSION);
+    }
+
+    /**
      * This is a static-only class.
      */
     private Updater() {}

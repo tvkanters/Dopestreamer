@@ -26,9 +26,8 @@ public class About implements Initializable {
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
         version.setText("Version " + Environment.VERSION);
 
-        final String latestVersion = Updater.getLatestVersion();
-        if (!Environment.VERSION.equals(latestVersion)) {
-            versionAvailable.setText("New update available: v" + latestVersion);
+        if (Updater.isOutdated()) {
+            versionAvailable.setText("New update available: v" + Updater.getLatestVersion());
             versionAvailable.setManaged(true);
         }
     }
