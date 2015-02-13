@@ -42,7 +42,7 @@ import com.dopelives.dopestreamer.util.Pref;
 /**
  * The controller for the streams screen.
  */
-public class Streams implements Initializable, StreamListener, StreamInfoListener {
+public class Streams implements Initializable, StreamListener, StreamInfoListener, Controller {
 
     @FXML
     private Node root;
@@ -195,6 +195,9 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         StreamInfo.addListener(this);
         StreamInfo.startRequestInterval();
     }
+
+    @Override
+    public void onActived() {}
 
     @FXML
     protected synchronized void onStreamButtonClicked(final ActionEvent event) {

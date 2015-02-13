@@ -34,6 +34,9 @@ public class StageManager extends Application {
     /** The manager used to change the active screens */
     private static final ScreenManager sScreenManager = new ScreenManager(Screen.STREAMS);
 
+    /** Whether or not no more classes should be loaded when pressing X */
+    private static boolean sCloseWithoutLoading = false;
+
     @Override
     public void start(final Stage stage) throws IOException {
         if (sStage != null) {
@@ -101,18 +104,34 @@ public class StageManager extends Application {
     }
 
     /**
+     * Sets whether or not pressing the X button should close Dopestreamer without loading any new classes. Useful for
+     * after the class loader has been closed.
+     *
+     * @param closeWithoutLoading
+     *            True iff no more classes should be loaded when pressing X
+     */
+    public static void setCloseWithoutLoading(final boolean closeWithoutLoading) {
+        sCloseWithoutLoading = closeWithoutLoading;
+    }
+
+    /**
      * Exists the program when closing the main window.
      */
     private class CloseHandler implements EventHandler<WindowEvent> {
         @Override
         public void handle(final WindowEvent event) {
-            // Don't delay the window closing
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Environment.exit();
-                }
-            }).start();
+            if (sCloseWithoutLoading) {
+                System.exit(0);
+
+            } else {
+                // Don't delay the window closing
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Environment.exit();
+                    }
+                }).start();
+            }
         }
     };
 

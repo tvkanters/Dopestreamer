@@ -1,0 +1,49 @@
+<?import java.net.*?>
+<?import javafx.collections.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Hyperlink?>
+
+<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Update"
+	xmlns:fx="http://javafx.com/fxml" styleClass="root" focusTraversable="true">
+
+	<stylesheets>
+		<URL value="@../style/style.css" />
+	</stylesheets>
+	
+	
+    <Text id="header" text="Dopestreamer" style="-fx-cursor:normal;" />
+
+    <VBox prefHeight="20"/>
+    
+    <VBox fx:id="boxUpdating">
+        <Label text="Updating Dopestreamer" />
+        <Text text="New version is being downloaded..." />
+    </VBox>
+    
+    <VBox fx:id="boxFailed" managed="false" visible="false">
+        <Label text="Update failed" />
+        <Text text="Check your connection and try again." />
+        <VBox prefHeight="10"/>
+        <Button text="Back" onMouseClicked="#onBackClicked" />
+    </VBox>
+    
+    <VBox fx:id="boxFinished" managed="false" visible="false">
+        <Label text="Update finished!" />
+        <Text text="Please reopen Dopestreamer." />
+        <VBox prefHeight="10"/>
+        <Button text="Close" onMouseClicked="#onCloseClicked" />
+    </VBox>
+
+
+</VBox>

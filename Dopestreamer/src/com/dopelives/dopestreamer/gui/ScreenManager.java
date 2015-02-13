@@ -32,6 +32,8 @@ public class ScreenManager extends StackPane {
         final Collection<Node> screens = getChildren();
         screens.clear();
         screens.add(screen.getNode());
+
+        screen.getController().onActived();
     }
 
     /**
@@ -60,6 +62,8 @@ public class ScreenManager extends StackPane {
             // Show the screen
             screens.add(screenNode);
         }
+
+        screen.getController().onActived();
     }
 
 }

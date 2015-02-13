@@ -9,14 +9,19 @@ import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Updater;
+import com.dopelives.dopestreamer.gui.Screen;
+import com.dopelives.dopestreamer.gui.StageManager;
 
-public class About implements Initializable {
+public class About implements Initializable, Controller {
 
+    @FXML
+    private Node updateBox;
     @FXML
     private Label version;
     @FXML
@@ -28,13 +33,23 @@ public class About implements Initializable {
 
         if (Updater.isOutdated()) {
             versionAvailable.setText("New update available: v" + Updater.getLatestVersion());
-            versionAvailable.setManaged(true);
+
+            updateBox.setManaged(true);
+            updateBox.setVisible(true);
         }
     }
 
+    @Override
+    public void onActived() {}
+
     @FXML
-    public void onVersionAvailableClicked() {
+    public void onChangelogClicked() {
         openUrl("https://github.com/tvkanters/Dopestreamer/releases");
+    }
+
+    @FXML
+    public void onUpdateClicked() {
+        StageManager.getScreenmanager().setScreen(Screen.UPDATE);
     }
 
     @FXML

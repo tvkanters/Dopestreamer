@@ -42,7 +42,7 @@ import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Pref;
 
-public class Settings implements Initializable {
+public class Settings implements Initializable, Controller {
 
     /** The factor to multiple the original scroll speed with */
     private static final double SCROLL_SPEED = 3;
@@ -200,6 +200,7 @@ public class Settings implements Initializable {
         });
 
         // Prevent scroll bar dragging from twitching due to the scroll speed fix
+        // Must be done at a later time as the scroll bars are loaded later
         scrollPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(final MouseEvent event) {
@@ -222,6 +223,9 @@ public class Settings implements Initializable {
             }
         });
     }
+
+    @Override
+    public void onActived() {}
 
     @FXML
     public void onAutoStartToggle() {

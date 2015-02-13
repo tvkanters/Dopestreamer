@@ -26,7 +26,12 @@
 
 
     <Label fx:id="version" />
-    <Text fx:id="versionAvailable" managed="false" onMouseClicked="#onVersionAvailableClicked" styleClass="link" />
+    <VBox fx:id="updateBox" managed="false" visible="false">
+	    <Text fx:id="versionAvailable" />
+	    <Text text="View changelog" onMouseClicked="#onChangelogClicked" styleClass="link" />
+	    <VBox prefHeight="10" />
+	    <Button text="Update" onMouseClicked="#onUpdateClicked" prefWidth="260" prefHeight="30"/>
+    </VBox>
 
 	<Label text="Developed by" />
 	<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
