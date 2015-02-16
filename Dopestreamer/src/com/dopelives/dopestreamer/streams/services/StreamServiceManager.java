@@ -31,7 +31,6 @@ public class StreamServiceManager {
 
         registerAutoswitch(hitbox);
         registerAutoswitch(vacker);
-        registerAutoswitch(twitch);
     }
 
     /**
