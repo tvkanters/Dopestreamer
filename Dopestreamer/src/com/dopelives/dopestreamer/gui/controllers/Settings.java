@@ -34,8 +34,7 @@ import javafx.util.Callback;
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
-import com.dopelives.dopestreamer.gui.combobox.MediaPlayerCell;
-import com.dopelives.dopestreamer.gui.combobox.VackerServerCell;
+import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
 import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
@@ -139,11 +138,11 @@ public class Settings implements Initializable, Controller {
         }
 
         // Make the media players look nice within the combo box
-        mediaPlayerSelection.setButtonCell(new MediaPlayerCell());
+        mediaPlayerSelection.setButtonCell(new ComboBoxCell<MediaPlayer>());
         mediaPlayerSelection.setCellFactory(new Callback<ListView<MediaPlayer>, ListCell<MediaPlayer>>() {
             @Override
             public ListCell<MediaPlayer> call(final ListView<MediaPlayer> param) {
-                return new MediaPlayerCell();
+                return new ComboBoxCell<MediaPlayer>();
             }
         });
 
@@ -167,11 +166,11 @@ public class Settings implements Initializable, Controller {
         vackerServerSelection.getSelectionModel().select(Vacker.Server.getSelected());
 
         // Make the Vacker servers look nice within the combo box
-        vackerServerSelection.setButtonCell(new VackerServerCell());
+        vackerServerSelection.setButtonCell(new ComboBoxCell<Vacker.Server>());
         vackerServerSelection.setCellFactory(new Callback<ListView<Vacker.Server>, ListCell<Vacker.Server>>() {
             @Override
             public ListCell<Vacker.Server> call(final ListView<Vacker.Server> param) {
-                return new VackerServerCell();
+                return new ComboBoxCell<Vacker.Server>();
             }
         });
 

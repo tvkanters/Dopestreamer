@@ -1,9 +1,11 @@
 package com.dopelives.dopestreamer.streams;
 
+import com.dopelives.dopestreamer.gui.combobox.ComboBoxItem;
+
 /**
  * The possible streaming qualities.
  */
-public enum Quality {
+public enum Quality implements ComboBoxItem {
 
     BEST("Best", "best"),
     P720("720p", "720p"),
@@ -28,8 +30,17 @@ public enum Quality {
     /**
      * @return The label to show the user
      */
+    @Override
     public String getLabel() {
         return mLabel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIconUrl() {
+        return null;
     }
 
     /**

@@ -3,27 +3,18 @@ package com.dopelives.dopestreamer.streams.services;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dopelives.dopestreamer.gui.combobox.ComboBoxItem;
 import com.dopelives.dopestreamer.streams.Quality;
 
 /**
  * The class for a stream service that can be selected and started to provide streams.
  */
-public abstract class StreamService {
+public abstract class StreamService implements ComboBoxItem {
 
     /**
      * @return The key for this service, shouldn't be changed during refactoring and must be unique
      */
     public abstract String getKey();
-
-    /**
-     * @return The label to show for this service
-     */
-    public abstract String getLabel();
-
-    /**
-     * @return The URL for the icon to show next to this service's label, relative to the image path
-     */
-    public abstract String getIconUrl();
 
     /**
      * The URL that Livestreamer use to choose the correct stream service plug-in.

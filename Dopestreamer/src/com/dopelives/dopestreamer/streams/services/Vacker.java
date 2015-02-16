@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
+import com.dopelives.dopestreamer.gui.combobox.ComboBoxItem;
 import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.util.HttpHelper;
 import com.dopelives.dopestreamer.util.Pref;
@@ -18,7 +19,7 @@ public class Vacker extends StreamService {
     /**
      * The servers available on Vacker
      */
-    public enum Server {
+    public enum Server implements ComboBoxItem {
 
         DE("de", "Germany"),
         NL("nl", "The Netherlands");
@@ -49,8 +50,9 @@ public class Vacker extends StreamService {
         }
 
         /**
-         * @return The label to show for this server
+         * {@inheritDoc}
          */
+        @Override
         public String getLabel() {
             return mLabel;
         }
@@ -70,8 +72,9 @@ public class Vacker extends StreamService {
         }
 
         /**
-         * @return The URL for the icon to show next to this server's label, relative to the image path
+         * {@inheritDoc}
          */
+        @Override
         public String getIconUrl() {
             return "countries/" + mKey + ".png";
         }

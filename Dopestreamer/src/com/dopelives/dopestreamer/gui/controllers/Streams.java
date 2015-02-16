@@ -27,8 +27,7 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.gui.StreamState;
-import com.dopelives.dopestreamer.gui.combobox.QualityCell;
-import com.dopelives.dopestreamer.gui.combobox.StreamServiceCell;
+import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
 import com.dopelives.dopestreamer.streams.Quality;
 import com.dopelives.dopestreamer.streams.Stream;
 import com.dopelives.dopestreamer.streams.StreamInfo;
@@ -164,21 +163,21 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         }
 
         // Make the stream services look nice within the combo box
-        streamServiceSelection.setButtonCell(new StreamServiceCell());
+        streamServiceSelection.setButtonCell(new ComboBoxCell<StreamService>());
         streamServiceSelection.setCellFactory(new Callback<ListView<StreamService>, ListCell<StreamService>>() {
             @Override
             public ListCell<StreamService> call(final ListView<StreamService> param) {
-                return new StreamServiceCell();
+                return new ComboBoxCell<StreamService>();
             }
         });
 
         // Prepare the quality combo box
         updateQualityOptions();
-        qualitySelection.setButtonCell(new QualityCell());
+        qualitySelection.setButtonCell(new ComboBoxCell<Quality>());
         qualitySelection.setCellFactory(new Callback<ListView<Quality>, ListCell<Quality>>() {
             @Override
             public ListCell<Quality> call(final ListView<Quality> param) {
-                return new QualityCell();
+                return new ComboBoxCell<Quality>();
             }
         });
 
