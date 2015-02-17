@@ -22,7 +22,6 @@ Button {
     -fx-padding: 9.0px 0.0px 0.0px 0.0px;
 }
 .headerButton ImageView {
-    -fx-background-color: rgba(0.0,0.0,0.0,0.0);
     -fx-cursor: hand;
 }
 
