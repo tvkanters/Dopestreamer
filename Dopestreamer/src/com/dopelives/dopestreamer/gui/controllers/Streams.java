@@ -6,10 +6,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -17,14 +15,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
@@ -78,39 +74,35 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
         // Select the custom channel radio button upon focusing the text field next to it
-        channelCustomInput.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
-                    final Boolean newValue) {
-                if (newValue) {
-                    channelCustom.setSelected(true);
-                }
-            }
-        });
+        channelCustomInput.focusedProperty()
+                .addListener(
+                        (final ObservableValue<? extends Boolean> observable, final Boolean oldValue,
+                                final Boolean newValue) -> {
+                            if (newValue) {
+                                channelCustom.setSelected(true);
+                            }
+                        });
 
         // Start stream when pressing ENTER in the channel input box
-        channelCustomInput.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(final KeyEvent key) {
-                if (key.getCode().equals(KeyCode.ENTER)) {
-                    final StreamManager streamManager = StreamManager.getInstance();
-                    switch (streamManager.getStreamState()) {
-                        case INACTIVE:
-                            break;
+        channelCustomInput.setOnKeyPressed((final KeyEvent key) -> {
+            if (key.getCode().equals(KeyCode.ENTER)) {
+                final StreamManager streamManager = StreamManager.getInstance();
+                switch (streamManager.getStreamState()) {
+                    case INACTIVE:
+                        break;
 
-                        case CONNECTING:
-                        case WAITING:
-                        case BUFFERING:
-                        case ACTIVE:
-                            StreamInfo.requestRefresh();
-                            streamManager.stopStream();
-                            break;
+                    case CONNECTING:
+                    case WAITING:
+                    case BUFFERING:
+                    case ACTIVE:
+                        StreamInfo.requestRefresh();
+                        streamManager.stopStream();
+                        break;
 
-                        default:
-                            throw new IllegalStateException("Unknown state: " + streamManager.getStreamState());
-                    }
-                    startStream();
+                    default:
+                        throw new IllegalStateException("Unknown state: " + streamManager.getStreamState());
                 }
+                startStream();
             }
         });
 
@@ -126,27 +118,24 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         streamServiceSelection.getItems().addAll(streamServices);
 
         // Indicate unavailable streams and update quality options
-        streamServiceSelection.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(final ActionEvent event) {
-                final StreamService streamService = streamServiceSelection.getValue();
-                final boolean disableDefault = !streamService.hasDefaultChannel();
-                final boolean disableCustom = !streamService.allowsCustomChannels();
+        streamServiceSelection.setOnAction((final ActionEvent event) -> {
+            final StreamService streamService = streamServiceSelection.getValue();
+            final boolean disableDefault = !streamService.hasDefaultChannel();
+            final boolean disableCustom = !streamService.allowsCustomChannels();
 
-                channelDefault.setDisable(disableDefault);
-                channelCustom.setDisable(disableCustom);
-                channelCustomInput.setDisable(disableCustom);
+            channelDefault.setDisable(disableDefault);
+            channelCustom.setDisable(disableCustom);
+            channelCustomInput.setDisable(disableCustom);
 
-                if (disableDefault) {
-                    channelCustom.setSelected(true);
-                } else if (disableCustom) {
-                    channelDefault.setSelected(true);
-                }
-
-                updateQualityOptions();
-
-                autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(streamService));
+            if (disableDefault) {
+                channelCustom.setSelected(true);
+            } else if (disableCustom) {
+                channelDefault.setSelected(true);
             }
+
+            updateQualityOptions();
+
+            autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(streamService));
         });
 
         // Select the stored last stream service
@@ -164,22 +153,13 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new ComboBoxCell<StreamService>());
-        streamServiceSelection.setCellFactory(new Callback<ListView<StreamService>, ListCell<StreamService>>() {
-            @Override
-            public ListCell<StreamService> call(final ListView<StreamService> param) {
-                return new ComboBoxCell<StreamService>();
-            }
-        });
+        streamServiceSelection
+                .setCellFactory((final ListView<StreamService> param) -> new ComboBoxCell<StreamService>());
 
         // Prepare the quality combo box
         updateQualityOptions();
         qualitySelection.setButtonCell(new ComboBoxCell<Quality>());
-        qualitySelection.setCellFactory(new Callback<ListView<Quality>, ListCell<Quality>>() {
-            @Override
-            public ListCell<Quality> call(final ListView<Quality> param) {
-                return new ComboBoxCell<Quality>();
-            }
-        });
+        qualitySelection.setCellFactory((final ListView<Quality> param) -> new ComboBoxCell<Quality>());
 
         // Set checkbox preferences
         gameModeToggle.setSelected(Pref.GAME_MODE.getBoolean());
@@ -262,11 +242,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
             case BUFFERING:
                 if (mAutoswitchEnabled) {
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            streamServiceSelection.setValue(streamManager.getCurrentStreamService());
-                        }
+                    Platform.runLater(() -> {
+                        streamServiceSelection.setValue(streamManager.getCurrentStreamService());
                     });
                 }
                 break;
@@ -276,11 +253,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         }
 
         // Run in UI thread
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                streamButton.setText(newState.getLabel());
-            }
+        Platform.runLater(() -> {
+            streamButton.setText(newState.getLabel());
         });
 
         if (oldState != null) {
@@ -312,11 +286,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onInvalidMediaPlayer(final Stream stream) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                streamButton.setText("Invalid media player");
-            }
+        Platform.runLater(() -> {
+            streamButton.setText("Invalid media player");
         });
     }
 
@@ -325,11 +296,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onInvalidLivestreamer(final Stream stream) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                streamButton.setText("Livestreamer outdated");
-            }
+        Platform.runLater(() -> {
+            streamButton.setText("Livestreamer outdated");
         });
     }
 
@@ -338,11 +306,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onLivestreamerNotFound(final Stream stream) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                streamButton.setText("Livestreamer not found");
-            }
+        Platform.runLater(() -> {
+            streamButton.setText("Livestreamer not found");
         });
     }
 
@@ -351,17 +316,14 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onStreamInfoUpdated(final String streamer, final String game) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                streamerInfo.setText(streamer);
-                gameInfo.setText(game);
+        Platform.runLater(() -> {
+            streamerInfo.setText(streamer);
+            gameInfo.setText(game);
 
-                topicActive.setVisible(true);
-                topicActive.setManaged(true);
-                topicInactive.setVisible(false);
-                topicInactive.setManaged(false);
-            }
+            topicActive.setVisible(true);
+            topicActive.setManaged(true);
+            topicInactive.setVisible(false);
+            topicInactive.setManaged(false);
         });
     }
 
@@ -370,14 +332,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onStreamInfoRemoved() {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                topicActive.setVisible(false);
-                topicActive.setManaged(false);
-                topicInactive.setVisible(true);
-                topicInactive.setManaged(true);
-            }
+        Platform.runLater(() -> {
+            topicActive.setVisible(false);
+            topicActive.setManaged(false);
+            topicInactive.setVisible(true);
+            topicInactive.setManaged(true);
         });
     }
 
@@ -386,11 +345,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onViewerCountUpdated(final int viewerCount) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                viewerInfo.setText(Integer.toString(viewerCount));
-            }
+        Platform.runLater(() -> {
+            viewerInfo.setText(Integer.toString(viewerCount));
         });
     }
 
@@ -424,11 +380,11 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     private void updateQualityOptions() {
         // Check what the old selection is
-        final String selectedQualityLabel;
+        final Quality selectedQuality;
         if (qualitySelection.getItems().size() > 0) {
-            selectedQualityLabel = qualitySelection.getValue().getLabel();
+            selectedQuality = qualitySelection.getValue();
         } else {
-            selectedQualityLabel = Quality.valueOf(Pref.LAST_QUALITY.getString()).getLabel();
+            selectedQuality = Quality.valueOf(Pref.LAST_QUALITY.getString());
         }
 
         // Add qualities to the combo box
@@ -436,17 +392,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         qualitySelection.getItems().setAll(qualities);
 
         // Select the last chosen quality
-        boolean selected = false;
-        for (int i = 0; i < qualities.size(); ++i) {
-            if (qualities.get(i).getLabel().equals(selectedQualityLabel)) {
-                qualitySelection.getSelectionModel().select(i);
-                selected = true;
-                break;
-            }
-        }
-
-        // Select the first option if the selected one isn't available for this service
-        if (!selected) {
+        if (qualities.contains(selectedQuality)) {
+            qualitySelection.getSelectionModel().select(selectedQuality);
+        } else {
+            // Select the first option if the selected one isn't available for this service
             qualitySelection.getSelectionModel().select(0);
         }
     }

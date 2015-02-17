@@ -1,6 +1,7 @@
 package com.dopelives.dopestreamer.streams;
 
 import java.security.InvalidParameterException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Pattern;
 
 import com.dopelives.dopestreamer.shell.Console;
@@ -11,6 +12,7 @@ import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 import com.dopelives.dopestreamer.streams.services.StreamService;
 import com.dopelives.dopestreamer.util.Pref;
+import com.dopelives.dopestreamer.util.Executor;
 
 /**
  * A Console wrapper specifically for streams.
@@ -33,32 +35,8 @@ public class Stream {
     /** The quality the stream is shown in */
     private final Quality mQuality;
 
-    /** Whether or not the stream is stopping */
-    private boolean mStopping = false;
     /** The thread handling the connecting process before Livestreamer takes over */
-    private final Thread mConnectThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            // Wait for streams to start until
-            try {
-                while (!mStopping && !mStreamService.isConnectPossible(mChannel)) {
-                    // Act as if Livestreamer is waiting for streams
-                    for (final ConsoleListener listener : mConsole.getListeners()) {
-                        listener.onConsoleOutput(mConsole.getProcessId(), "Waiting for streams");
-                    }
-
-                    Thread.sleep(RETRY_DELAY * 1000);
-                }
-            } catch (final InterruptedException ex) {
-                ex.printStackTrace();
-            }
-
-            // Start stream if it hasn't been cancelled yet
-            if (!mStopping) {
-                mConsole.start();
-            }
-        }
-    });
+    private ScheduledFuture<?> mConnectTask;
 
     /**
      * Starts a stream for the default channel at the given service.
@@ -143,28 +121,38 @@ public class Stream {
      * Starts the stream through Livestreamer. May only be called once.
      */
     public void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Check if the channel is a possibility
-                if (!mStreamService.isChannelPossible(mChannel)) {
-                    // Channel isn't possible, act as if Livestreamer complained
-                    for (final ConsoleListener listener : mConsole.getListeners()) {
-                        listener.onConsoleOutput(mConsole.getProcessId(), "Unable to open URL");
-                    }
-                    return;
+        Executor.execute(() -> {
+            if (!mStreamService.isChannelPossible(mChannel)) {
+                // Channel isn't possible, act as if Livestreamer complained
+                for (final ConsoleListener listener : mConsole.getListeners()) {
+                    listener.onConsoleOutput(mConsole.getProcessId(), "Unable to open URL");
                 }
-
-                mConnectThread.start();
+                return;
             }
-        }).start();
+
+            mConnectTask = Executor.scheduleInterval(() -> {
+                if (!mStreamService.isConnectPossible(mChannel)) {
+                    // Act as if Livestreamer is waiting for streams
+                    for (final ConsoleListener listener : mConsole.getListeners()) {
+                        listener.onConsoleOutput(mConsole.getProcessId(), "Waiting for streams");
+                    }
+
+                } else {
+                    // Start stream
+                    mConsole.start();
+                    mConnectTask.cancel(false);
+                }
+            }, 0, RETRY_DELAY * 1000);
+        });
     }
 
     /**
      * Stops Livestreamer and its child processes.
      */
     public void stop() {
-        mStopping = true;
+        if (mConnectTask != null) {
+            mConnectTask.cancel(false);
+        }
 
         mConsole.stop();
     }

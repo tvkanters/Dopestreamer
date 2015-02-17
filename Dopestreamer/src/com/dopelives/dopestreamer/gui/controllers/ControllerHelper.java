@@ -20,17 +20,14 @@ public class ControllerHelper {
      *            True if the CSS class should be added, false for removal
      */
     public static void setCssClass(final Node element, final String cssClass, final boolean enabled) {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                final ObservableList<String> cssClasses = element.getStyleClass();
-                if (enabled) {
-                    if (!cssClasses.contains(cssClass)) {
-                        cssClasses.add(cssClass);
-                    }
-                } else {
-                    cssClasses.remove(cssClass);
+        Platform.runLater(() -> {
+            final ObservableList<String> cssClasses = element.getStyleClass();
+            if (enabled) {
+                if (!cssClasses.contains(cssClass)) {
+                    cssClasses.add(cssClass);
                 }
+            } else {
+                cssClasses.remove(cssClass);
             }
         });
     }

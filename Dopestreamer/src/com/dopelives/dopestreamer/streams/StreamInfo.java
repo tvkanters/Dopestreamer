@@ -2,8 +2,7 @@ package com.dopelives.dopestreamer.streams;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +13,7 @@ import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Audio;
 import com.dopelives.dopestreamer.util.HttpHelper;
 import com.dopelives.dopestreamer.util.Pref;
+import com.dopelives.dopestreamer.util.Executor;
 
 /**
  * A static helper class for getting stream info from the IRC topic.
@@ -47,12 +47,10 @@ public class StreamInfo {
     /** The amount of viewers on Hitbox */
     private static int sViewersHitbox = 0;
 
-    /** The timer used for request intervals */
-    private static final Timer sRequestTimer = new Timer();
-    /** The timer task used for request topic intervals */
-    private static TimerTask sRequestTopicInterval;
-    /** The timer task used for request viewer count intervals */
-    private static TimerTask sRequestViewerCountInterval;
+    /** The task used for request topic intervals */
+    private static ScheduledFuture<?> sRequestTopicTask;
+    /** The task used for request viewer count intervals */
+    private static ScheduledFuture<?> sRequestViewerCountTask;
 
     /** The listeners that will receive updates of stream info changes */
     private static final List<StreamInfoListener> sListeners = new LinkedList<>();
@@ -172,22 +170,22 @@ public class StreamInfo {
      * Updates the topic info.
      */
     private static void executeTopicRefresh() {
-        new Thread(sTopicUpdater).start();
+        Executor.execute(sTopicUpdater);
     }
 
     /**
      * Updates the viewer counts.
      */
     private static void executeViewerCountRefresh() {
-        new Thread(sVackerUpdater).start();
-        new Thread(sHitboxUpdater).start();
+        Executor.execute(sVackerUpdater);
+        Executor.execute(sHitboxUpdater);
     }
 
     /**
      * Refreshes the latest stream info. If an interval is active, its timer will reset.
      */
     public synchronized static void requestRefresh() {
-        if (sRequestTopicInterval != null) {
+        if (sRequestTopicTask != null) {
             startRequestInterval();
         } else {
             executeTopicRefresh();
@@ -203,39 +201,27 @@ public class StreamInfo {
         // Stop any current refresh task
         stopRequestInterval();
 
-        // Create the timer tasks
-        sRequestTopicInterval = new TimerTask() {
-            @Override
-            public void run() {
-                executeTopicRefresh();
-            }
-        };
-        sRequestViewerCountInterval = new TimerTask() {
-            @Override
-            public void run() {
-                executeViewerCountRefresh();
-            }
-        };
+        // Create the tasks
+        sRequestTopicTask = Executor.scheduleInterval(() -> {
+            executeTopicRefresh();
+        }, 0, REQUEST_INTERVAL_TOPIC);
 
-        // Schedule the tasks
-        sRequestTimer.schedule(sRequestTopicInterval, 0, REQUEST_INTERVAL_TOPIC);
-        sRequestTimer.schedule(sRequestViewerCountInterval, 0, REQUEST_INTERVAL_VIEWER_COUNT);
+        sRequestViewerCountTask = Executor.scheduleInterval(() -> {
+            executeViewerCountRefresh();
+        }, 0, REQUEST_INTERVAL_VIEWER_COUNT);
     }
 
     /**
      * Stops the interval to periodically refresh the latest stream info.
      */
     public synchronized static void stopRequestInterval() {
-        if (sRequestTopicInterval != null) {
-            sRequestTopicInterval.cancel();
-            sRequestTopicInterval = null;
-        }
-        if (sRequestViewerCountInterval != null) {
-            sRequestViewerCountInterval.cancel();
-            sRequestViewerCountInterval = null;
-        }
+        if (sRequestTopicTask != null) {
+            sRequestTopicTask.cancel(false);
+            sRequestViewerCountTask.cancel(false);
 
-        sRequestTimer.purge();
+            sRequestTopicTask = null;
+            sRequestViewerCountTask = null;
+        }
     }
 
     /**

@@ -7,7 +7,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
 
 import com.dopelives.dopestreamer.Environment;
 
@@ -34,12 +33,9 @@ public class Audio {
             final Clip clip = (Clip) AudioSystem.getLine(new Line.Info(Clip.class));
 
             // Make the the clip is freed after playing
-            clip.addLineListener(new LineListener() {
-                @Override
-                public void update(final LineEvent event) {
-                    if (event.getType() == LineEvent.Type.STOP) {
-                        clip.close();
-                    }
+            clip.addLineListener((final LineEvent event) -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    clip.close();
                 }
             });
 

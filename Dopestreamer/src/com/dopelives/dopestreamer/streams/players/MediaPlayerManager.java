@@ -3,6 +3,7 @@ package com.dopelives.dopestreamer.streams.players;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A manager for all available media players.
@@ -48,12 +49,9 @@ public class MediaPlayerManager {
      * @return The media player with matching key or null if it wasn't found
      */
     public static MediaPlayer getMediaPlayerByKey(final String key) {
-        for (final MediaPlayer mediaPlayer : sMediaPlayers) {
-            if (mediaPlayer.getKey().equals(key)) {
-                return mediaPlayer;
-            }
-        }
-        return null;
+        final Optional<MediaPlayer> match = sMediaPlayers.stream().filter(mp -> mp.getKey().equals(key)).findAny();
+
+        return match.isPresent() ? match.get() : null;
     }
 
     /**

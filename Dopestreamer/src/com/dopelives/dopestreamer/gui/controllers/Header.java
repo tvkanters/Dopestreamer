@@ -12,6 +12,7 @@ import com.dopelives.dopestreamer.Updater;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.util.ImageHelper;
+import com.dopelives.dopestreamer.util.Executor;
 
 public class Header implements Initializable {
 
@@ -21,20 +22,14 @@ public class Header implements Initializable {
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
         // Check if a new version is available
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (Updater.isOutdated()) {
-                    // If a new version is available, replace the icon
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            aboutButton.setImage(ImageHelper.loadJavaFXImage("exclamation.png"));
-                        }
-                    });
-                }
+        Executor.execute(() -> {
+            if (Updater.isOutdated()) {
+                // If a new version is available, replace the icon
+                Platform.runLater(() -> {
+                    aboutButton.setImage(ImageHelper.loadJavaFXImage("exclamation.png"));
+                });
             }
-        }).start();
+        });
     }
 
     @FXML

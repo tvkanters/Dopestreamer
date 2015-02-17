@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
+import com.dopelives.dopestreamer.util.Executor;
+
 /**
  * A console to execute commands in.
  */
@@ -61,14 +63,14 @@ public class Console {
         System.out.println(mPrefix + "START");
 
         // Execute the command
-        final Thread mainThread = Thread.currentThread();
-        new Thread(new ProcessRunner(mainThread)).start();
+        final Thread currentThread = Thread.currentThread();
+        Executor.execute(new ProcessRunner(currentThread));
 
         // Wait for the process to be started (doesn't require command to be finish)
-        synchronized (mainThread) {
+        synchronized (currentThread) {
             if (mStarting) {
                 try {
-                    mainThread.wait();
+                    currentThread.wait();
                 } catch (final InterruptedException ex) {
                     ex.printStackTrace();
                 }
@@ -92,8 +94,6 @@ public class Console {
 
         /** The parent thread for this process */
         final Thread mParentThread;
-        /** The thread that reads the process's output */
-        final Thread mOutputThread;
         /** The stream from which to get the results */
         private BufferedReader mOutput;
 
@@ -105,7 +105,6 @@ public class Console {
          */
         public ProcessRunner(final Thread parent) {
             mParentThread = parent;
-            mOutputThread = new Thread(new OutputReader());
         }
 
         @Override
@@ -118,7 +117,21 @@ public class Console {
 
                 // Keep track of the output
                 mRunning = true;
-                mOutputThread.start();
+                Executor.execute(() -> {
+                    while (mRunning) {
+                        try {
+                            final String line = mOutput.readLine();
+                            if (line != null) {
+                                System.out.println(mPrefix + line);
+                                for (final ConsoleListener listener : mListeners) {
+                                    listener.onConsoleOutput(mProcessId, line);
+                                }
+                            }
+                        } catch (final IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
 
                 // Notify that the process has started
                 synchronized (mParentThread) {
@@ -139,36 +152,12 @@ public class Console {
                 mOutput.close();
 
                 // Inform the listeners that the process has stopped
-                for (final ConsoleListener listener : mListeners) {
-                    listener.onConsoleStop(mProcessId);
-                }
+                mListeners.forEach(l -> l.onConsoleStop(mProcessId));
 
                 System.out.println(mPrefix + "STOP");
 
             } catch (final IOException ex) {
                 ex.printStackTrace();
-            }
-        }
-
-        /**
-         * Reads the output from the process and prints them.
-         */
-        private class OutputReader implements Runnable {
-            @Override
-            public void run() {
-                while (mRunning) {
-                    try {
-                        final String line = mOutput.readLine();
-                        if (line != null) {
-                            System.out.println(mPrefix + line);
-                            for (final ConsoleListener listener : mListeners) {
-                                listener.onConsoleOutput(mProcessId, line);
-                            }
-                        }
-                    } catch (final IOException ex) {
-                        ex.printStackTrace();
-                    }
-                }
             }
         }
     }

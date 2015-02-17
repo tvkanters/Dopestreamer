@@ -12,6 +12,7 @@ import com.dopelives.dopestreamer.Updater;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.streams.StreamManager;
+import com.dopelives.dopestreamer.util.Executor;
 
 public class Update implements Initializable, Controller {
 
@@ -30,53 +31,44 @@ public class Update implements Initializable, Controller {
 
     @Override
     public void onActived() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Close child processes
-                StreamManager.getInstance().stopStream();
+        Executor.execute(() -> {
+            // Close child processes
+            StreamManager.getInstance().stopStream();
 
-                // The UI runnable must be created before the class loader is closed
-                final Runnable uiRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        // Switch screen
-                        boxUpdating.setManaged(false);
-                        boxUpdating.setVisible(false);
+            // The UI runnable must be created before the class loader is closed
+            final Runnable uiRunnable = () -> {
+                // Switch screen
+                boxUpdating.setManaged(false);
+                boxUpdating.setVisible(false);
 
-                        if (mSuccess) {
-                            StageManager.setCloseWithoutLoading(true);
-                            boxFinished.setManaged(true);
-                            boxFinished.setVisible(true);
-                        } else {
-                            boxFailed.setManaged(true);
-                            boxFailed.setVisible(true);
-                        }
-                    }
-                };
+                if (mSuccess) {
+                    StageManager.setCloseWithoutLoading(true);
+                    boxFinished.setManaged(true);
+                    boxFinished.setVisible(true);
+                } else {
+                    boxFailed.setManaged(true);
+                    boxFailed.setVisible(true);
+                }
+            };
 
-                // Update Dopestreamer
-                mSuccess = Updater.downloadAndInstallUpdate();
+            // Update Dopestreamer
+            mSuccess = Updater.downloadAndInstallUpdate();
 
-                // Update the UI
-                Platform.runLater(uiRunnable);
-            }
-        }).start();
+            // Update the UI
+            Platform.runLater(uiRunnable);
+        });
     }
 
     @FXML
     private void onBackClicked() {
         StageManager.getScreenmanager().setScreen(Screen.STREAMS);
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                boxUpdating.setManaged(true);
-                boxUpdating.setVisible(true);
+        Platform.runLater(() -> {
+            boxUpdating.setManaged(true);
+            boxUpdating.setVisible(true);
 
-                boxFailed.setManaged(false);
-                boxFailed.setVisible(false);
-            }
+            boxFailed.setManaged(false);
+            boxFailed.setVisible(false);
         });
     }
 

@@ -3,6 +3,7 @@ package com.dopelives.dopestreamer.streams.services;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A manager for all available stream services.
@@ -69,13 +70,9 @@ public class StreamServiceManager {
      * @return The stream service with matching key or null if it wasn't found
      */
     public static StreamService getStreamServiceByKey(final String key) {
-        for (final StreamService streamService : sStreamServices) {
-            if (streamService.getKey().equals(key)) {
-                return streamService;
-            }
-        }
+        final Optional<StreamService> match = sStreamServices.stream().filter(s -> s.getKey().equals(key)).findAny();
 
-        return null;
+        return match.isPresent() ? match.get() : null;
     }
 
     /**

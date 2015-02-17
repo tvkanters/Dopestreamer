@@ -3,14 +3,14 @@ package com.dopelives.dopestreamer.streams;
 import java.security.InvalidParameterException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
 import com.dopelives.dopestreamer.streams.services.StreamService;
 import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
+import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.Pref;
 
 /**
@@ -29,10 +29,8 @@ public class StreamManager implements ConsoleListener {
     /** The currently active stream */
     private Stream mStream;
 
-    /** The timer used for buffering timeouts */
-    private final Timer mBufferingTimer = new Timer();
-    /** The timer task used for buffering timeouts */
-    private TimerTask mBufferingTimeout;
+    /** The task used for buffering timeouts */
+    private ScheduledFuture<?> mBufferingTimeout;
     /** The amount of consecutive buffering attempts have been performed */
     private int mBufferingAttempts = 0;
 
@@ -42,11 +40,9 @@ public class StreamManager implements ConsoleListener {
     /** Whether or not the stream will autoswitch between channels */
     private boolean mAutoswitchEnabled;
     /** The index of the current autoswitch stream service */
-    private static int mCurrentAutoswitchIndex = -1;
-    /** The timer used to retry autoswitch services */
-    private static Timer mAutoswitchTimer = new Timer();
-    /** The timer task used to retry autoswitch services */
-    private static TimerTask mAutoswitchTimerTask = null;
+    private int mCurrentAutoswitchIndex = -1;
+    /** The task used to retry autoswitch services */
+    private ScheduledFuture<?> mAutoswitchTimerTask = null;
 
     /**
      * @return The base stream manager to use for global streams
@@ -139,13 +135,9 @@ public class StreamManager implements ConsoleListener {
 
         // Start the stream
         if (delay) {
-            mAutoswitchTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    mStream.start();
-                }
-            };
-            mAutoswitchTimer.schedule(mAutoswitchTimerTask, Stream.RETRY_DELAY * 1000);
+            mAutoswitchTimerTask = Executor.schedule(() -> {
+                mStream.start();
+            }, Stream.RETRY_DELAY * 1000);
 
         } else {
             mStream.start();
@@ -186,8 +178,8 @@ public class StreamManager implements ConsoleListener {
     public synchronized void stopStream() {
         mBufferingAttempts = 0;
         if (mAutoswitchTimerTask != null) {
-            mAutoswitchTimerTask.cancel();
-            mAutoswitchTimer.purge();
+            mAutoswitchTimerTask.cancel(false);
+            mAutoswitchTimerTask = null;
         }
         updateState(StreamState.INACTIVE);
         stopStreamConsole();
@@ -226,17 +218,13 @@ public class StreamManager implements ConsoleListener {
                 restartLastStream();
 
             } else {
-                for (final StreamListener listener : mListeners) {
-                    listener.onInvalidChannel(mStream);
-                }
+                mListeners.forEach(l -> l.onInvalidChannel(mStream));
                 stopStream();
             }
 
             // Invalid quality for chosen channel
         } else if (output.contains("error: The specified stream(s) '")) {
-            for (final StreamListener listener : mListeners) {
-                listener.onInvalidQuality(mStream);
-            }
+            mListeners.forEach(l -> l.onInvalidQuality(mStream));
             stopStream();
 
             // Opening the media player
@@ -251,23 +239,17 @@ public class StreamManager implements ConsoleListener {
         } else if (output.contains("Failed to start player")
                 || output.contains("The default player (VLC) does not seem to be installed.")) {
             stopStream();
-            for (final StreamListener listener : mListeners) {
-                listener.onInvalidMediaPlayer(mStream);
-            }
+            mListeners.forEach(l -> l.onInvalidMediaPlayer(mStream));
 
             // Livestreamer is outdated
         } else if (output.contains("livestreamer: error: unrecognized arguments")) {
             stopStream();
-            for (final StreamListener listener : mListeners) {
-                listener.onInvalidLivestreamer(mStream);
-            }
+            mListeners.forEach(l -> l.onInvalidLivestreamer(mStream));
 
             // Livestreamer isn't found
         } else if (output.contains(" is not recognized as an internal or external command")) {
             stopStream();
-            for (final StreamListener listener : mListeners) {
-                listener.onLivestreamerNotFound(mStream);
-            }
+            mListeners.forEach(l -> l.onLivestreamerNotFound(mStream));
         }
 
     }
@@ -323,9 +305,7 @@ public class StreamManager implements ConsoleListener {
         final StreamState oldState = mStreamState;
         mStreamState = newState;
 
-        for (final StreamListener listener : mListeners) {
-            listener.onStateUpdated(this, oldState, newState);
-        }
+        mListeners.forEach(l -> l.onStateUpdated(this, oldState, newState));
     }
 
     /**
@@ -342,14 +322,10 @@ public class StreamManager implements ConsoleListener {
      * Starts the timeout for buffering. Will try to restart the stream after the timeout.
      */
     private synchronized void startBufferingTimeout() {
-        mBufferingTimeout = new TimerTask() {
-            @Override
-            public void run() {
-                stopStreamConsole();
-                restartLastStream();
-            }
-        };
-        mBufferingTimer.schedule(mBufferingTimeout, ++mBufferingAttempts * BUFFERING_TIMEOUT);
+        mBufferingTimeout = Executor.schedule(() -> {
+            stopStreamConsole();
+            restartLastStream();
+        }, ++mBufferingAttempts * BUFFERING_TIMEOUT);
     }
 
     /**
@@ -357,8 +333,8 @@ public class StreamManager implements ConsoleListener {
      */
     private synchronized void stopBufferingTimeout() {
         if (mBufferingTimeout != null) {
-            mBufferingTimeout.cancel();
-            mBufferingTimer.purge();
+            mBufferingTimeout.cancel(false);
+            mBufferingTimeout = null;
         }
     }
 
@@ -385,5 +361,10 @@ public class StreamManager implements ConsoleListener {
     public StreamService getCurrentStreamService() {
         return (mStream != null ? mStream.getStreamService() : null);
     }
+
+    /**
+     * This is a singleton.
+     */
+    private StreamManager() {}
 
 }

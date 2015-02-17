@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -21,7 +19,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
@@ -29,7 +26,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
@@ -39,6 +35,7 @@ import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 import com.dopelives.dopestreamer.streams.services.Vacker;
+import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.Pref;
 
 public class Settings implements Initializable, Controller {
@@ -116,35 +113,26 @@ public class Settings implements Initializable, Controller {
         mediaPlayerSelection.getItems().addAll(mediaPlayers);
 
         // Update the custom media player input field based on the selected media player
-        mediaPlayerSelection.valueProperty().addListener(new ChangeListener<MediaPlayer>() {
-            @Override
-            public void changed(final ObservableValue<? extends MediaPlayer> observable, final MediaPlayer oldValue,
-                    final MediaPlayer newValue) {
-                final boolean customPlayer = newValue.getKey().equals("");
-                mediaPlayerLocationWrapper.setVisible(customPlayer);
-                mediaPlayerLocationWrapper.setManaged(customPlayer);
+        mediaPlayerSelection.valueProperty().addListener(
+                (final ObservableValue<? extends MediaPlayer> observable, final MediaPlayer oldValue,
+                        final MediaPlayer newValue) -> {
+                    final boolean customPlayer = newValue.getKey().equals("");
+                    mediaPlayerLocationWrapper.setVisible(customPlayer);
+                    mediaPlayerLocationWrapper.setManaged(customPlayer);
 
-                Pref.DEFAULT_PLAYER.put(newValue.getKey());
-            }
-        });
+                    Pref.DEFAULT_PLAYER.put(newValue.getKey());
+                });
 
         // Select the stored last media player
-        final String selectedStreamServiceKey = Pref.DEFAULT_PLAYER.getString();
-        for (int i = 0; i < mediaPlayers.size(); ++i) {
-            if (mediaPlayers.get(i).getKey().equals(selectedStreamServiceKey)) {
-                mediaPlayerSelection.getSelectionModel().select(i);
-                break;
-            }
+        MediaPlayer selectedMediaPlayer = MediaPlayerManager.getMediaPlayerByKey(Pref.DEFAULT_PLAYER.getString());
+        if (selectedMediaPlayer == null) {
+            selectedMediaPlayer = MediaPlayerManager.getMediaPlayerByKey(Pref.DEFAULT_PLAYER.getDefaultString());
         }
+        mediaPlayerSelection.getSelectionModel().select(selectedMediaPlayer);
 
         // Make the media players look nice within the combo box
         mediaPlayerSelection.setButtonCell(new ComboBoxCell<MediaPlayer>());
-        mediaPlayerSelection.setCellFactory(new Callback<ListView<MediaPlayer>, ListCell<MediaPlayer>>() {
-            @Override
-            public ListCell<MediaPlayer> call(final ListView<MediaPlayer> param) {
-                return new ComboBoxCell<MediaPlayer>();
-            }
-        });
+        mediaPlayerSelection.setCellFactory((final ListView<MediaPlayer> param) -> new ComboBoxCell<MediaPlayer>());
 
         // Set text of player location field
         mediaPlayerLocation.setText(Pref.PLAYER_LOCATION.getString());
@@ -154,25 +142,19 @@ public class Settings implements Initializable, Controller {
         vackerServerSelection.getItems().addAll(vackerServers);
 
         // Update the Vacker server based on the selection
-        vackerServerSelection.valueProperty().addListener(new ChangeListener<Vacker.Server>() {
-            @Override
-            public void changed(final ObservableValue<? extends Vacker.Server> observable,
-                    final Vacker.Server oldValue, final Vacker.Server newValue) {
-                Pref.VACKER_SERVER.put(newValue.getKey());
-            }
-        });
+        vackerServerSelection.valueProperty().addListener(
+                (final ObservableValue<? extends Vacker.Server> observable, final Vacker.Server oldValue,
+                        final Vacker.Server newValue) -> {
+                    Pref.VACKER_SERVER.put(newValue.getKey());
+                });
 
         // Select the preferred Vacker servers
         vackerServerSelection.getSelectionModel().select(Vacker.Server.getSelected());
 
         // Make the Vacker servers look nice within the combo box
         vackerServerSelection.setButtonCell(new ComboBoxCell<Vacker.Server>());
-        vackerServerSelection.setCellFactory(new Callback<ListView<Vacker.Server>, ListCell<Vacker.Server>>() {
-            @Override
-            public ListCell<Vacker.Server> call(final ListView<Vacker.Server> param) {
-                return new ComboBoxCell<Vacker.Server>();
-            }
-        });
+        vackerServerSelection
+                .setCellFactory((final ListView<Vacker.Server> param) -> new ComboBoxCell<Vacker.Server>());
 
         // Make the scroll speed not be painfully slow
         scrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
@@ -200,25 +182,22 @@ public class Settings implements Initializable, Controller {
 
         // Prevent scroll bar dragging from twitching due to the scroll speed fix
         // Must be done at a later time as the scroll bars are loaded later
-        scrollPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(final MouseEvent event) {
-                scrollPane.setOnMouseEntered(null);
-                final Set<Node> nodes = scrollPane.lookupAll(".scroll-bar .thumb");
-                for (final Node node : nodes) {
-                    node.setOnMousePressed(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(final MouseEvent event) {
-                            mIsDragging = true;
-                        }
-                    });
-                    node.setOnMouseReleased(new EventHandler<MouseEvent>() {
-                        @Override
-                        public void handle(final MouseEvent event) {
-                            mIsDragging = false;
-                        }
-                    });
-                }
+        scrollPane.setOnMouseEntered((final MouseEvent event) -> {
+            scrollPane.setOnMouseEntered(null);
+            final Set<Node> nodes = scrollPane.lookupAll(".scroll-bar .thumb");
+            for (final Node node : nodes) {
+                node.setOnMousePressed(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(final MouseEvent event) {
+                        mIsDragging = true;
+                    }
+                });
+                node.setOnMouseReleased(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(final MouseEvent event) {
+                        mIsDragging = false;
+                    }
+                });
             }
         });
     }
@@ -326,17 +305,10 @@ public class Settings implements Initializable, Controller {
                 + new SimpleDateFormat("'dopelog-'yyyyMMddhhmmss'.txt'").format(new Date());
         Environment.getOutputSpy().writeToFile(filename);
 
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        saveOutputButton.setDisable(false);
-                    }
-                });
-            }
+        Executor.schedule(() -> {
+            Platform.runLater(() -> {
+                saveOutputButton.setDisable(false);
+            });
         }, 1000);
     }
-
 }

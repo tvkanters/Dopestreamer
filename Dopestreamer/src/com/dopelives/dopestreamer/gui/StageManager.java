@@ -16,6 +16,7 @@ import javafx.stage.WindowEvent;
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.util.Pref;
+import com.dopelives.dopestreamer.util.Executor;
 
 /**
  * Handles the main window's stage. May only be opened once.
@@ -125,12 +126,9 @@ public class StageManager extends Application {
 
             } else {
                 // Don't delay the window closing
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Environment.exit();
-                    }
-                }).start();
+                Executor.execute(() -> {
+                    Environment.exit();
+                });
             }
         }
     };

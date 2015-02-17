@@ -20,6 +20,8 @@ import com.dopelives.dopestreamer.util.HttpHelper;
  */
 public class Updater {
 
+    /** The Github API page */
+    private static final String GITHUB_PAGE = "https://api.github.com/repos/tvkanters/Dopestreamer/releases?per_page=1";
     /** The latest Dopestreamer version's code in x.x.x format */
     private static String sLatestVersion = null;
 
@@ -29,8 +31,7 @@ public class Updater {
      * @return The latest version's code in x.x.x format
      */
     public static synchronized String updateLatestVersion() {
-        final String result = HttpHelper
-                .getContent("https://api.github.com/repos/tvkanters/Dopestreamer/releases?per_page=1");
+        final String result = HttpHelper.getContent(GITHUB_PAGE);
         if (result == null) {
             return null;
         }
@@ -72,8 +73,7 @@ public class Updater {
      * @return True iff the update was successful
      */
     public static boolean downloadAndInstallUpdate() {
-        final String result = HttpHelper
-                .getContent("https://api.github.com/repos/tvkanters/Dopestreamer/releases?per_page=1");
+        final String result = HttpHelper.getContent(GITHUB_PAGE);
         if (result == null) {
             return false;
         }

@@ -73,11 +73,8 @@ public class TrayManager implements StreamListener {
                 @Override
                 public void mouseClicked(final MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON1) {
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                StageManager.show();
-                            }
+                        Platform.runLater(() -> {
+                            StageManager.show();
                         });
                     }
                 }
