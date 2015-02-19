@@ -42,7 +42,7 @@ public class StreamManager implements ConsoleListener {
     /** The index of the current autoswitch stream service */
     private int mCurrentAutoswitchIndex = -1;
     /** The task used to retry autoswitch services */
-    private ScheduledFuture<?> mAutoswitchTimerTask = null;
+    private ScheduledFuture<?> mAutoswitchDelay = null;
 
     /**
      * @return The base stream manager to use for global streams
@@ -135,8 +135,9 @@ public class StreamManager implements ConsoleListener {
 
         // Start the stream
         if (delay) {
-            mAutoswitchTimerTask = Executor.schedule(() -> {
+            mAutoswitchDelay = Executor.schedule(() -> {
                 mStream.start();
+                mAutoswitchDelay = null;
             }, Stream.RETRY_DELAY * 1000);
 
         } else {
@@ -177,12 +178,23 @@ public class StreamManager implements ConsoleListener {
      */
     public synchronized void stopStream() {
         mBufferingAttempts = 0;
-        if (mAutoswitchTimerTask != null) {
-            mAutoswitchTimerTask.cancel(false);
-            mAutoswitchTimerTask = null;
-        }
         updateState(StreamState.INACTIVE);
         stopStreamConsole();
+    }
+
+    /**
+     * Stops the console of the stream, if it was opened.
+     */
+    private synchronized void stopStreamConsole() {
+        if (mAutoswitchDelay != null) {
+            mAutoswitchDelay.cancel(false);
+            mAutoswitchDelay = null;
+        }
+
+        if (mStream != null) {
+            mStream.stop();
+            mStream = null;
+        }
     }
 
     /**
@@ -306,16 +318,6 @@ public class StreamManager implements ConsoleListener {
         mStreamState = newState;
 
         mListeners.forEach(l -> l.onStateUpdated(this, oldState, newState));
-    }
-
-    /**
-     * Stops the console of the stream, if it was opened.
-     */
-    private synchronized void stopStreamConsole() {
-        if (mStream != null) {
-            mStream.stop();
-            mStream = null;
-        }
     }
 
     /**
