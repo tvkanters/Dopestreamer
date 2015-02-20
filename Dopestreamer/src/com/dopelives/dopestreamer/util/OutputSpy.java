@@ -15,7 +15,7 @@ import java.util.List;
 public class OutputSpy extends OutputStream {
 
     /** The maximum amount of lines to store */
-    private static final int NUM_LINES = 25;
+    private static final int NUM_LINES = 100;
     /** The formatter for time prefixes per line */
     private static final SimpleDateFormat sTimeFormatter = new SimpleDateFormat("[HH:mm:ss] ");
 

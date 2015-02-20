@@ -11,8 +11,8 @@ import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
 import com.dopelives.dopestreamer.streams.services.StreamService;
-import com.dopelives.dopestreamer.util.Pref;
 import com.dopelives.dopestreamer.util.Executor;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * A Console wrapper specifically for streams.
@@ -37,6 +37,8 @@ public class Stream {
 
     /** The thread handling the connecting process before Livestreamer takes over */
     private ScheduledFuture<?> mConnectTask;
+    /** A flag indicating that the stream is stopping */
+    private boolean mStopping = false;
 
     /**
      * Starts a stream for the default channel at the given service.
@@ -131,6 +133,12 @@ public class Stream {
             }
 
             mConnectTask = Executor.scheduleInterval(() -> {
+                if (mStopping) {
+                    mConnectTask.cancel(false);
+                    mConnectTask = null;
+                    return;
+                }
+
                 if (!mStreamService.isConnectPossible(mChannel)) {
                     // Act as if Livestreamer is waiting for streams
                     for (final ConsoleListener listener : mConsole.getListeners()) {
@@ -141,6 +149,7 @@ public class Stream {
                     // Start stream
                     mConsole.start();
                     mConnectTask.cancel(false);
+                    mConnectTask = null;
                 }
             }, 0, RETRY_DELAY * 1000);
         });
@@ -150,10 +159,7 @@ public class Stream {
      * Stops Livestreamer and its child processes.
      */
     public void stop() {
-        if (mConnectTask != null) {
-            mConnectTask.cancel(false);
-        }
-
+        mStopping = true;
         mConsole.stop();
     }
 

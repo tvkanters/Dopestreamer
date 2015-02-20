@@ -37,7 +37,7 @@ public class Executor {
      *
      * @param task
      *            The task to execute
-     * @param initialDelay
+     * @param delay
      *            The time to delay first execution in milliseconds
      *
      * @return The ScheduleFuture for further control over the scheduled task

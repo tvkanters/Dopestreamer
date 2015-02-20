@@ -204,6 +204,11 @@ public class StreamManager implements ConsoleListener {
      */
     @Override
     public synchronized void onConsoleOutput(final ProcessId processId, final String output) {
+        // Only listen to output of the current stream
+        if (!isCurrentStream(processId)) {
+            return;
+        }
+
         // Starting to buffer
         if (output.contains("Opening stream")) {
             updateState(StreamState.BUFFERING);
@@ -290,7 +295,7 @@ public class StreamManager implements ConsoleListener {
             case WAITING:
             case BUFFERING:
                 // The user didn't cancel streaming, so try starting the stream again
-                if (mStream != null && processId != null && processId.equals(mStream.getProcessId())) {
+                if (isCurrentStream(processId)) {
                     System.out.println("Restarting stream");
                     restartLastStream();
                 }
@@ -299,6 +304,18 @@ public class StreamManager implements ConsoleListener {
             default:
                 throw new IllegalStateException("Unknown state: " + mStreamState);
         }
+    }
+
+    /**
+     * Checks if a given process ID belongs to the currently active stream.
+     *
+     * @param processId
+     *            The process ID to check
+     *
+     * @return True if there is a stream active and its process ID matches
+     */
+    private synchronized boolean isCurrentStream(final ProcessId processId) {
+        return mStream != null && processId != null && processId.equals(mStream.getProcessId());
     }
 
     /**
