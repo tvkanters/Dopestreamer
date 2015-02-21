@@ -18,7 +18,6 @@ public class StreamServiceManager {
 
     static {
         final StreamService hitbox = new Hitbox();
-        final StreamService twitch = new Twitch();
         final StreamService vacker = new Vacker();
 
         register(new Afreeca());
@@ -26,7 +25,7 @@ public class StreamServiceManager {
         register(new LivestreamNew());
         register(new LivestreamOld());
         register(new Restream());
-        register(twitch);
+        register(new Twitch());
         register(new Ustream());
         register(vacker);
 

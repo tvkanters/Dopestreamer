@@ -17,6 +17,8 @@ public class Console {
     /** The number counting the amount of consoles opened */
     private static int sConsoleCount = 0;
 
+    /** The number indicating this console's count */
+    private final int mConsoleCount;
     /** The listeners to receive updates of this console */
     private final Collection<ConsoleListener> mListeners = new HashSet<>();
 
@@ -45,7 +47,8 @@ public class Console {
      */
     /* default */Console(final ProcessBuilder builder) {
         // Keep track of which console we're using
-        mPrefix = "[" + ++sConsoleCount + "] ";
+        mConsoleCount = ++sConsoleCount;
+        mPrefix = "[" + mConsoleCount + "] ";
 
         mBuilder = builder;
         mBuilder.redirectErrorStream(true);
@@ -180,10 +183,10 @@ public class Console {
     }
 
     /**
-     * @return The process ID of this console
+     * @return The process ID of this console or the negative console count if there isn't any yet
      */
     public ProcessId getProcessId() {
-        return mProcessId;
+        return (mProcessId != null ? mProcessId : new ProcessId(-mConsoleCount));
     }
 
     /**
