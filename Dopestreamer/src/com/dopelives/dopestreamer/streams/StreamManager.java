@@ -227,17 +227,9 @@ public class StreamManager implements ConsoleListener {
             }
 
             // Invalid channel name
-        } else if (output.contains("Unable to open URL") && !output.contains("Failed to open segment")
-                && !output.contains("Failed to reload playlist")) {
-            if (mAutoswitchEnabled) {
-                // Try the next stream service
-                stopStreamConsole();
-                restartLastStream();
-
-            } else {
-                mListeners.forEach(l -> l.onInvalidChannel(mStream));
-                stopStream();
-            }
+        } else if (output.contains("404 Client Error: Not Found")) {
+            mListeners.forEach(l -> l.onInvalidChannel(mStream));
+            stopStream();
 
             // Invalid quality for chosen channel
         } else if (output.contains("error: The specified stream(s) '")) {

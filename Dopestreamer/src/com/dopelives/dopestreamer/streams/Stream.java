@@ -127,7 +127,7 @@ public class Stream {
             if (!mStreamService.isChannelPossible(mChannel)) {
                 // Channel isn't possible, act as if Livestreamer complained
                 for (final ConsoleListener listener : mConsole.getListeners()) {
-                    listener.onConsoleOutput(mConsole.getProcessId(), "Unable to open URL");
+                    listener.onConsoleOutput(mConsole.getProcessId(), "404 Client Error: Not Found");
                 }
                 return;
             }

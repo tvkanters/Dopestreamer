@@ -11,9 +11,9 @@ import org.json.JSONObject;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Audio;
+import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.HttpHelper;
 import com.dopelives.dopestreamer.util.Pref;
-import com.dopelives.dopestreamer.util.Executor;
 
 /**
  * A static helper class for getting stream info from the IRC topic.
@@ -96,9 +96,9 @@ public class StreamInfo {
                         }
                     }
                 }
-            }
 
-            sInitialUpdate = false;
+                sInitialUpdate = false;
+            }
         }
     };
 
