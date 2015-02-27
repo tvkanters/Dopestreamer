@@ -60,6 +60,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @FXML
     private Label streamerInfo;
     @FXML
+    private Text streamTypeInfo;
+    @FXML
     private Label gameInfo;
     @FXML
     private CheckBox gameModeToggle;
@@ -315,9 +317,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * {@inheritDoc}
      */
     @Override
-    public void onStreamInfoUpdated(final String streamer, final String game) {
+    public void onStreamInfoUpdated(final String streamer, final String type, final String game) {
         Platform.runLater(() -> {
             streamerInfo.setText(streamer);
+            streamTypeInfo.setText(type);
             gameInfo.setText(game);
 
             topicActive.setVisible(true);

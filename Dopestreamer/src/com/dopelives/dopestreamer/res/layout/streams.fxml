@@ -89,7 +89,8 @@
 			<Label fx:id="streamerInfo" styleClass="streamInfo" />
 		</HBox>
 		<HBox>
-			<Text text="Game: " />
+            <Text fx:id="streamTypeInfo" />
+            <Text text=": " />
 			<Label fx:id="gameInfo" styleClass="streamInfo" />
 		</HBox>
 	</VBox>

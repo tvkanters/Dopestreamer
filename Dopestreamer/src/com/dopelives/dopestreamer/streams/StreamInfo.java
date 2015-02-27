@@ -21,7 +21,7 @@ import com.dopelives.dopestreamer.util.Pref;
 public class StreamInfo {
 
     /** The URL at which to get the topic info */
-    private static final String URL_TOPIC = "http://goalitium.kapsi.fi/dopelives_status";
+    private static final String URL_TOPIC = "http://goalitium.kapsi.fi/dopelives_status2";
     /** The URL at which to get the Hitbox info */
     private static final String URL_HITBOX = "http://api.hitbox.tv/media/live/dopefish";
 
@@ -31,7 +31,7 @@ public class StreamInfo {
     private static final int REQUEST_INTERVAL_VIEWER_COUNT = 15 * 1000;
 
     /** The pattern used to match active streams */
-    private static final Pattern sTopicParser = Pattern.compile("^(.+) is playing (.+)$");
+    private static final Pattern sTopicParser = Pattern.compile("^(.+)\n([^:]+): ?(.+)$");
 
     /** Whether or not the initial update is processing */
     private static boolean sInitialUpdate = true;
@@ -39,6 +39,8 @@ public class StreamInfo {
     private static boolean sStreamActive = false;
     /** The last detected streamer */
     private static String sStreamer;
+    /** The last detected stream type */
+    private static String sType;
     /** The last detected game */
     private static String sGame;
 
@@ -66,16 +68,18 @@ public class StreamInfo {
                 if (matcher.find()) {
                     // Stream info found, see if it needs to be updated
                     final String streamer = matcher.group(1);
-                    final String game = matcher.group(2);
+                    final String type = matcher.group(2);
+                    final String game = matcher.group(3);
 
-                    if (!sStreamActive || !sStreamer.equals(streamer) || !sGame.equals(game)) {
+                    if (!sStreamActive || !sStreamer.equals(streamer) || !sType.equals(type) || !sGame.equals(game)) {
                         sStreamActive = true;
                         sStreamer = streamer;
+                        sType = type;
                         sGame = game;
 
                         // Notify all listeners of a change in stream info
                         for (final StreamInfoListener listener : sListeners) {
-                            listener.onStreamInfoUpdated(sStreamer, sGame);
+                            listener.onStreamInfoUpdated(sStreamer, sType, sGame);
                         }
 
                         // Notify the user if he wants and if a stream isn't already active
@@ -260,10 +264,12 @@ public class StreamInfo {
          *
          * @param streamer
          *            The streamer
+         * @param The
+         *            type of stream
          * @param game
          *            The game being streamed
          */
-        void onStreamInfoUpdated(String streamer, String game);
+        void onStreamInfoUpdated(String streamer, String type, String game);
 
         /**
          * Called when a streamer has stopped.
