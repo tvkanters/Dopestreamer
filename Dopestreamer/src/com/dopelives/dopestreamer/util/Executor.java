@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class Executor {
 
     /** The maximum amount of threads in the pool */
-    private static final int MAX_NUM_THREADS = 32;
+    private static final int MAX_NUM_THREADS = 10;
 
     /** The executor that does the hard work */
     private static final ScheduledThreadPoolExecutor sExecutor;
@@ -18,7 +18,7 @@ public class Executor {
     static {
         // Prepare the executor
         sExecutor = new ScheduledThreadPoolExecutor(MAX_NUM_THREADS);
-        sExecutor.setKeepAliveTime(10, TimeUnit.SECONDS);
+        sExecutor.setKeepAliveTime(30, TimeUnit.SECONDS);
         sExecutor.allowCoreThreadTimeOut(true);
     }
 
