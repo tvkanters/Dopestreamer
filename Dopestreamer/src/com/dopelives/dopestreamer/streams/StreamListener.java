@@ -59,4 +59,12 @@ public interface StreamListener {
      */
     void onLivestreamerNotFound(final Stream stream);
 
+    /**
+     * Called when RTMPDump can't be found.
+     *
+     * @param stream
+     *            The stream that encountered the error
+     */
+    void onRtmpDumpNotFound(final Stream stream);
+
 }
