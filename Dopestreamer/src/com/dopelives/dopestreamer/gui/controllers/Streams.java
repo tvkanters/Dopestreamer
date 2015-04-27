@@ -317,6 +317,16 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * {@inheritDoc}
      */
     @Override
+    public void onRtmpDumpNotFound(final Stream stream) {
+        Platform.runLater(() -> {
+            streamButton.setText("RTMPDump not found");
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onStreamInfoUpdated(final String streamer, final String type, final String game) {
         Platform.runLater(() -> {
             streamerInfo.setText(streamer);

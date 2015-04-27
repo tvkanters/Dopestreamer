@@ -227,4 +227,10 @@ public class TrayManager implements StreamListener {
     @Override
     public void onLivestreamerNotFound(final Stream stream) {}
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onRtmpDumpNotFound(final Stream stream) {}
+
 }

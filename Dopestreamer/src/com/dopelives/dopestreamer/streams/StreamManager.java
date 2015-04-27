@@ -259,6 +259,11 @@ public class StreamManager implements ConsoleListener {
         } else if (output.contains(" is not recognized as an internal or external command")) {
             stopStream();
             mListeners.forEach(l -> l.onLivestreamerNotFound(mStream));
+
+            // RTMPDump isn't found
+        } else if (output.contains("Unable to find") && output.contains("rtmpdump")) {
+            stopStream();
+            mListeners.forEach(l -> l.onRtmpDumpNotFound(mStream));
         }
 
     }
