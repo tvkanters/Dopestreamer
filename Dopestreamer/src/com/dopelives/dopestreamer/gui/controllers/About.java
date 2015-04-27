@@ -8,7 +8,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
@@ -17,25 +16,44 @@ import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Updater;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StageManager;
+import com.dopelives.dopestreamer.util.Pref;
 
-public class About implements Initializable, Controller {
+public class About extends ScrollableController {
 
     @FXML
-    private Node updateBox;
+    private Node dopestreamerUpdateBox;
     @FXML
-    private Label version;
+    private Label dopestreamerVersion;
     @FXML
-    private Text versionAvailable;
+    private Text dopestreamerVersionAvailable;
+
+    @FXML
+    private Node livestreamerUpdateBox;
+    @FXML
+    private Label livestreamerVersion;
+    @FXML
+    private Text liveStreamerVersionAvailable;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
-        version.setText("Version " + Environment.VERSION);
+        super.initialize(location, resources);
 
-        if (Updater.isOutdated()) {
-            versionAvailable.setText("New update available: v" + Updater.getLatestVersion());
+        dopestreamerVersion.setText("Version " + Environment.VERSION);
+        if (Updater.isDopestreamerOutdated()) {
+            dopestreamerVersionAvailable.setText("New update available: v" + Updater.getLatestDopestreamerVersion());
 
-            updateBox.setManaged(true);
-            updateBox.setVisible(true);
+            dopestreamerUpdateBox.setManaged(true);
+            dopestreamerUpdateBox.setVisible(true);
+        }
+
+        final String currentVersion = Updater.getCurrentLivestreamerVersion();
+        livestreamerVersion.setText("Livestreamer "
+                + (currentVersion != null ? "version " + currentVersion : "not found"));
+        if (Pref.LIVESTREAMER_UPDATE_CHECK.getBoolean() && Updater.isLivestreamerOutdated()) {
+            liveStreamerVersionAvailable.setText("New update available: v" + Updater.getLatestLivestreamerVersion());
+
+            livestreamerUpdateBox.setManaged(true);
+            livestreamerUpdateBox.setVisible(true);
         }
     }
 
@@ -43,12 +61,17 @@ public class About implements Initializable, Controller {
     public void onActived() {}
 
     @FXML
-    public void onChangelogClicked() {
+    public void onDopestreamerChangelogClicked() {
         openUrl("https://github.com/tvkanters/Dopestreamer/releases");
     }
 
     @FXML
-    public void onUpdateClicked() {
+    public void onLivestreamerChangelogClicked() {
+        openUrl("https://github.com/chrippa/livestreamer/releases");
+    }
+
+    @FXML
+    public void onDopestreamerUpdateClicked() {
         StageManager.getScreenmanager().setScreen(Screen.UPDATE);
     }
 

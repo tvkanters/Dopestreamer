@@ -9,10 +9,12 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.util.HttpHelper;
 
 /**
@@ -20,40 +22,80 @@ import com.dopelives.dopestreamer.util.HttpHelper;
  */
 public class Updater {
 
-    /** The Github API page */
-    private static final String GITHUB_PAGE = "https://api.github.com/repos/tvkanters/Dopestreamer/releases?per_page=1";
+    /** The Dopestreamer Github API page */
+    private static final String DOPESTREAMER_PAGE = "https://api.github.com/repos/tvkanters/Dopestreamer/releases?per_page=1";
+    /** The Livestreamer Github API page */
+    private static final String LIVESTREAMER_PAGE = "https://api.github.com/repos/chrippa/livestreamer/releases?per_page=1";
+
+    /** The pattern used to match version numbers */
+    private static final Pattern sVersionMatcher = Pattern.compile("^\\d+(\\.\\d+)*$");
+
     /** The latest Dopestreamer version's code in x.x.x format */
-    private static String sLatestVersion = null;
+    private static String sDopestreamerLatestVersion = null;
+    /** The latest Livestreamer version's code in x.x.x format */
+    private static String sLivestreamerLatestVersion = null;
+
+    /**
+     * Queries Github to check what the latest Dopestreamer version is.
+     *
+     * @return The latest version's code in x.x.x format or null if it couldn't be loaded
+     */
+    public static synchronized String updateLatestDopestreamerVersion() {
+        sDopestreamerLatestVersion = queryLatestVersion(DOPESTREAMER_PAGE);
+        return sDopestreamerLatestVersion;
+    }
+
+    /**
+     * Queries Github to check what the latest Livestreamer version is.
+     *
+     * @return The latest version's code in x.x.x format or null if it couldn't be loaded
+     */
+    public static synchronized String updateLatestLivestreamerVersion() {
+        sLivestreamerLatestVersion = queryLatestVersion(LIVESTREAMER_PAGE);
+        return sLivestreamerLatestVersion;
+    }
 
     /**
      * Queries Github to check what the latest version is.
      *
-     * @return The latest version's code in x.x.x format
+     * @return The latest version's code in x.x.x format or null if it couldn't be loaded
      */
-    public static synchronized String updateLatestVersion() {
-        final String result = HttpHelper.getContent(GITHUB_PAGE);
+    private static synchronized String queryLatestVersion(final String page) {
+        final String result = HttpHelper.getContent(page);
         if (result == null) {
             return null;
         }
 
         final JSONObject json = new JSONArray(result).getJSONObject(0);
-        sLatestVersion = json.getString("tag_name").substring(1);
-
-        return sLatestVersion;
+        return json.getString("tag_name").substring(1);
     }
 
     /**
-     * Returns the version that was latest last time it was checked. If it wasn't checked before, Github will be queried
-     * to check what the latest version is.
+     * Returns the Dopestreamer version that was latest last time it was checked. If it wasn't checked before, Github
+     * will be queried to check what the latest version is.
      *
-     * @return The latest version's code code in x.x.x format
+     * @return The latest version's code code in x.x.x format or null if it couldn't be loaded
      */
-    public static synchronized String getLatestVersion() {
-        if (sLatestVersion == null) {
-            updateLatestVersion();
+    public static synchronized String getLatestDopestreamerVersion() {
+        if (sDopestreamerLatestVersion == null) {
+            updateLatestDopestreamerVersion();
         }
 
-        return sLatestVersion;
+        return sDopestreamerLatestVersion;
+    }
+
+    /**
+     * Returns the Livestreamer version that was latest last time it was checked. If it wasn't checked before, Github
+     * will be queried to check what the latest version is.
+     *
+     * @return The latest version's code code in x.x.x format or null if it couldn't be loaded
+     */
+    public static synchronized String getLatestLivestreamerVersion() {
+        if (sLivestreamerLatestVersion == null) {
+            updateLatestLivestreamerVersion();
+        }
+
+        return sLivestreamerLatestVersion;
     }
 
     /**
@@ -61,9 +103,37 @@ public class Updater {
      *
      * @return True iff there is a newer version
      */
-    public static boolean isOutdated() {
-        final String latestVersion = getLatestVersion();
+    public static boolean isDopestreamerOutdated() {
+        final String latestVersion = getLatestDopestreamerVersion();
         return latestVersion != null && !latestVersion.equals(Environment.VERSION);
+    }
+
+    /**
+     * Checks if there the current version of Livestreamer is outdated, based on the latest version on Github.
+     *
+     * @return True iff there is a newer version
+     */
+    public static boolean isLivestreamerOutdated() {
+        final String latestVersion = getLatestLivestreamerVersion();
+        return latestVersion != null && !latestVersion.equals(getCurrentLivestreamerVersion());
+    }
+
+    /**
+     * Checks what the current version of Livestreamer is, based on what's installed.
+     *
+     * @return The current version of Livestreamer or null if it couldn't be found
+     */
+    public static String getCurrentLivestreamerVersion() {
+        final Shell shell = Shell.getInstance();
+        String currentVersion = shell.executeCommandForResult(shell.getLivestreamerPath() + " --version");
+        currentVersion = currentVersion.substring(currentVersion.indexOf(' ') + 1);
+
+        // Only return an actual version number or nothing
+        if (sVersionMatcher.matcher(currentVersion).find()) {
+            return currentVersion;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -73,7 +143,7 @@ public class Updater {
      * @return True iff the update was successful
      */
     public static boolean downloadAndInstallUpdate() {
-        final String result = HttpHelper.getContent(GITHUB_PAGE);
+        final String result = HttpHelper.getContent(DOPESTREAMER_PAGE);
         if (result == null) {
             return false;
         }

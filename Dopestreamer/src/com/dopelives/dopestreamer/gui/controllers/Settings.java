@@ -7,24 +7,17 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
 import com.dopelives.dopestreamer.Environment;
@@ -38,10 +31,7 @@ import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.Pref;
 
-public class Settings implements Initializable, Controller {
-
-    /** The factor to multiple the original scroll speed with */
-    private static final double SCROLL_SPEED = 3;
+public class Settings extends ScrollableController {
 
     @FXML
     private CheckBox startOnBootToggle;
@@ -58,6 +48,8 @@ public class Settings implements Initializable, Controller {
     @FXML
     private CheckBox notificationDingdongToggle;
     @FXML
+    private CheckBox livestreamerUpdateCheckToggle;
+    @FXML
     private CheckBox protocolToggle;
     @FXML
     private VBox protocolToggleWrapper;
@@ -71,14 +63,11 @@ public class Settings implements Initializable, Controller {
     private ComboBox<Vacker.Server> vackerServerSelection;
     @FXML
     private Button saveOutputButton;
-    @FXML
-    private ScrollPane scrollPane;
-
-    /** Whether or not the scroll bar is being dragged */
-    private boolean mIsDragging = false;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
+        super.initialize(location, resources);
+
         final Shell shell = Shell.getInstance();
 
         // Set the checkbox preferences
@@ -87,6 +76,7 @@ public class Settings implements Initializable, Controller {
         showInTrayToggle.setSelected(Pref.SHOW_IN_TRAY.getBoolean());
         notificationToggle.setSelected(Pref.NOTIFICATIONS.getBoolean());
         notificationDingdongToggle.setSelected(Pref.NOTIFICATION_DINGDONG.getBoolean());
+        livestreamerUpdateCheckToggle.setSelected(Pref.LIVESTREAMER_UPDATE_CHECK.getBoolean());
 
         // Set the start on boot checkbox
         if (shell.isStartOnBootSupported()) {
@@ -155,51 +145,6 @@ public class Settings implements Initializable, Controller {
         vackerServerSelection.setButtonCell(new ComboBoxCell<Vacker.Server>());
         vackerServerSelection
                 .setCellFactory((final ListView<Vacker.Server> param) -> new ComboBoxCell<Vacker.Server>());
-
-        // Make the scroll speed not be painfully slow
-        scrollPane.vvalueProperty().addListener(new ChangeListener<Number>() {
-            /** The value set by this object to prevent recursive updates */
-            private double mSetValue = 0;
-
-            @Override
-            public void changed(final ObservableValue<? extends Number> observable, final Number oldVal,
-                    final Number newVal) {
-                final double oldValue = oldVal.doubleValue();
-                final double newValue = newVal.doubleValue();
-
-                // Recursive update and dragging detection
-                if (newValue == mSetValue || mIsDragging) {
-                    return;
-                }
-
-                final double difference = newValue - oldValue;
-                mSetValue = Math.max(scrollPane.getVmin(),
-                        Math.min(scrollPane.getVmax(), newValue + difference * (SCROLL_SPEED - 1)));
-
-                scrollPane.vvalueProperty().set(mSetValue);
-            }
-        });
-
-        // Prevent scroll bar dragging from twitching due to the scroll speed fix
-        // Must be done at a later time as the scroll bars are loaded later
-        scrollPane.setOnMouseEntered((final MouseEvent event) -> {
-            scrollPane.setOnMouseEntered(null);
-            final Set<Node> nodes = scrollPane.lookupAll(".scroll-bar .thumb");
-            for (final Node node : nodes) {
-                node.setOnMousePressed(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(final MouseEvent event) {
-                        mIsDragging = true;
-                    }
-                });
-                node.setOnMouseReleased(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(final MouseEvent event) {
-                        mIsDragging = false;
-                    }
-                });
-            }
-        });
     }
 
     @Override
@@ -235,6 +180,11 @@ public class Settings implements Initializable, Controller {
     @FXML
     public void onNotificationDingdongToggle() {
         Pref.NOTIFICATION_DINGDONG.put(notificationDingdongToggle.isSelected());
+    }
+
+    @FXML
+    public void onLivestreamerUpdateCheckToggle() {
+        Pref.LIVESTREAMER_UPDATE_CHECK.put(livestreamerUpdateCheckToggle.isSelected());
     }
 
     @FXML

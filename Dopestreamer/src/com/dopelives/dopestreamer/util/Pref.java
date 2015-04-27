@@ -36,7 +36,9 @@ public enum Pref {
     /** Whether or not streams automatically switch to live Dopelives channels */
     AUTOSWITCH("autoswitch", true),
     /** The Vacker server to use */
-    VACKER_SERVER("vackerserver", "");
+    VACKER_SERVER("vackerserver", ""),
+    /** Whether or not Dopestreamer should check if updates of Livestreamer are available */
+    LIVESTREAMER_UPDATE_CHECK("livestreamerupdatecheck", true);
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());

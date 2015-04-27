@@ -25,6 +25,7 @@
 
     <fx:include source="header.fxml" />
 
+
     <ScrollPane fx:id="scrollPane" minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
         <VBox minHeight="280" >
 		    <Label text="General" />
@@ -45,6 +46,8 @@
                 <VBox prefHeight="2" />
                 <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support livestreamer:// and rtmp://" />
             </VBox>
+            <VBox prefHeight="2" />
+            <CheckBox fx:id="livestreamerUpdateCheckToggle" onAction="#onLivestreamerUpdateCheckToggle" text="Check for Livestreamer updates" />
             
             <Label text="Media player" />
             <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />

@@ -25,24 +25,36 @@
 	<fx:include source="header.fxml" />
 
 
-    <Label fx:id="version" />
-    <VBox fx:id="updateBox" managed="false" visible="false">
-	    <Text fx:id="versionAvailable" />
-	    <Text text="View changelog" onMouseClicked="#onChangelogClicked" styleClass="link" />
-	    <VBox prefHeight="10" />
-	    <Button text="Update" onMouseClicked="#onUpdateClicked" prefWidth="260" prefHeight="30"/>
-    </VBox>
-
-	<Label text="Developed by" />
-	<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
-    <Text text="Simon Vacker (Xphome)" onMouseClicked="#onXphomeClicked" styleClass="link" />
-    <Text text="Jimmy (did nothing wrong)" />
-    <Text text="Ari Vuollet (GoaLitiuM)" />
-
-	<Label text="Special thanks to" />
-	<Text text="The Dopelives community" onMouseClicked="#onDopelivesClicked" styleClass="link" />
-	<Text text="The Livestreamer devs" onMouseClicked="#onLivestreamerClicked" styleClass="link" />
-	<Text text="The RTMPDump devs" onMouseClicked="#onRtmpDumpClicked" styleClass="link" />
+    <ScrollPane fx:id="scrollPane" minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox minHeight="280" >
+		    <Label fx:id="dopestreamerVersion" />
+		    <VBox fx:id="dopestreamerUpdateBox" managed="false" visible="false">
+		        <Text fx:id="dopestreamerVersionAvailable" />
+		        <Text text="View changelog" onMouseClicked="#onDopestreamerChangelogClicked" styleClass="link" />
+		        <VBox prefHeight="10" />
+		        <Button text="Update" onMouseClicked="#onDopestreamerUpdateClicked" prefWidth="260" prefHeight="30"/>
+		    </VBox>
+            <Label fx:id="livestreamerVersion" />
+		    <VBox fx:id="livestreamerUpdateBox" managed="false" visible="false">
+		        <Text fx:id="liveStreamerVersionAvailable" />
+		        <Text text="Visit Github to update" onMouseClicked="#onLivestreamerChangelogClicked" styleClass="link" />
+                <Text wrappingWidth="260" text="${'• Download the zip file\n• Move contents to DSer/LSer directory\n• Remove the outdated .egg folders'}" />
+		    </VBox>
+		
+			<Label text="Developed by" />
+			<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
+		    <Text text="Simon Vacker (Xphome)" onMouseClicked="#onXphomeClicked" styleClass="link" />
+		    <Text text="Jimmy (did nothing wrong)" />
+		    <Text text="Ari Vuollet (GoaLitiuM)" />
+		
+			<Label text="Special thanks to" />
+			<Text text="The Dopelives community" onMouseClicked="#onDopelivesClicked" styleClass="link" />
+			<Text text="The Livestreamer devs" onMouseClicked="#onLivestreamerClicked" styleClass="link" />
+			<Text text="The RTMPDump devs" onMouseClicked="#onRtmpDumpClicked" styleClass="link" />
+			
+            <VBox prefHeight="20" />
+		</VBox>
+	</ScrollPane>
 
 
 </VBox>
