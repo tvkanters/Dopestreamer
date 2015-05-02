@@ -34,6 +34,15 @@ public class Updater {
     private static String sDopestreamerLatestVersion = null;
     /** The latest Livestreamer version's code in x.x.x format */
     private static String sLivestreamerLatestVersion = null;
+    /** The current Livestreamer version's code in x.x.x format */
+    private static String sLivestreamerCurrentVersion = null;
+
+    /**
+     * @return True iff the version check for Dopestreamer has been completed
+     */
+    public static synchronized boolean isDopestreamerVersionCheckComplete() {
+        return sDopestreamerLatestVersion != null;
+    }
 
     /**
      * Queries Github to check what the latest Dopestreamer version is.
@@ -123,17 +132,19 @@ public class Updater {
      *
      * @return The current version of Livestreamer or null if it couldn't be found
      */
-    public static String getCurrentLivestreamerVersion() {
-        final Shell shell = Shell.getInstance();
-        String currentVersion = shell.executeCommandForResult(shell.getLivestreamerPath() + " --version");
-        currentVersion = currentVersion.substring(currentVersion.indexOf(' ') + 1);
+    public static synchronized String getCurrentLivestreamerVersion() {
+        if (sLivestreamerCurrentVersion == null) {
+            final Shell shell = Shell.getInstance();
+            String currentVersion = shell.executeCommandForResult(shell.getLivestreamerPath() + " --version");
+            currentVersion = currentVersion.substring(currentVersion.indexOf(' ') + 1);
 
-        // Only return an actual version number or nothing
-        if (sVersionMatcher.matcher(currentVersion).find()) {
-            return currentVersion;
-        } else {
-            return null;
+            // Only return an actual version number or nothing
+            if (sVersionMatcher.matcher(currentVersion).find()) {
+                sLivestreamerCurrentVersion = currentVersion;
+            }
         }
+
+        return sLivestreamerCurrentVersion;
     }
 
     /**

@@ -22,16 +22,28 @@ public class Header implements Initializable {
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
-        // Check if a new version is available
-        Executor.execute(() -> {
-            if (Updater.isDopestreamerOutdated()
-                    || (Pref.LIVESTREAMER_UPDATE_CHECK.getBoolean() && Updater.isLivestreamerOutdated())) {
-                // If a new version is available, replace the icon
-                Platform.runLater(() -> {
-                    aboutButton.setImage(ImageHelper.loadJavaFXImage("exclamation.png"));
-                });
+        // Check if a new version is available, and if so, replace the icon
+        if (Updater.isDopestreamerVersionCheckComplete()) {
+            if (isUpdateAvailable()) {
+                aboutButton.setImage(ImageHelper.loadJavaFXImage("exclamation.png"));
             }
-        });
+        } else {
+            Executor.execute(() -> {
+                if (isUpdateAvailable()) {
+                    Platform.runLater(() -> {
+                        aboutButton.setImage(ImageHelper.loadJavaFXImage("exclamation.png"));
+                    });
+                }
+            });
+        }
+    }
+
+    /**
+     * @return True if an update is available for something that should be checked
+     */
+    private boolean isUpdateAvailable() {
+        return Updater.isDopestreamerOutdated()
+                || (Pref.LIVESTREAMER_UPDATE_CHECK.getBoolean() && Updater.isLivestreamerOutdated());
     }
 
     @FXML
