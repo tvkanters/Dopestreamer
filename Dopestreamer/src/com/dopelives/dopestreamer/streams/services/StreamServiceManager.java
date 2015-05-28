@@ -29,8 +29,8 @@ public class StreamServiceManager {
         register(new Ustream());
         register(vacker);
 
-        registerAutoswitch(hitbox);
         registerAutoswitch(vacker);
+        registerAutoswitch(hitbox);
     }
 
     /**

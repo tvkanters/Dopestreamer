@@ -213,7 +213,6 @@ public class StreamManager implements ConsoleListener {
         if (output.contains("Opening stream")) {
             updateState(StreamState.BUFFERING);
             startBufferingTimeout();
-            resetAutoswitch();
 
             // No stream active at the moment, so waiting for it to start
         } else if (output.contains("Waiting for streams")) {
@@ -239,6 +238,7 @@ public class StreamManager implements ConsoleListener {
             // Opening the media player
         } else if (output.contains("Starting player")) {
             stopBufferingTimeout();
+            resetAutoswitch();
 
             // Streaming started
         } else if (output.contains("Writing stream")) {
