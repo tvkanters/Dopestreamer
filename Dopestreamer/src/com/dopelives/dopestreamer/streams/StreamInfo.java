@@ -24,6 +24,8 @@ public class StreamInfo {
     private static final String URL_TOPIC = "http://goalitium.kapsi.fi/dopelives_status2";
     /** The URL at which to get the Hitbox info */
     private static final String URL_HITBOX = "http://api.hitbox.tv/media/live/dopefish";
+    /** The URL at which to get the Twitch info */
+    private static final String URL_TWITCH = "https://api.twitch.tv/kraken/streams/dopelives";
 
     /** The amount of time in milliseconds before between each topic request */
     private static final int REQUEST_INTERVAL_TOPIC = 5 * 1000;
@@ -48,6 +50,8 @@ public class StreamInfo {
     private static int sViewersVacker = 0;
     /** The amount of viewers on Hitbox */
     private static int sViewersHitbox = 0;
+    /** The amount of viewers on Twitch */
+    private static int sViewersTwitch = 0;
 
     /** The task used for request topic intervals */
     private static ScheduledFuture<?> sRequestTopicTask;
@@ -154,7 +158,9 @@ public class StreamInfo {
             final String result = HttpHelper.getContent(URL_HITBOX);
             if (result != null) {
                 final JSONObject json = new JSONObject(result).getJSONArray("livestream").getJSONObject(0);
-                int viewerCount = 0;
+
+                // Viewer count is -2 by default to account for the restream viewers
+                int viewerCount = -2;
 
                 // Only add the Hitbox viewer count if it's live
                 if (json.getInt("media_is_live") == 1) {
@@ -162,8 +168,34 @@ public class StreamInfo {
                 }
 
                 // If the viewer count changed, update it
+                viewerCount = Math.max(viewerCount, 0);
                 if (viewerCount != sViewersHitbox) {
                     sViewersHitbox = viewerCount;
+                    updateViewerCount();
+                }
+            }
+        }
+    };
+
+    /** The updater performing the HTTP request to get the latest Twitch info */
+    private static final Runnable sTwitchUpdater = new Runnable() {
+        @Override
+        public void run() {
+            // Check the newest stream info
+            final String result = HttpHelper.getContent(URL_TWITCH);
+            if (result != null) {
+                final JSONObject json = new JSONObject(result).getJSONObject("stream");
+
+                int viewerCount = 0;
+
+                // Only add the Hitbox viewer count if it's live
+                if (json != null) {
+                    viewerCount += json.getInt("viewers");
+                }
+
+                // If the viewer count changed, update it
+                if (viewerCount != sViewersTwitch) {
+                    sViewersTwitch = viewerCount;
                     updateViewerCount();
                 }
             }
@@ -183,6 +215,7 @@ public class StreamInfo {
     private static void executeViewerCountRefresh() {
         Executor.execute(sVackerUpdater);
         Executor.execute(sHitboxUpdater);
+        Executor.execute(sTwitchUpdater);
     }
 
     /**
@@ -232,7 +265,7 @@ public class StreamInfo {
      * Informs the listeners of an updated viewer count.
      */
     private static void updateViewerCount() {
-        final int viewerCount = sViewersVacker + sViewersHitbox;
+        final int viewerCount = sViewersVacker + sViewersHitbox + sViewersTwitch;
 
         for (final StreamInfoListener listener : sListeners) {
             listener.onViewerCountUpdated(viewerCount);
