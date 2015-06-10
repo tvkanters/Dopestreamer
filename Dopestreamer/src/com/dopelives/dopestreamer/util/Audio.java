@@ -1,12 +1,15 @@
 package com.dopelives.dopestreamer.util;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import com.dopelives.dopestreamer.Environment;
 
@@ -46,8 +49,10 @@ public class Audio {
             // Open and play the audio stream
             clip.open(AudioSystem.getAudioInputStream(bufferedAudioStream));
             clip.start();
-        } catch (final Exception exc) {
-            exc.printStackTrace(System.out);
+
+        } catch (final RuntimeException | LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
+            // Audio could not be played, not big enough of a deal to do anything about it
+            ex.printStackTrace(System.out);
         }
     }
 }
