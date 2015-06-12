@@ -184,13 +184,13 @@ public class StreamInfo {
             // Check the newest stream info
             final String result = HttpHelper.getContent(URL_TWITCH);
             if (result != null) {
-                final JSONObject json = new JSONObject(result).getJSONObject("stream");
+                final JSONObject json = new JSONObject(result);
 
                 int viewerCount = 0;
 
-                // Only add the Hitbox viewer count if it's live
-                if (json != null) {
-                    viewerCount += json.getInt("viewers");
+                // Only add the Twitch viewer count if it's live
+                if (!json.isNull("stream")) {
+                    viewerCount += json.getJSONObject("stream").getInt("viewers");
                 }
 
                 // If the viewer count changed, update it
@@ -264,7 +264,7 @@ public class StreamInfo {
     /**
      * Informs the listeners of an updated viewer count.
      */
-    private static void updateViewerCount() {
+    private static synchronized void updateViewerCount() {
         final int viewerCount = sViewersVacker + sViewersHitbox + sViewersTwitch;
 
         for (final StreamInfoListener listener : sListeners) {
