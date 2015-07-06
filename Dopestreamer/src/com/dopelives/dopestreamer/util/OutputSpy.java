@@ -41,7 +41,7 @@ public class OutputSpy extends OutputStream {
      * {@inheritDoc}
      */
     @Override
-    public void write(final int b) throws IOException {
+    public synchronized void write(final int b) throws IOException {
         // Print to console
         mOutputStream.write(b);
 
