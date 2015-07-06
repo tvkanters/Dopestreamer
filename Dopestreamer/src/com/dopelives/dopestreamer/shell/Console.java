@@ -152,7 +152,11 @@ public class Console {
                 // Shut down the console
                 mRunning = false;
                 mStopped = true;
-                mOutput.close();
+                try {
+                    mOutput.close();
+                } catch (final IOException ex) {
+                    ex.printStackTrace();
+                }
 
                 // Inform the listeners that the process has stopped
                 mListeners.forEach(l -> l.onConsoleStop(mProcessId));
