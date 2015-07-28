@@ -176,6 +176,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         // Set checkbox preferences
         gameModeToggle.setSelected(Pref.GAME_MODE.getBoolean());
         autoswitchToggle.setSelected(Pref.AUTOSWITCH.getBoolean());
+        autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(selectedService));
 
         // Update to the right stream state
         final StreamManager streamManager = StreamManager.getInstance();
