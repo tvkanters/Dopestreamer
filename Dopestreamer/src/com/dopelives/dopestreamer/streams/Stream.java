@@ -81,6 +81,11 @@ public class Stream {
 
         command += " -l debug --retry-streams " + RETRY_DELAY;
 
+        // Makes HLS buffering quicker is wanted
+        if (Pref.HLS_QUICK_BUFFER.getBoolean()) {
+            command += " --hls-live-edge=2";
+        }
+
         // Add OS specific arguments
         final String additionalArguments = shell.getAdditionalLivestreamerArguments();
         if (!additionalArguments.equals("")) {

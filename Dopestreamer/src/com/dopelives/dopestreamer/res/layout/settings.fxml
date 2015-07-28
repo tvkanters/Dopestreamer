@@ -28,6 +28,18 @@
 
     <ScrollPane fx:id="scrollPane" minWidth="280" minHeight="360" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
         <VBox minHeight="280" >
+            
+            <Label text="Vacker server" />
+            <ComboBox fx:id="vackerServerSelection" prefWidth="260" prefHeight="30" />
+
+            <Label text="Media player" />
+            <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
+            <VBox fx:id="mediaPlayerLocationWrapper">
+                <VBox prefHeight="2" />
+                <TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
+                      promptText="Path to custom media player" />
+            </VBox>
+            
 		    <Label text="General" />
             <VBox fx:id="startOnBootToggleWrapper">
                 <CheckBox fx:id="startOnBootToggle" onAction="#onStartOnBootToggle" text="Start on Windows boot" />
@@ -48,17 +60,12 @@
             </VBox>
             <VBox prefHeight="2" />
             <CheckBox fx:id="livestreamerUpdateCheckToggle" onAction="#onLivestreamerUpdateCheckToggle" text="Check for Livestreamer updates" />
-            
-            <Label text="Media player" />
-            <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
-            <VBox fx:id="mediaPlayerLocationWrapper">
-                <VBox prefHeight="2" />
-                <TextField fx:id="mediaPlayerLocation" onKeyReleased="#onPlayerLocationChanged" prefWidth="260" prefHeight="30"
-                      promptText="Path to custom media player" />
-            </VBox>
-            
-            <Label text="Vacker server" />
-            <ComboBox fx:id="vackerServerSelection" prefWidth="260" prefHeight="30" />
+            <VBox prefHeight="2" />
+            <CheckBox fx:id="hlsQuickBufferToggle" onAction="#onHlsQuickBufferToggle" text="Reduced Twitch delay">
+                <tooltip>
+                    <Tooltip text="Reduces Twitch delay (and that of other HLS streams) by shortening buffering" />
+                </tooltip>
+            </CheckBox>
 		    
 		    <Label text="Debugging" />
 		    <Button fx:id="saveOutputButton" onAction="#onSaveOutput" text="Save console output to file" />

@@ -50,6 +50,8 @@ public class Settings extends ScrollableController {
     @FXML
     private CheckBox livestreamerUpdateCheckToggle;
     @FXML
+    private CheckBox hlsQuickBufferToggle;
+    @FXML
     private CheckBox protocolToggle;
     @FXML
     private VBox protocolToggleWrapper;
@@ -77,6 +79,7 @@ public class Settings extends ScrollableController {
         notificationToggle.setSelected(Pref.NOTIFICATIONS.getBoolean());
         notificationDingdongToggle.setSelected(Pref.NOTIFICATION_DINGDONG.getBoolean());
         livestreamerUpdateCheckToggle.setSelected(Pref.LIVESTREAMER_UPDATE_CHECK.getBoolean());
+        hlsQuickBufferToggle.setSelected(Pref.HLS_QUICK_BUFFER.getBoolean());
 
         // Set the start on boot checkbox
         if (shell.isStartOnBootSupported()) {
@@ -185,6 +188,11 @@ public class Settings extends ScrollableController {
     @FXML
     public void onLivestreamerUpdateCheckToggle() {
         Pref.LIVESTREAMER_UPDATE_CHECK.put(livestreamerUpdateCheckToggle.isSelected());
+    }
+
+    @FXML
+    public void onHlsQuickBufferToggle() {
+        Pref.HLS_QUICK_BUFFER.put(hlsQuickBufferToggle.isSelected());
     }
 
     @FXML
