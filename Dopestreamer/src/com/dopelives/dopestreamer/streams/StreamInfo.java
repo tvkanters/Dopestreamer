@@ -114,7 +114,7 @@ public class StreamInfo {
     private static final Runnable sVackerUpdater = new Runnable() {
 
         /** The channels to sum the viewers of */
-        private final String[] mChannels = { "live", "live_low", "restream", "restream_low" };
+        private final String[] mChannels = { "live", "live_low" };
 
         @Override
         public void run() {
@@ -139,7 +139,6 @@ public class StreamInfo {
                         viewerCount += channelInfo.getInt("viewers");
                     }
                 }
-
             }
 
             // If the viewer count changed, update it
