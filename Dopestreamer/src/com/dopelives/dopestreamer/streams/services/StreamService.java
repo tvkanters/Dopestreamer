@@ -34,7 +34,7 @@ public abstract class StreamService implements ComboBoxItem {
      * @return The details to connect through Livestreamer in the format {url}/{channel} {quality}
      */
     public String getConnectionDetails(final String channel, final Quality quality) {
-        return getUrl() + channel + " " + quality;
+        return getUrl() + channel + " " + quality.getCommand();
     }
 
     /**
