@@ -297,8 +297,8 @@ public class StreamInfo {
          *
          * @param streamer
          *            The streamer
-         * @param The
-         *            type of stream
+         * @param type
+         *            The type of stream
          * @param game
          *            The game being streamed
          */
