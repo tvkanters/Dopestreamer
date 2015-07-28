@@ -96,3 +96,12 @@ ScrollPane .corner {
 .viewerCount {
     -fx-padding: 21px 0 0 0;
 }
+
+
+.combo-box > .list-cell {
+    -fx-padding: 0 0 0 10px;
+    -fx-border-insets: 0 0 0 10px;
+}
+.combo-box-base > *.arrow-button {
+    -fx-padding: 0 10px 0 3px;
+}
