@@ -22,7 +22,8 @@ public class Vacker extends StreamService {
     public enum Server implements ComboBoxItem {
 
         DE("de", "Germany"),
-        NL("nl", "The Netherlands");
+        NL("nl", "The Netherlands"),
+        US("us", "United States");
 
         /** The key for this server */
         private final String mKey;
