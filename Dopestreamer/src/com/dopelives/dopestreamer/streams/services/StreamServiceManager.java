@@ -24,7 +24,6 @@ public class StreamServiceManager {
         register(hitbox);
         register(new LivestreamNew());
         register(new LivestreamOld());
-        register(new Restream());
         register(new Twitch());
         register(new Ustream());
         register(vacker);
