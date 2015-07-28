@@ -29,7 +29,7 @@ public class Executor {
      *            The task to execute
      */
     public static void execute(final Runnable task) {
-        sExecutor.execute(task);
+        sExecutor.execute(wrapTask(task));
     }
 
     /**
@@ -43,7 +43,7 @@ public class Executor {
      * @return The ScheduleFuture for further control over the scheduled task
      */
     public static ScheduledFuture<?> schedule(final Runnable task, final long delay) {
-        return sExecutor.schedule(task, delay, TimeUnit.MILLISECONDS);
+        return sExecutor.schedule(wrapTask(task), delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -57,7 +57,7 @@ public class Executor {
      * @return The ScheduleFuture for further control over the scheduled task
      */
     public static ScheduledFuture<?> scheduleInterval(final Runnable task, final long delay) {
-        return sExecutor.scheduleAtFixedRate(task, delay, delay, TimeUnit.MILLISECONDS);
+        return sExecutor.scheduleAtFixedRate(wrapTask(task), delay, delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -73,7 +73,28 @@ public class Executor {
      * @return The ScheduleFuture for further control over the scheduled task
      */
     public static ScheduledFuture<?> scheduleInterval(final Runnable task, final long initialDelay, final long delay) {
-        return sExecutor.scheduleAtFixedRate(task, initialDelay, delay, TimeUnit.MILLISECONDS);
+        return sExecutor.scheduleAtFixedRate(wrapTask(task), initialDelay, delay, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Wraps a task such that thrown exceptions will be printed.
+     *
+     * @param task
+     *            The task to execute
+     *
+     * @return The wrapped task to execute
+     */
+    private static Runnable wrapTask(final Runnable task) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    task.run();
+                } catch (final Throwable ex) {
+                    ex.printStackTrace();
+                }
+            }
+        };
     }
 
     /**
