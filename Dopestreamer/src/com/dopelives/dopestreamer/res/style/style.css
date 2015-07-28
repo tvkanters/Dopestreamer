@@ -84,6 +84,12 @@ ScrollPane {
     -fx-background-insets: 0;
     -fx-padding: 0;
 }
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
 
 ScrollPane:focused {
     -fx-background-insets: 0;

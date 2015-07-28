@@ -22,7 +22,6 @@ import javafx.scene.layout.VBox;
 
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
-import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
 import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
@@ -227,18 +226,13 @@ public class Settings extends ScrollableController {
 
     @FXML
     public void onPlayerLocationChanged(final KeyEvent keyEvent) {
+        // Release focus upon pressing enter
         if (keyEvent.getCode() == KeyCode.ENTER) {
             mediaPlayerLocation.getParent().requestFocus();
             return;
         }
 
         final String input = mediaPlayerLocation.getText();
-        if (input.equals("420")) {
-            for (final Screen screen : Screen.values()) {
-                screen.getNode().getStylesheets().add(Environment.STYLE_FOLDER + "420.css");
-            }
-            return;
-        }
 
         // Check input validity
         final boolean inputValid;

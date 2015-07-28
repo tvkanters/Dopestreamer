@@ -22,6 +22,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 
+import com.dopelives.dopestreamer.Environment;
+import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
 import com.dopelives.dopestreamer.streams.Quality;
@@ -105,6 +107,14 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                         throw new IllegalStateException("Unknown state: " + streamManager.getStreamState());
                 }
                 startStream();
+            }
+        });
+        // Dank it up
+        channelCustomInput.setOnKeyReleased((final KeyEvent key) -> {
+            if (channelCustomInput.getText().equals("420")) {
+                for (final Screen screen : Screen.values()) {
+                    screen.getNode().getStylesheets().add(Environment.STYLE_FOLDER + "420.css");
+                }
             }
         });
 
