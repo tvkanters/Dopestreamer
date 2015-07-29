@@ -17,6 +17,9 @@ public class Console {
     /** The number counting the amount of consoles opened */
     private static int sConsoleCount = 0;
 
+    /** The object to sync threads on */
+    private final Object mSync = this;
+
     /** The number indicating this console's count */
     private final int mConsoleCount;
     /** The listeners to receive updates of this console */
@@ -36,6 +39,8 @@ public class Console {
     private boolean mStarting = false;
     /** Whether or not the console is currently running */
     private boolean mRunning = false;
+    /** Whether or not the console should be stopping */
+    private boolean mStopping = false;
     /** Whether or not the console has ran and stopped */
     private boolean mStopped = false;
 
@@ -57,23 +62,22 @@ public class Console {
     /**
      * Executes the given command. May not be called while the process is already active.
      */
-    public void start() {
-        if (mStarting || mRunning || mStopped) {
-            throw new IllegalStateException("Console already executed");
-        }
-        mStarting = true;
+    public synchronized void start() {
+        synchronized (mSync) {
+            if (mStarting || mRunning || mStopped) {
+                throw new IllegalStateException("Console already executed");
+            }
+            mStarting = true;
 
-        System.out.println(mPrefix + "START");
+            System.out.println(mPrefix + "START");
 
-        // Execute the command
-        final Thread currentThread = Thread.currentThread();
-        Executor.execute(new ProcessRunner(currentThread));
+            // Execute the command
+            Executor.execute(new ProcessRunner());
 
-        // Wait for the process to be started (doesn't require command to be finish)
-        synchronized (currentThread) {
+            // Wait for the process to be started (doesn't require command to be finish)
             if (mStarting) {
                 try {
-                    currentThread.wait();
+                    wait();
                 } catch (final InterruptedException ex) {
                     ex.printStackTrace();
                 }
@@ -84,9 +88,12 @@ public class Console {
     /**
      * Forcefully stops the running process.
      */
-    public void stop() {
-        if (mProcessId != null) {
-            Shell.getInstance().killProcessTree(mProcessId);
+    public synchronized void stop() {
+        synchronized (mSync) {
+            mStopping = true;
+            if (mProcessId != null) {
+                Shell.getInstance().killProcessTree(mProcessId);
+            }
         }
     }
 
@@ -95,51 +102,44 @@ public class Console {
      */
     private class ProcessRunner implements Runnable {
 
-        /** The parent thread for this process */
-        final Thread mParentThread;
         /** The stream from which to get the results */
         private BufferedReader mOutput;
-
-        /**
-         * Prepares a new thread that a process can run in.
-         *
-         * @param parent
-         *            The thread starting this one
-         */
-        public ProcessRunner(final Thread parent) {
-            mParentThread = parent;
-        }
 
         @Override
         public void run() {
             try {
-                // Start process and retrieve streams
-                mProcess = mBuilder.start();
-                mProcessId = Shell.getInstance().getProcessId(mProcess);
-                mOutput = new BufferedReader(new InputStreamReader(mProcess.getInputStream()));
-
-                // Keep track of the output
-                mRunning = true;
-                Executor.execute(() -> {
-                    while (mRunning) {
-                        try {
-                            final String line = mOutput.readLine();
-                            if (line != null) {
-                                System.out.println(mPrefix + line);
-                                for (final ConsoleListener listener : mListeners) {
-                                    listener.onConsoleOutput(mProcessId, line);
-                                }
-                            }
-                        } catch (final IOException ex) {
-                            ex.printStackTrace();
-                        }
+                synchronized (mSync) {
+                    if (mStopping) {
+                        // Don't start the process, but exit nicely through the finally block
+                        return;
                     }
-                });
 
-                // Notify that the process has started
-                synchronized (mParentThread) {
+                    // Start process and retrieve streams
+                    mProcess = mBuilder.start();
+                    mProcessId = Shell.getInstance().getProcessId(mProcess);
+                    mOutput = new BufferedReader(new InputStreamReader(mProcess.getInputStream()));
+
+                    // Keep track of the output
+                    mRunning = true;
+                    Executor.execute(() -> {
+                        while (mRunning) {
+                            try {
+                                final String line = mOutput.readLine();
+                                if (line != null) {
+                                    System.out.println(mPrefix + line);
+                                    for (final ConsoleListener listener : mListeners) {
+                                        listener.onConsoleOutput(mProcessId, line);
+                                    }
+                                }
+                            } catch (final IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
+
+                    // Notify that the process has started
                     mStarting = false;
-                    mParentThread.notify();
+                    mSync.notifyAll();
                 }
 
                 // Wait for the process to finish
@@ -149,11 +149,17 @@ public class Console {
                     ex.printStackTrace();
                 }
 
+            } catch (final IOException ex) {
+                ex.printStackTrace();
+
+            } finally {
                 // Shut down the console
                 mRunning = false;
                 mStopped = true;
                 try {
-                    mOutput.close();
+                    if (mOutput != null) {
+                        mOutput.close();
+                    }
                 } catch (final IOException ex) {
                     ex.printStackTrace();
                 }
@@ -162,9 +168,6 @@ public class Console {
                 mListeners.forEach(l -> l.onConsoleStop(mProcessId));
 
                 System.out.println(mPrefix + "STOP");
-
-            } catch (final IOException ex) {
-                ex.printStackTrace();
             }
         }
     }

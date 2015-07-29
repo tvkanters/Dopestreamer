@@ -127,7 +127,7 @@ public class Stream {
     /**
      * Starts the stream through Livestreamer. May only be called once.
      */
-    public void start() {
+    public synchronized void start() {
         Executor.execute(() -> {
             if (!mStreamService.isChannelPossible(mChannel)) {
                 // Channel isn't possible, act as if Livestreamer complained
@@ -163,7 +163,7 @@ public class Stream {
     /**
      * Stops Livestreamer and its child processes.
      */
-    public void stop() {
+    public synchronized void stop() {
         mStopping = true;
         mConsole.stop();
     }
