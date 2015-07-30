@@ -18,10 +18,17 @@ public enum Quality implements ComboBoxItem {
 
     /** The label to show the user */
     private final String mLabel;
-
     /** The command to send to Livestreamer */
     private final String mCommand;
 
+    /**
+     * Creates a new quality option for streams.
+     *
+     * @param label
+     *            The label to show the user
+     * @param command
+     *            The command to send to Livestreamer
+     */
     private Quality(final String label, final String command) {
         mLabel = label;
         mCommand = command;
