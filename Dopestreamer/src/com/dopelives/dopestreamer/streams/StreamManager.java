@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
+import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
@@ -155,6 +156,7 @@ public class StreamManager implements ConsoleListener {
     /**
      * Starts the stream based on the user preferences. Will restart the stream if it was already running.
      */
+    @SuppressWarnings("unused")
     public synchronized void restartLastStream() {
         final Quality quality = Quality.valueOf(Pref.LAST_QUALITY.getString());
 
@@ -163,7 +165,7 @@ public class StreamManager implements ConsoleListener {
         final String channel = Pref.LAST_CHANNEL.getString();
 
         if (channel.equals("")) {
-            if (Pref.AUTOSWITCH.getBoolean()) {
+            if (Environment.ALLOW_AUTOSWITCH && Pref.AUTOSWITCH.getBoolean()) {
                 startAutoswitch(quality);
             } else {
                 startStream(streamService, quality);

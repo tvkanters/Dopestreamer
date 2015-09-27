@@ -175,8 +175,12 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         // Set checkbox preferences
         gameModeToggle.setSelected(Pref.GAME_MODE.getBoolean());
-        autoswitchToggle.setSelected(Pref.AUTOSWITCH.getBoolean());
-        autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(selectedService));
+        if (Environment.ALLOW_AUTOSWITCH) {
+            autoswitchToggle.setSelected(Pref.AUTOSWITCH.getBoolean());
+            autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(selectedService));
+        } else {
+            autoswitchToggle.setVisible(false);
+        }
 
         // Update to the right stream state
         final StreamManager streamManager = StreamManager.getInstance();
@@ -216,6 +220,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     /**
      * Uses the GUI input to start a stream.
      */
+    @SuppressWarnings("unused")
     private void startStream() {
         mAutoswitchEnabled = false;
         final StreamManager streamManager = StreamManager.getInstance();
@@ -224,7 +229,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         // Pick a default or custom channel
         if (channelDefault.isSelected() && selectedStreamService.hasDefaultChannel()) {
-            if (Pref.AUTOSWITCH.getBoolean()
+            if (Environment.ALLOW_AUTOSWITCH && Pref.AUTOSWITCH.getBoolean()
                     && StreamServiceManager.getAutoswitchServices().contains(selectedStreamService)) {
                 mAutoswitchEnabled = true;
                 streamManager.resetAutoswitch();
