@@ -6,6 +6,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.dopelives.dopestreamer.gui.StreamState;
@@ -130,7 +131,13 @@ public class StreamInfo {
                     return;
                 }
 
-                final JSONObject json = new JSONObject(result);
+                final JSONObject json;
+                try {
+                    json = new JSONObject(result);
+                } catch (final JSONException ex) {
+                    System.out.println("Could not parse Vacker response as JSON");
+                    return;
+                }
 
                 // Sum up the viewers of all relevant channels
                 for (final String channel : mChannels) {
@@ -156,7 +163,13 @@ public class StreamInfo {
             // Check the newest stream info
             final String result = HttpHelper.getContent(URL_HITBOX);
             if (result != null) {
-                final JSONObject json = new JSONObject(result).getJSONArray("livestream").getJSONObject(0);
+                final JSONObject json;
+                try {
+                    json = new JSONObject(result).getJSONArray("livestream").getJSONObject(0);
+                } catch (final JSONException ex) {
+                    System.out.println("Could not parse Hitbox response as JSON");
+                    return;
+                }
 
                 // Viewer count is -2 by default to account for the restream viewers
                 int viewerCount = -2;
@@ -183,7 +196,13 @@ public class StreamInfo {
             // Check the newest stream info
             final String result = HttpHelper.getContent(URL_TWITCH);
             if (result != null) {
-                final JSONObject json = new JSONObject(result);
+                final JSONObject json;
+                try {
+                    json = new JSONObject(result);
+                } catch (final JSONException ex) {
+                    System.out.println("Could not parse Twitch response as JSON");
+                    return;
+                }
 
                 int viewerCount = 0;
 

@@ -44,7 +44,7 @@ public class HttpHelper {
             }
             reader.close();
         } catch (final SocketTimeoutException ex) {
-            System.out.println("Timeout while loading URL " + url + ": " + ex.getClass());
+            System.out.println("Timeout while loading URL " + url);
             return null;
         } catch (final IOException ex) {
             System.out.println("Couldn't load URL " + url + ": " + ex.getClass());
