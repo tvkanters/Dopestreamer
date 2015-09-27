@@ -18,6 +18,7 @@ public class MediaPlayerManager {
         register(new MpcHc());
         register(new Mplayer());
         register(new Mpv());
+        register(new Potplayer());
         register(new Vlc());
     }
 
