@@ -121,8 +121,8 @@ public class Vacker extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    public String getIconUrl() {
-        return getDisabledIconUrl("services/vacker.png");
+    public String getStreamServiceIconUrl() {
+        return "vacker.png";
     }
 
     /**

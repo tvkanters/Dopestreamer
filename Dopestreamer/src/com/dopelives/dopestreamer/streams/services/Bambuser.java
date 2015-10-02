@@ -25,8 +25,8 @@ public class Bambuser extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    public String getIconUrl() {
-        return getDisabledIconUrl("services/bambuser.png");
+    public String getStreamServiceIconUrl() {
+        return "bambuser.png";
     }
 
     /**

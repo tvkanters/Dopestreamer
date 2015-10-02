@@ -1,12 +1,9 @@
 package com.dopelives.dopestreamer.streams.services;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-
-import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * A manager for all available stream services.
@@ -43,9 +40,6 @@ public class StreamServiceManager {
      */
     private static void register(final StreamService streamService) {
         sStreamServices.add(streamService);
-
-        streamService.showOnDropdown = !Arrays.asList(Pref.DISABLED_STREAM_SERVICES.getString().split(","))
-                .contains(streamService.getKey());
     }
 
     /**
@@ -59,16 +53,21 @@ public class StreamServiceManager {
     }
 
     /**
-     * @return An unmodifiable list of stream services
+     * @return An unmodifiable list of stream services, excluding disabled ones
      */
-    public static List<StreamService> getStreamServices() {
-        List<StreamService> ret = new LinkedList<>();
-        for (StreamService strm : sStreamServices) {
-            if (strm.showOnDropdown) ret.add(strm);
+    public static List<StreamService> getEnabledStreamServices() {
+        final List<StreamService> enabledStreamServices = new LinkedList<>();
+        for (final StreamService streamService : sStreamServices) {
+            if (streamService.isEnabled()) {
+                enabledStreamServices.add(streamService);
+            }
         }
-        return Collections.unmodifiableList(ret);
+        return Collections.unmodifiableList(enabledStreamServices);
     }
 
+    /**
+     * @return An unmodifiable list of stream services, including disabled ones
+     */
     public static List<StreamService> getAllStreamServices() {
         return Collections.unmodifiableList(sStreamServices);
     }

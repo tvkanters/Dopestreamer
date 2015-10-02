@@ -74,6 +74,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
     /** Whether or not autoswitch is currently active */
     private boolean mAutoswitchEnabled;
+    /** The stream service that was last selected */
+    private StreamService mLastSelected = null;
+    /** Whether or not the last selected stream service can be updated */
+    private boolean mLockStreamServiceSelection = false;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -124,15 +128,14 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         }
 
         // Add stream services to the combo box
-        final List<StreamService> streamServices = StreamServiceManager.getStreamServices();
+        final List<StreamService> streamServices = StreamServiceManager.getEnabledStreamServices();
         streamServiceSelection.getItems().addAll(streamServices);
 
         // Indicate unavailable streams and update quality options
         streamServiceSelection.setOnAction((final ActionEvent event) -> {
-            final StreamService streamService = streamServiceSelection.getValue();
-            if (streamService == null) return;
+            mLockStreamServiceSelection = false;
 
-            stickySelection = false;
+            final StreamService streamService = streamServiceSelection.getValue();
 
             final boolean disableDefault = !streamService.hasDefaultChannel();
             final boolean disableCustom = !streamService.allowsCustomChannels();
@@ -153,20 +156,21 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         });
 
         // Select the stored last stream service
-        final StreamService selectedService = StreamServiceManager
-                .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getString());
+        final StreamService selectedService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
+                .getString());
         if (streamServices.contains(selectedService)) {
             streamServiceSelection.getSelectionModel().select(selectedService);
-        } else if (streamServices.size() > 0) {
-            streamServiceSelection.getSelectionModel().select(0);
-        } else {
-            streamServiceSelection.getSelectionModel().clearSelection();
         }
+
         // Make sure a value is selected
         if (streamServiceSelection.getValue() == null) {
-            final StreamService defaultService = StreamServiceManager
-                    .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getDefaultString());
-            streamServiceSelection.getSelectionModel().select(defaultService);
+            final StreamService defaultService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
+                    .getDefaultString());
+            if (streamServices.contains(defaultService)) {
+                streamServiceSelection.getSelectionModel().select(defaultService);
+            } else {
+                streamServiceSelection.getSelectionModel().select(0);
+            }
         }
 
         // Make the stream services look nice within the combo box
@@ -196,29 +200,6 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         // Update the stream info
         StreamInfo.addListener(this);
         StreamInfo.startRequestInterval();
-    }
-
-    private StreamService lastSelected = null;
-    private boolean stickySelection = false;
-
-    public void updateStreamList() {
-        final List<StreamService> streamServices = StreamServiceManager.getStreamServices();
-        Platform.runLater(() -> {
-            StreamService selected = streamServiceSelection.getValue();
-            if (selected != null && !stickySelection) lastSelected = selected;
-            streamServiceSelection.getSelectionModel().clearSelection();
-            streamServiceSelection.getItems().setAll(streamServices);
-            if (streamServiceSelection.getItems().contains(lastSelected) && stickySelection) {
-                streamServiceSelection.getSelectionModel().select(lastSelected);
-                stickySelection = false;
-            } else if (streamServiceSelection.getItems().contains(selected)) {
-                streamServiceSelection.getSelectionModel().select(selected);
-                stickySelection = true;
-            } else if (streamServices.size() > 0) {
-                streamServiceSelection.getSelectionModel().select(0);
-                stickySelection = true;
-            }
-        });
     }
 
     @Override
@@ -254,7 +235,6 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         mAutoswitchEnabled = false;
         final StreamManager streamManager = StreamManager.getInstance();
         final StreamService selectedStreamService = streamServiceSelection.getValue();
-        if (selectedStreamService == null) return;
         final Quality quality = qualitySelection.getValue();
 
         // Pick a default or custom channel
@@ -280,8 +260,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * {@inheritDoc}
      */
     @Override
-    public void onStateUpdated(final StreamManager streamManager, final StreamState oldState,
-            final StreamState newState) {
+    public void onStateUpdated(final StreamManager streamManager, final StreamState oldState, final StreamState newState) {
         switch (newState) {
             case CONNECTING:
                 setCustomChannelValid(true);
@@ -468,6 +447,38 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @FXML
     private void clearFocus() {
         root.requestFocus();
+    }
+
+    /**
+     * Updates the last of stream services. To be called after stream services are enabled or disabled.
+     */
+    public void updateStreamServices() {
+        Platform.runLater(() -> {
+            final List<StreamService> streamServices = StreamServiceManager.getEnabledStreamServices();
+
+            // Keep track of which stream service the user selected manually
+            final StreamService selected = streamServiceSelection.getValue();
+            if (selected != null && !mLockStreamServiceSelection) {
+                mLastSelected = selected;
+            }
+
+            // Update the stream services
+            streamServiceSelection.getItems().setAll(streamServices);
+
+            // Select the right stream service
+            if (streamServiceSelection.getItems().contains(mLastSelected) && mLockStreamServiceSelection) {
+                streamServiceSelection.getSelectionModel().select(mLastSelected);
+                mLockStreamServiceSelection = false;
+
+            } else if (streamServiceSelection.getItems().contains(selected)) {
+                streamServiceSelection.getSelectionModel().select(selected);
+                mLockStreamServiceSelection = true;
+
+            } else if (streamServices.size() > 0) {
+                streamServiceSelection.getSelectionModel().select(0);
+                mLockStreamServiceSelection = true;
+            }
+        });
     }
 
 }

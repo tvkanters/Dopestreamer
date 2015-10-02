@@ -70,7 +70,7 @@ public class Settings extends ScrollableController {
     @FXML
     private Button saveOutputButton;
     @FXML
-    private ComboBox<StreamService> streamingServiceList;
+    private ComboBox<StreamService> streamingServicesDisabled;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -107,37 +107,41 @@ public class Settings extends ScrollableController {
             protocolToggleWrapper.setManaged(false);
         }
 
-        // Populate list
+        // Add stream services to the combo box
         final List<StreamService> streamServices = StreamServiceManager.getAllStreamServices();
-        streamingServiceList.getItems().setAll(streamServices);
-        streamingServiceList.setValue(null);
+        streamingServicesDisabled.getItems().setAll(streamServices);
+        streamingServicesDisabled.setValue(null);
 
-        // Make it look good
-        streamingServiceList.setButtonCell(new ComboBoxCell<>());
-        streamingServiceList.setCellFactory((final ListView<StreamService> param) -> new ComboBoxCell<StreamService>());
+        // Make the stream services look nice within the combo box
+        streamingServicesDisabled.setButtonCell(new ComboBoxCell<>());
+        streamingServicesDisabled
+                .setCellFactory((final ListView<StreamService> param) -> new ComboBoxCell<StreamService>());
 
-        streamingServiceList.setOnAction((final ActionEvent event) -> {
-            final StreamService streamService = streamingServiceList.getValue();
-            if (streamService == null) // Lol recursion
+        streamingServicesDisabled.setOnAction((final ActionEvent event) -> {
+            final StreamService streamService = streamingServicesDisabled.getValue();
+            if (streamService == null) {
                 return;
-
-            streamService.showOnDropdown = !streamService.showOnDropdown;
-            if (streamService.showOnDropdown) {
-                List<String> disabledStreamServices = new ArrayList<String>(
-                        Arrays.asList(Pref.DISABLED_STREAM_SERVICES.getString().split(",")));
-                disabledStreamServices.remove(streamService.getKey());
-                String newstring = String.join(",", disabledStreamServices);
-                Pref.DISABLED_STREAM_SERVICES.put(newstring);
-            } else {
-                String current = Pref.DISABLED_STREAM_SERVICES.getString();
-                Pref.DISABLED_STREAM_SERVICES.put((!current.equals("") ? current + "," : "") + streamService.getKey());
             }
+
+            final String disabledStreamServices = Pref.DISABLED_STREAM_SERVICES.getString();
+            if (streamService.isEnabled()) {
+                // Disable the stream service
+                Pref.DISABLED_STREAM_SERVICES.put((!disabledStreamServices.equals("") ? disabledStreamServices + ","
+                        : "") + streamService.getKey());
+            } else {
+                // Enable the stream service
+                final List<String> disabledStreamServicesSplit = new ArrayList<String>(Arrays
+                        .asList(disabledStreamServices.split(",")));
+                disabledStreamServicesSplit.remove(streamService.getKey());
+                Pref.DISABLED_STREAM_SERVICES.put(String.join(",", disabledStreamServicesSplit));
+            }
+
             Platform.runLater(() -> {
-                streamingServiceList.getSelectionModel().clearSelection();
-                streamingServiceList.getItems().setAll(streamServices);
+                streamingServicesDisabled.getSelectionModel().clearSelection();
+                streamingServicesDisabled.getItems().setAll(streamServices);
             });
-            Streams streams = (Streams) Screen.STREAMS.getController();
-            streams.updateStreamList();
+
+            ((Streams) Screen.STREAMS.getController()).updateStreamServices();
         });
 
         // Add media players to the combo box
@@ -299,6 +303,6 @@ public class Settings extends ScrollableController {
             Platform.runLater(() -> {
                 saveOutputButton.setDisable(false);
             });
-        } , 1000);
+        }, 1000);
     }
 }

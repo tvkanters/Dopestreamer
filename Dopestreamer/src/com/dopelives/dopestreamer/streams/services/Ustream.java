@@ -30,8 +30,8 @@ public class Ustream extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    public String getIconUrl() {
-        return getDisabledIconUrl("services/ustream.png");
+    public String getStreamServiceIconUrl() {
+        return "ustream.png";
     }
 
     /**

@@ -41,8 +41,8 @@ public enum Pref {
     LIVESTREAMER_UPDATE_CHECK("livestreamerupdatecheck", true),
     /** Whether or not the buffering of HLS should be done quicker */
     HLS_QUICK_BUFFER("hlsquickbuffer", true),
-    /** Disabled stream services */
-    DISABLED_STREAM_SERVICES("disabledstreamservices", "");
+    /** Stream services that the user disabled and shouldn't be offered */
+    DISABLED_STREAM_SERVICES("disabledstreamservices", "afreeca,bambuser,livestreamold,livestream");
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());

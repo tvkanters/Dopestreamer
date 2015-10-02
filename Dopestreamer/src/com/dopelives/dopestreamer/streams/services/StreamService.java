@@ -1,22 +1,17 @@
 package com.dopelives.dopestreamer.streams.services;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxItem;
 import com.dopelives.dopestreamer.streams.Quality;
+import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * The class for a stream service that can be selected and started to provide streams.
  */
 public abstract class StreamService implements ComboBoxItem {
-
-    public boolean showOnDropdown = true;
-
-    public String getDisabledIconUrl(String url) {
-        if (showOnDropdown) return url;
-        else return "services/X.png";
-    }
 
     /**
      * @return The key for this service, shouldn't be changed during refactoring and must be unique
@@ -29,6 +24,26 @@ public abstract class StreamService implements ComboBoxItem {
      * @return The URL in format {domain}.{tld}/({channelpath}/)?
      */
     public abstract String getUrl();
+
+    /**
+     * @return The URL for the icon to show next to the label, relative to the image path, or null if there is none
+     */
+    protected abstract String getStreamServiceIconUrl();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIconUrl() {
+        return "services/" + (isEnabled() ? getStreamServiceIconUrl() : "disabled.png");
+    }
+
+    /**
+     * @return True iff the service has not been disabled
+     */
+    public final boolean isEnabled() {
+        return !Arrays.asList(Pref.DISABLED_STREAM_SERVICES.getString().split(",")).contains(getKey());
+    }
 
     /**
      * Retrieves the details of a stream service, channel and quality to connect through Livestreamer.
