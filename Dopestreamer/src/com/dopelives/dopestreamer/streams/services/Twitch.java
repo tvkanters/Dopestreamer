@@ -31,7 +31,7 @@ public class Twitch extends StreamService {
      */
     @Override
     public String getIconUrl() {
-        return "services/twitch.png";
+        return getDisabledIconUrl("services/twitch.png");
     }
 
     /**

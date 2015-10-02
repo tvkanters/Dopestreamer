@@ -11,6 +11,13 @@ import com.dopelives.dopestreamer.streams.Quality;
  */
 public abstract class StreamService implements ComboBoxItem {
 
+    public boolean showOnDropdown = true;
+
+    public String getDisabledIconUrl(String url) {
+        if (showOnDropdown) return url;
+        else return "services/X.png";
+    }
+
     /**
      * @return The key for this service, shouldn't be changed during refactoring and must be unique
      */

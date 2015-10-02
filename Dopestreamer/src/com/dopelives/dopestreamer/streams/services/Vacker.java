@@ -122,7 +122,7 @@ public class Vacker extends StreamService {
      */
     @Override
     public String getIconUrl() {
-        return "services/vacker.png";
+        return getDisabledIconUrl("services/vacker.png");
     }
 
     /**
