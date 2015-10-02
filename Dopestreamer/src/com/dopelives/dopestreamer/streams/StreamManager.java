@@ -139,7 +139,7 @@ public class StreamManager implements ConsoleListener {
             mAutoswitchDelay = Executor.schedule(() -> {
                 mStream.start();
                 mAutoswitchDelay = null;
-            }, Stream.RETRY_DELAY * 1000);
+            } , Stream.RETRY_DELAY * 1000);
 
         } else {
             mStream.start();
@@ -160,8 +160,8 @@ public class StreamManager implements ConsoleListener {
     public synchronized void restartLastStream() {
         final Quality quality = Quality.valueOf(Pref.LAST_QUALITY.getString());
 
-        final StreamService streamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
-                .getString());
+        final StreamService streamService = StreamServiceManager
+                .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getString());
         final String channel = Pref.LAST_CHANNEL.getString();
 
         if (channel.equals("")) {
@@ -343,7 +343,7 @@ public class StreamManager implements ConsoleListener {
         mBufferingTimeout = Executor.schedule(() -> {
             stopStreamConsole();
             restartLastStream();
-        }, ++mBufferingAttempts * BUFFERING_TIMEOUT);
+        } , ++mBufferingAttempts * BUFFERING_TIMEOUT);
     }
 
     /**

@@ -26,7 +26,7 @@ public class Afreeca extends StreamService {
      */
     @Override
     public String getIconUrl() {
-        return "services/afreeca.png";
+        return getDisabledIconUrl("services/afreeca.png");
     }
 
     /**

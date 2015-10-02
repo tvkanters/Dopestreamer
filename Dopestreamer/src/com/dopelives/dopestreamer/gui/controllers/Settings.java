@@ -3,6 +3,7 @@ package com.dopelives.dopestreamer.gui.controllers;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -22,10 +24,13 @@ import javafx.scene.layout.VBox;
 
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
+import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
 import com.dopelives.dopestreamer.shell.Shell;
 import com.dopelives.dopestreamer.streams.players.MediaPlayer;
 import com.dopelives.dopestreamer.streams.players.MediaPlayerManager;
+import com.dopelives.dopestreamer.streams.services.StreamService;
+import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.Pref;
@@ -64,6 +69,8 @@ public class Settings extends ScrollableController {
     private ComboBox<Vacker.Server> vackerServerSelection;
     @FXML
     private Button saveOutputButton;
+    @FXML
+    private ComboBox<StreamService> streamingServiceList;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -100,20 +107,52 @@ public class Settings extends ScrollableController {
             protocolToggleWrapper.setManaged(false);
         }
 
+        // Populate list
+        final List<StreamService> streamServices = StreamServiceManager.getAllStreamServices();
+        streamingServiceList.getItems().setAll(streamServices);
+        streamingServiceList.setValue(null);
+
+        // Make it look good
+        streamingServiceList.setButtonCell(new ComboBoxCell<>());
+        streamingServiceList.setCellFactory((final ListView<StreamService> param) -> new ComboBoxCell<StreamService>());
+
+        streamingServiceList.setOnAction((final ActionEvent event) -> {
+            final StreamService streamService = streamingServiceList.getValue();
+            if (streamService == null) // Lol recursion
+                return;
+
+            streamService.showOnDropdown = !streamService.showOnDropdown;
+            if (streamService.showOnDropdown) {
+                List<String> disabledStreamServices = new ArrayList<String>(
+                        Arrays.asList(Pref.DISABLED_STREAM_SERVICES.getString().split(",")));
+                disabledStreamServices.remove(streamService.getKey());
+                String newstring = String.join(",", disabledStreamServices);
+                Pref.DISABLED_STREAM_SERVICES.put(newstring);
+            } else {
+                String current = Pref.DISABLED_STREAM_SERVICES.getString();
+                Pref.DISABLED_STREAM_SERVICES.put((!current.equals("") ? current + "," : "") + streamService.getKey());
+            }
+            Platform.runLater(() -> {
+                streamingServiceList.getSelectionModel().clearSelection();
+                streamingServiceList.getItems().setAll(streamServices);
+            });
+            Streams streams = (Streams) Screen.STREAMS.getController();
+            streams.updateStreamList();
+        });
+
         // Add media players to the combo box
         final List<MediaPlayer> mediaPlayers = MediaPlayerManager.getMediaPlayers();
         mediaPlayerSelection.getItems().addAll(mediaPlayers);
 
         // Update the custom media player input field based on the selected media player
-        mediaPlayerSelection.valueProperty().addListener(
-                (final ObservableValue<? extends MediaPlayer> observable, final MediaPlayer oldValue,
-                        final MediaPlayer newValue) -> {
-                    final boolean customPlayer = newValue.getKey().equals("");
-                    mediaPlayerLocationWrapper.setVisible(customPlayer);
-                    mediaPlayerLocationWrapper.setManaged(customPlayer);
+        mediaPlayerSelection.valueProperty().addListener((final ObservableValue<? extends MediaPlayer> observable,
+                final MediaPlayer oldValue, final MediaPlayer newValue) -> {
+            final boolean customPlayer = newValue.getKey().equals("");
+            mediaPlayerLocationWrapper.setVisible(customPlayer);
+            mediaPlayerLocationWrapper.setManaged(customPlayer);
 
-                    Pref.DEFAULT_PLAYER.put(newValue.getKey());
-                });
+            Pref.DEFAULT_PLAYER.put(newValue.getKey());
+        });
 
         // Select the stored last media player
         MediaPlayer selectedMediaPlayer = MediaPlayerManager.getMediaPlayerByKey(Pref.DEFAULT_PLAYER.getString());
@@ -134,11 +173,10 @@ public class Settings extends ScrollableController {
         vackerServerSelection.getItems().addAll(vackerServers);
 
         // Update the Vacker server based on the selection
-        vackerServerSelection.valueProperty().addListener(
-                (final ObservableValue<? extends Vacker.Server> observable, final Vacker.Server oldValue,
-                        final Vacker.Server newValue) -> {
-                    Pref.VACKER_SERVER.put(newValue.getKey());
-                });
+        vackerServerSelection.valueProperty().addListener((final ObservableValue<? extends Vacker.Server> observable,
+                final Vacker.Server oldValue, final Vacker.Server newValue) -> {
+            Pref.VACKER_SERVER.put(newValue.getKey());
+        });
 
         // Select the preferred Vacker servers
         vackerServerSelection.getSelectionModel().select(Vacker.Server.getSelected());
@@ -261,6 +299,6 @@ public class Settings extends ScrollableController {
             Platform.runLater(() -> {
                 saveOutputButton.setDisable(false);
             });
-        }, 1000);
+        } , 1000);
     }
 }

@@ -31,6 +31,9 @@
             
             <Label text="Vacker server" />
             <ComboBox fx:id="vackerServerSelection" prefWidth="260" prefHeight="30" />
+            
+            <Label text="Service list" />
+            <ComboBox fx:id="streamingServiceList" prefWidth="260" prefHeight="30" />
 
             <Label text="Media player" />
             <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
