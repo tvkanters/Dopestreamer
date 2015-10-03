@@ -111,7 +111,6 @@ public class Settings extends ScrollableController {
         // Add stream services to the combo box
         final List<StreamService> streamServices = StreamServiceManager.getAllStreamServices();
         streamingServicesDisabled.getItems().setAll(streamServices);
-        streamingServicesDisabled.getSelectionModel().select(0);
 
         // Make the stream services look nice within the combo box
         streamingServicesDisabled.setButtonCell(new ComboBoxTextCell<>("Enable or disable services"));
@@ -138,6 +137,7 @@ public class Settings extends ScrollableController {
             }
 
             Platform.runLater(() -> {
+                streamingServicesDisabled.getSelectionModel().clearSelection();
                 streamingServicesDisabled.getItems().setAll(streamServices);
             });
 

@@ -172,6 +172,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 streamServiceSelection.getSelectionModel().select(0);
             }
         }
+        streamServiceSelection.getOnAction().handle(null);
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new ComboBoxCell<StreamService>());

@@ -33,7 +33,7 @@
             <ComboBox fx:id="vackerServerSelection" prefWidth="260" prefHeight="30" />
             
             <Label text="Available stream services" />
-            <ComboBox fx:id="streamingServicesDisabled" prefWidth="260" prefHeight="30" />
+            <ComboBox fx:id="streamingServicesDisabled" prefWidth="260" prefHeight="30" promptText="Enable or disable services" />
 
             <Label text="Media player" />
             <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />

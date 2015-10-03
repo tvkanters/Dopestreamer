@@ -57,11 +57,17 @@ public class StreamServiceManager {
      */
     public static List<StreamService> getEnabledStreamServices() {
         final List<StreamService> enabledStreamServices = new LinkedList<>();
+
         for (final StreamService streamService : sStreamServices) {
             if (streamService.isEnabled()) {
                 enabledStreamServices.add(streamService);
             }
         }
+
+        if (enabledStreamServices.isEmpty()) {
+            enabledStreamServices.add(new NoStreamService());
+        }
+
         return Collections.unmodifiableList(enabledStreamServices);
     }
 
