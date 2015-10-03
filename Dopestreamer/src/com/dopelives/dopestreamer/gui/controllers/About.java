@@ -86,6 +86,11 @@ public class About extends ScrollableController {
     }
 
     @FXML
+    public void onBoomerClicked() {
+        openUrl("https://github.com/Booom3");
+    }
+
+    @FXML
     public void onDopelivesClicked() {
         openUrl("http://dopelives.com/");
     }
