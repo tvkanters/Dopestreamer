@@ -7,9 +7,6 @@ import javafx.scene.control.ListCell;
  */
 public class ComboBoxTextCell<T extends ComboBoxItem> extends ListCell<T> {
 
-    /** The text to show in the combo box cell */
-    private final String mLabel;
-
     /**
      * Creates a new combo box cell with static text.
      *
@@ -17,24 +14,8 @@ public class ComboBoxTextCell<T extends ComboBoxItem> extends ListCell<T> {
      *            The label to show
      */
     public ComboBoxTextCell(final String label) {
-        mLabel = label;
         setPrefHeight(30);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * Sets the text of the cell to the given static label.
-     */
-    @Override
-    public void updateItem(final T item, final boolean empty) {
-        super.updateItem(item, empty);
-
-        if (item == null) {
-            return;
-        }
-
-        setText(mLabel);
+        setText(label);
     }
 
 }
