@@ -25,6 +25,7 @@ import javafx.scene.layout.VBox;
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
+import com.dopelives.dopestreamer.gui.combobox.CheckComboBox;
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxTextCell;
 import com.dopelives.dopestreamer.shell.Shell;
@@ -71,7 +72,7 @@ public class Settings extends ScrollableController {
     @FXML
     private Button saveOutputButton;
     @FXML
-    private ComboBox<StreamService> streamingServicesDisabled;
+    private CheckComboBox<StreamService> streamingServicesDisabled;
 
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
@@ -142,6 +143,8 @@ public class Settings extends ScrollableController {
             });
 
             ((Streams) Screen.STREAMS.getController()).updateStreamServices();
+
+            streamingServicesDisabled.consumeNextHide();
         });
 
         // Add media players to the combo box

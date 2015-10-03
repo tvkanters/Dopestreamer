@@ -7,8 +7,7 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.ComboBox?>
+<?import com.dopelives.dopestreamer.gui.combobox.CheckComboBox?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.control.CheckBox?>
@@ -33,7 +32,7 @@
             <ComboBox fx:id="vackerServerSelection" prefWidth="260" prefHeight="30" />
             
             <Label text="Available stream services" />
-            <ComboBox fx:id="streamingServicesDisabled" prefWidth="260" prefHeight="30" promptText="Enable or disable services" />
+            <CheckComboBox fx:id="streamingServicesDisabled" prefWidth="260" prefHeight="30" promptText="Enable or disable services" />
 
             <Label text="Media player" />
             <ComboBox fx:id="mediaPlayerSelection" prefWidth="260" prefHeight="30" />
