@@ -1,5 +1,9 @@
 package com.dopelives.dopestreamer.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 /**
@@ -42,7 +46,8 @@ public enum Pref {
     /** Whether or not the buffering of HLS should be done quicker */
     HLS_QUICK_BUFFER("hlsquickbuffer", true),
     /** Stream services that the user disabled and shouldn't be offered */
-    DISABLED_STREAM_SERVICES("disabledstreamservices", "afreeca,bambuser,livestreamold,livestream");
+    DISABLED_STREAM_SERVICES("disabledstreamservices", new String[] { "afreeca", "bambuser", "livestreamold",
+            "livestream" });
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
@@ -55,12 +60,19 @@ public enum Pref {
     private final Integer mDefaultInt;
     /** The default string value for the preference */
     private final String mDefaultString;
+    /** The default list for the preference */
+    private final List<String> mDefaultList;
+
+    /** The list in which the values for the preference are stored */
+    private List<String> mList;
 
     private Pref(final String key, final Boolean defaultValue) {
         mKey = key;
         mDefaultBoolean = defaultValue;
         mDefaultInt = null;
         mDefaultString = null;
+        mDefaultList = null;
+        mList = null;
     }
 
     private Pref(final String key, final Integer defaultValue) {
@@ -68,6 +80,8 @@ public enum Pref {
         mDefaultBoolean = null;
         mDefaultInt = defaultValue;
         mDefaultString = null;
+        mDefaultList = null;
+        mList = null;
     }
 
     private Pref(final String key, final String defaultValue) {
@@ -75,36 +89,92 @@ public enum Pref {
         mDefaultBoolean = null;
         mDefaultInt = null;
         mDefaultString = defaultValue;
+        mDefaultList = null;
+        mList = null;
+    }
+
+    private Pref(final String key, final String[] defaultValue) {
+        mKey = key;
+        mDefaultBoolean = null;
+        mDefaultInt = null;
+        mDefaultString = null;
+        mDefaultList = new ArrayList<>(Arrays.asList(defaultValue));
+
+        final String storedList = Preferences.userRoot().node(Pref.class.getName()).get(mKey, null);
+        if (storedList != null) {
+            mList = new ArrayList<>(Arrays.asList(storedList.split(",")));
+        } else {
+            mList = new ArrayList<>(mDefaultList);
+        }
     }
 
     /**
-     * Saves the preference value persistently for the user.
+     * Saves the preference boolean value persistently for the user.
      *
      * @param value
      *            The value to save for this preference
      */
     public void put(final boolean value) {
+        enforceBoolean();
         sPreferences.putBoolean(mKey, value);
     }
 
     /**
-     * Saves the preference value persistently for the user.
+     * Saves the preference integer value persistently for the user.
      *
      * @param value
      *            The value to save for this preference
      */
     public void put(final int value) {
+        enforceInteger();
         sPreferences.putInt(mKey, value);
     }
 
     /**
-     * Saves the preference value persistently for the user.
+     * Saves the preference string value persistently for the user.
      *
      * @param value
      *            The value to save for this preference
      */
     public void put(final String value) {
+        enforceString();
         sPreferences.put(mKey, value);
+    }
+
+    /**
+     * Save the preference list persistently for the user.
+     *
+     * @param value
+     *            The value to save for this preference
+     */
+    public void put(final List<String> value) {
+        enforceList();
+        mList = new ArrayList<String>(value);
+        sPreferences.put(mKey, String.join(",", mList));
+    }
+
+    /**
+     * Adds the preference list value persistently for the user.
+     *
+     * @param value
+     *            The value to add for this preference
+     */
+    public void add(final String value) {
+        enforceList();
+        mList.add(value);
+        sPreferences.put(mKey, String.join(",", mList));
+    }
+
+    /**
+     * Removes a preference list value persistently for the user.
+     *
+     * @param value
+     *            The value to remove for this preference
+     */
+    public void remove(final String value) {
+        enforceList();
+        mList.remove(value);
+        sPreferences.put(mKey, String.join(",", mList));
     }
 
     /**
@@ -113,6 +183,7 @@ public enum Pref {
      * @return The saved value or a default one if it has not been put
      */
     public boolean getBoolean() {
+        enforceBoolean();
         return sPreferences.getBoolean(mKey, mDefaultBoolean);
     }
 
@@ -122,6 +193,7 @@ public enum Pref {
      * @return The saved value or a default one if it has not been put
      */
     public int getInteger() {
+        enforceInteger();
         return sPreferences.getInt(mKey, mDefaultInt);
     }
 
@@ -131,7 +203,28 @@ public enum Pref {
      * @return The saved value or a default one if it has not been put
      */
     public String getString() {
+        enforceString();
         return sPreferences.get(mKey, mDefaultString);
+    }
+
+    /**
+     * Retrieves a saved list.
+     *
+     * @return The saved value or a default one if it has not been put
+     */
+    public List<String> getList() {
+        enforceList();
+        return Collections.unmodifiableList(mList);
+    }
+
+    /**
+     * Retrieves a saved list.
+     *
+     * @return Whether on not the value exists in the list
+     */
+    public boolean contains(final String value) {
+        enforceList();
+        return mList.contains(value);
     }
 
     /**
@@ -140,6 +233,7 @@ public enum Pref {
      * @return The default value
      */
     public boolean getDefaultBoolean() {
+        enforceBoolean();
         return mDefaultBoolean;
     }
 
@@ -149,6 +243,7 @@ public enum Pref {
      * @return The default value
      */
     public int getDefaultInt() {
+        enforceInteger();
         return mDefaultInt;
     }
 
@@ -158,7 +253,18 @@ public enum Pref {
      * @return The default value
      */
     public String getDefaultString() {
+        enforceString();
         return mDefaultString;
+    }
+
+    /**
+     * Retrieves a default preference value.
+     *
+     * @return The default value
+     */
+    public List<String> getDefaultList() {
+        enforceList();
+        return Collections.unmodifiableList(mDefaultList);
     }
 
     /**
@@ -166,6 +272,46 @@ public enum Pref {
      */
     public void reset() {
         sPreferences.remove(mKey);
+
+        if (mList != null) {
+            mList = new ArrayList<>(mDefaultList);
+        }
+    }
+
+    /**
+     * Ensures that the current preference is an integer.
+     */
+    private void enforceBoolean() {
+        if (mDefaultBoolean == null) {
+            throw new IllegalArgumentException(this + " does not accept booleans");
+        }
+    }
+
+    /**
+     * Ensures that the current preference is an integer.
+     */
+    private void enforceInteger() {
+        if (mDefaultInt == null) {
+            throw new IllegalArgumentException(this + " does not accept integers");
+        }
+    }
+
+    /**
+     * Ensures that the current preference is an integer.
+     */
+    private void enforceString() {
+        if (mDefaultString == null) {
+            throw new IllegalArgumentException(this + " does not accept strings");
+        }
+    }
+
+    /**
+     * Ensures that the current preference is a list.
+     */
+    private void enforceList() {
+        if (mDefaultList == null) {
+            throw new IllegalArgumentException(this + " does not accept list items");
+        }
     }
 
 }

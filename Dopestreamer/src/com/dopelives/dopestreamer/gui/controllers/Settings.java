@@ -3,7 +3,6 @@ package com.dopelives.dopestreamer.gui.controllers;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -124,17 +123,10 @@ public class Settings extends ScrollableController {
                 return;
             }
 
-            final String disabledStreamServices = Pref.DISABLED_STREAM_SERVICES.getString();
             if (streamService.isEnabled()) {
-                // Disable the stream service
-                Pref.DISABLED_STREAM_SERVICES.put((!disabledStreamServices.equals("") ? disabledStreamServices + ","
-                        : "") + streamService.getKey());
+                Pref.DISABLED_STREAM_SERVICES.add(streamService.getKey());
             } else {
-                // Enable the stream service
-                final List<String> disabledStreamServicesSplit = new ArrayList<String>(Arrays
-                        .asList(disabledStreamServices.split(",")));
-                disabledStreamServicesSplit.remove(streamService.getKey());
-                Pref.DISABLED_STREAM_SERVICES.put(String.join(",", disabledStreamServicesSplit));
+                Pref.DISABLED_STREAM_SERVICES.remove(streamService.getKey());
             }
 
             Platform.runLater(() -> {

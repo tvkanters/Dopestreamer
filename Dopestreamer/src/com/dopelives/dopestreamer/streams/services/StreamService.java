@@ -1,6 +1,5 @@
 package com.dopelives.dopestreamer.streams.services;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public abstract class StreamService implements ComboBoxItem {
      * @return True iff the service has not been disabled
      */
     public final boolean isEnabled() {
-        return !Arrays.asList(Pref.DISABLED_STREAM_SERVICES.getString().split(",")).contains(getKey());
+        return !Pref.DISABLED_STREAM_SERVICES.contains(getKey());
     }
 
     /**
