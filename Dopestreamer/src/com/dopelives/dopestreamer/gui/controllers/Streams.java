@@ -203,7 +203,6 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                     }
                 }
                 if (found) {
-                    jasons.remove(foundIndex);
                     foundJason.put("label", newLabel);
                     jasons.put(foundIndex, foundJason);
                     Pref.FAVORITED_STREAMS.put(jasons.toString());
