@@ -22,7 +22,7 @@ public enum Pref {
     /** The last channel someone streamed, empty string for default Dopelives channel */
     LAST_CHANNEL("lastchannel", ""),
     /** The key of the last stream service used */
-    LAST_STREAM_SERVICE("laststreamservice", "vacker"),
+    LAST_STREAM_SERVICE("laststreamservice", "xphome"),
     /** The enum constant of the last quality used */
     LAST_QUALITY("lastquality", "BEST"),
     /** The key of the selected default media player or an empty string for a custom media player */
