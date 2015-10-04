@@ -10,6 +10,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.dopelives.dopestreamer.Environment;
+import com.dopelives.dopestreamer.gui.Screen;
+import com.dopelives.dopestreamer.gui.StreamState;
+import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
+import com.dopelives.dopestreamer.streams.Quality;
+import com.dopelives.dopestreamer.streams.Stream;
+import com.dopelives.dopestreamer.streams.StreamInfo;
+import com.dopelives.dopestreamer.streams.StreamInfo.StreamInfoListener;
+import com.dopelives.dopestreamer.streams.StreamListener;
+import com.dopelives.dopestreamer.streams.StreamManager;
+import com.dopelives.dopestreamer.streams.services.FavoriteStream;
+import com.dopelives.dopestreamer.streams.services.StreamService;
+import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
+import com.dopelives.dopestreamer.util.Pref;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,21 +42,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
-
-import com.dopelives.dopestreamer.Environment;
-import com.dopelives.dopestreamer.gui.Screen;
-import com.dopelives.dopestreamer.gui.StreamState;
-import com.dopelives.dopestreamer.gui.combobox.ComboBoxCell;
-import com.dopelives.dopestreamer.streams.Quality;
-import com.dopelives.dopestreamer.streams.Stream;
-import com.dopelives.dopestreamer.streams.StreamInfo;
-import com.dopelives.dopestreamer.streams.StreamInfo.StreamInfoListener;
-import com.dopelives.dopestreamer.streams.StreamListener;
-import com.dopelives.dopestreamer.streams.StreamManager;
-import com.dopelives.dopestreamer.streams.services.FavoriteStream;
-import com.dopelives.dopestreamer.streams.services.StreamService;
-import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
-import com.dopelives.dopestreamer.util.Pref;
 
 /**
  * The controller for the streams screen.
@@ -173,7 +173,44 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         });
 
         favoriteChannelList.setOnAction((final ActionEvent event) -> {
-            final FavoriteStream favoriteStream = favoriteChannelList.getValue();
+            final FavoriteStream favoriteStream;
+            try {
+                favoriteStream = favoriteChannelList.getValue();
+            } catch (final ClassCastException ex) {
+                String newLabel = favoriteChannelList.getEditor().textProperty().getValue();
+                JSONArray jasons;
+                try {
+                    jasons = new JSONArray(Pref.FAVORITED_STREAMS.getString());
+                } catch (final JSONException ex2) {
+                    return;
+                }
+                boolean found = false;
+                int foundIndex = 0;
+                JSONObject foundJason = new JSONObject();
+                for (int i = 0; i < jasons.length(); i++) {
+                    JSONObject s;
+                    try {
+                        s = jasons.getJSONObject(i);
+                    } catch (final JSONException ex3) {
+                        continue;
+                    }
+                    if (s.getString("streamServiceKey").equals(streamServiceSelection.getValue().getKey())
+                            && s.getString("channelName").equals(channelCustomInput.getText())) {
+                        found = true;
+                        foundIndex = i;
+                        foundJason = s;
+                        break;
+                    }
+                }
+                if (found) {
+                    jasons.remove(foundIndex);
+                    foundJason.put("label", newLabel);
+                    jasons.put(foundIndex, foundJason);
+                    Pref.FAVORITED_STREAMS.put(jasons.toString());
+                    updateFavoriteList();
+                }
+                return;
+            }
             if (favoriteStream == null) return;
 
             Platform.runLater(() -> {
@@ -398,8 +435,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 favoriteChannel.setSelected(false);
                 favoriteChannelList.getEditor().textProperty().setValue("");
             } else {
-                if (channelDefault.isSelected())
-                    channelCustomInput.setText("");
+                if (channelDefault.isSelected()) channelCustomInput.setText("");
                 favoriteChannelList.getEditor().textProperty().setValue(fffavname);
                 favoriteChannel.setSelected(true);
             }

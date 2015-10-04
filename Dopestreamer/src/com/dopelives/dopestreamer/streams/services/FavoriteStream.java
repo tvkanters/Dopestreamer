@@ -22,7 +22,7 @@ public class FavoriteStream implements ComboBoxItem {
             streamServiceKey = "none";
         }
     }
-    
+
     public String GetChannelName() {
         return channelName;
     }

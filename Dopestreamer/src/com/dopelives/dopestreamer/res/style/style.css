@@ -76,13 +76,13 @@ Button {
     -fx-font-size: 14.0px;
     -fx-font-weight: normal;
     -fx-text-fill: #474;
-    -fx-label-padding: 0;
-    -fx-effect: innershadow(three-pass-box, #000, 0,0,0,0);
+    -fx-label-padding: 0.0;
+    -fx-effect: innershadow(three-pass-box, #000, 0.0,0.0,0.0,0.0);
 }
 
 ScrollPane {
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+    -fx-background-insets: 0.0;
+    -fx-padding: 0.0;
 }
 .scroll-pane {
    -fx-background-color: transparent;
@@ -92,39 +92,39 @@ ScrollPane {
 }
 
 ScrollPane:focused {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 ScrollPane .corner {
-    -fx-background-insets: 0;
+    -fx-background-insets: 0.0;
 }
 
 .viewerCount {
-    -fx-padding: 21px 0 0 0;
+    -fx-padding: 21.0px 0.0 0.0 0.0;
 }
 
 
 .combo-box > .list-cell {
-    -fx-padding: 0 0 0 10px;
-    -fx-border-insets: 0 0 0 10px;
+    -fx-padding: 0.0 0.0 0.0 10.0px;
+    -fx-border-insets: 0.0 0.0 0.0 10.0px;
 }
 .combo-box-base > *.arrow-button {
-    -fx-padding: 0 10px 0 3px;
+    -fx-padding: 0.0 10.0px 0.0 3.0px;
 }
 
 #favoriteChannel>.box {
-	-fx-background-insets: 0;
-  	-fx-background-radius: 0;
+	-fx-background-insets: 0.0;
+  	-fx-background-radius: 0.0;
   	-fx-background-color: transparent;
-  	-fx-scale-x: 3;
-  	-fx-scale-y: 3;
+  	-fx-scale-x: 3.0;
+  	-fx-scale-y: 3.0;
 }
 
 #favoriteChannel>.box>.mark {
 	-fx-background-image: url("../images/star_empty.png");
 	-fx-background-position: center;
   	-fx-background-repeat: no-repeat;
-  	-fx-background-size: 12;
+  	-fx-background-size: 12.0;
   	-fx-shape: none;
   	-fx-cursor: hand;
 }

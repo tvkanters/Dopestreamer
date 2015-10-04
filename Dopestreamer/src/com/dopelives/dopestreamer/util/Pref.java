@@ -52,10 +52,9 @@ public enum Pref {
     DISABLED_STREAM_SERVICES("disabledstreamservices", new String[] { "afreeca", "bambuser", "livestreamold",
             "livestream" }),
     /** Favorited streams, for easy access. */
-    FAVORITED_STREAMS("favoritedstreams", new JSONArray().put(new JSONObject().put("label", "Dopelives")
-                                                          .put("streamServiceKey", "xphome")
-                                                          .put("channelName", ""))
-                                                          .toString());
+    FAVORITED_STREAMS("favoritedstreams", new JSONArray()
+            .put(new JSONObject().put("label", "Dopelives").put("streamServiceKey", "xphome").put("channelName", ""))
+            .toString());
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
