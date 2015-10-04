@@ -41,7 +41,7 @@ public abstract class StreamService implements ComboBoxItem {
      * @return True iff the service has not been disabled
      */
     public final boolean isEnabled() {
-        return !Pref.DISABLED_STREAM_SERVICES.contains(getKey());
+        return getKey().equals("none") ? false : !Pref.DISABLED_STREAM_SERVICES.contains(getKey());
     }
 
     /**

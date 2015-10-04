@@ -2,10 +2,16 @@ package com.dopelives.dopestreamer.gui.controllers;
 
 import java.net.URL;
 import java.security.InvalidParameterException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -32,6 +38,7 @@ import com.dopelives.dopestreamer.streams.StreamInfo;
 import com.dopelives.dopestreamer.streams.StreamInfo.StreamInfoListener;
 import com.dopelives.dopestreamer.streams.StreamListener;
 import com.dopelives.dopestreamer.streams.StreamManager;
+import com.dopelives.dopestreamer.streams.services.FavoriteStream;
 import com.dopelives.dopestreamer.streams.services.StreamService;
 import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 import com.dopelives.dopestreamer.util.Pref;
@@ -71,6 +78,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     private CheckBox autoswitchToggle;
     @FXML
     private Text viewerInfo;
+    @FXML
+    private ComboBox<FavoriteStream> favoriteChannelList;
+    @FXML
+    private CheckBox favoriteChannel;
 
     /** Whether or not autoswitch is currently active */
     private boolean mAutoswitchEnabled;
@@ -79,8 +90,117 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     /** Whether or not the last selected stream service can be updated */
     private boolean mLockStreamServiceSelection = false;
 
+    boolean foundFav = false;
+    String foundFavName = "";
+    StreamService favChanTemp = null;
+
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
+
+        favoriteChannelList.setEditable(true);
+        updateFavoriteList();
+
+        channelDefault.setOnAction((final ActionEvent event) -> {
+            checkFavorites();
+        });
+        channelCustom.setOnAction((final ActionEvent event) -> {
+            checkFavorites();
+        });
+
+        favoriteChannel.setOnAction((final ActionEvent event) -> {
+            // On checking/unchecking the Favorite checkbox we get all the data we need
+            JSONObject favorite = new JSONObject();
+            String favName = favoriteChannelList.getEditor().textProperty().getValue();
+            if (favName.equals("")) favName = channelCustomInput.getText().toUpperCase();
+            favorite.put("label", favName);
+            favorite.put("streamServiceKey", streamServiceSelection.getValue().getKey());
+            favorite.put("channelName", channelCustomInput.getText());
+
+            // Get the stored favorites
+            JSONArray jsons = new JSONArray();
+            jsons = new JSONArray(Pref.FAVORITED_STREAMS.getString());
+
+            boolean contains = false;
+            int containIndex = 0;
+            // And loop through them to see if we can find a match
+            for (int i = 0; i < jsons.length(); i++) {
+                JSONObject jason;
+                try {
+                    jason = jsons.getJSONObject(i);
+                } catch (final JSONException ex) {
+                    continue; // ¯\_(ツ)_/¯
+                }
+
+                // No, .equals won't work between JSON objects because I dunno
+                // Whatever, you don't need to favorite the same channel
+                // under different labels anyway
+                String chan = jason.getString("channelName");
+                String ky = jason.getString("streamServiceKey");
+                String fachan = favorite.getString("channelName");
+                String faky = favorite.getString("streamServiceKey");
+                if (chan.equals(fachan) && (ky.equals(faky) || faky.equals("none"))) {
+                    // We recognize "none" as a key here because it lets removed streamservices
+                    // be removed from favorites, so you're not stuck with dead channels.
+                    contains = true;
+                    containIndex = i;
+                    break;
+                }
+            }
+            if (favoriteChannel.isSelected()) {
+                if (!contains) {
+                    jsons.put(favorite);
+                    Pref.FAVORITED_STREAMS.put(jsons.toString());
+                    Platform.runLater(() -> {
+                        favoriteChannelList.getEditor().textProperty().setValue(favorite.getString("label"));
+                    });
+                }
+            } else {
+                if (contains) {
+                    jsons.remove(containIndex);
+                    Pref.FAVORITED_STREAMS.put(jsons.toString());
+                }
+            }
+            updateFavoriteList();
+        });
+
+        channelCustomInput.textProperty().addListener(new ChangeListener<String>() {
+
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                checkFavorites();
+            }
+
+        });
+
+        favoriteChannelList.setOnAction((final ActionEvent event) -> {
+            final FavoriteStream favoriteStream = favoriteChannelList.getValue();
+            if (favoriteStream == null) return;
+
+            Platform.runLater(() -> {
+                final StreamService strSrvc = StreamServiceManager.getStreamServiceByKey(favoriteStream.GetKey());
+
+                if (favChanTemp != null) {
+                    if (!favChanTemp.isEnabled()) streamServiceSelection.getItems().remove(favChanTemp);
+                    favChanTemp = null;
+                }
+                if (!streamServiceSelection.getItems().contains(strSrvc)) {
+                    streamServiceSelection.getItems().add(strSrvc);
+                    favChanTemp = strSrvc;
+                }
+
+                streamServiceSelection.getSelectionModel().select(strSrvc);
+
+                favoriteChannelList.getSelectionModel().clearSelection();
+                favoriteChannelList.getEditor().textProperty().set(favoriteStream.getLabel());
+                channelCustomInput.setText(favoriteStream.GetChannelName());
+
+                if (favoriteStream.GetChannelName().equals("") && strSrvc.hasDefaultChannel())
+                    channelDefault.setSelected(true);
+                else channelCustom.setSelected(true);
+            });
+
+        });
+
         // Select the custom channel radio button upon focusing the text field next to it
         channelCustomInput.focusedProperty().addListener((final ObservableValue<? extends Boolean> observable,
                 final Boolean oldValue, final Boolean newValue) -> {
@@ -123,8 +243,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         // Set the last used channel if provided
         final String lastChannel = Pref.LAST_CHANNEL.getString();
         if (!lastChannel.equals("")) {
-            channelCustom.setSelected(true);
-            channelCustomInput.setText(lastChannel);
+            Platform.runLater(() -> {
+                channelCustom.setSelected(true);
+                channelCustomInput.setText(lastChannel);
+            });
         }
 
         // Add stream services to the combo box
@@ -150,22 +272,31 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 channelDefault.setSelected(true);
             }
 
+            if (favChanTemp != null && !favChanTemp.isEnabled()
+                    && streamServiceSelection.getSelectionModel().getSelectedItem() != favChanTemp) {
+                final StreamService runLaterTempChan = favChanTemp;
+                Platform.runLater(() -> {
+                    streamServiceSelection.getItems().remove(runLaterTempChan);
+                });
+            }
+
             updateQualityOptions();
+            checkFavorites();
 
             autoswitchToggle.setDisable(!StreamServiceManager.getAutoswitchServices().contains(streamService));
         });
 
         // Select the stored last stream service
-        final StreamService selectedService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
-                .getString());
+        final StreamService selectedService = StreamServiceManager
+                .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getString());
         if (streamServices.contains(selectedService)) {
             streamServiceSelection.getSelectionModel().select(selectedService);
         }
 
         // Make sure a value is selected
         if (streamServiceSelection.getValue() == null) {
-            final StreamService defaultService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
-                    .getDefaultString());
+            final StreamService defaultService = StreamServiceManager
+                    .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getDefaultString());
             if (streamServices.contains(defaultService)) {
                 streamServiceSelection.getSelectionModel().select(defaultService);
             } else {
@@ -201,6 +332,81 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         // Update the stream info
         StreamInfo.addListener(this);
         StreamInfo.startRequestInterval();
+    }
+
+    private void updateFavoriteList() {
+        List<FavoriteStream> favorites = new LinkedList<FavoriteStream>();
+        String favString = Pref.FAVORITED_STREAMS.getString();
+        JSONArray jsons;
+        try {
+            jsons = new JSONArray(favString);
+        } catch (final JSONException ex) {
+            return;
+        }
+        for (int i = 0; i < jsons.length(); i++) {
+            JSONObject jason;
+            try {
+                jason = jsons.getJSONObject(i);
+            } catch (final JSONException ex) {
+                continue;
+            }
+            favorites.add(new FavoriteStream(jason));
+        }
+
+        favoriteChannelList.getItems().setAll(favorites);
+        favoriteChannelList.setButtonCell(new ComboBoxCell<FavoriteStream>());
+        favoriteChannelList
+                .setCellFactory((final ListView<FavoriteStream> param) -> new ComboBoxCell<FavoriteStream>());
+    }
+
+    private void checkFavorites() {
+        String favsString = Pref.FAVORITED_STREAMS.getString();
+        JSONArray jsons;
+        try {
+            jsons = new JSONArray(favsString);
+
+        } catch (final JSONException ex) {
+            return;
+        }
+        for (int i = 0; i < jsons.length(); i++) {
+            JSONObject jason;
+            try {
+                jason = jsons.getJSONObject(i);
+            } catch (final JSONException ex) {
+                continue;
+            }
+            String sel = streamServiceSelection.getValue().getKey();
+            String jsel = jason.getString("streamServiceKey");
+            String jchanname = jason.getString("channelName");
+            String editBoxValue = channelCustomInput.getText();
+            if ((editBoxValue.equals(jchanname) || (jchanname.equals("") && channelDefault.isSelected()))
+                    && (sel.equals(jsel) || sel.equals("none"))) {
+                // We recognize "none" as a key here because it lets removed streamservices
+                // be removed from favorites, so you're not stuck with dead channels.
+                // We also check if favorited channel name is empty and default button is ticked,
+                // in which case only the stream service key needs to match a favorite
+                // to support having different defaults saved on different services
+                foundFav = true;
+                foundFavName = jason.getString("label");
+                break;
+            }
+        }
+        final boolean ffound = foundFav;
+        final String fffavname = foundFavName;
+        Platform.runLater(() -> {
+            if (!ffound) {
+                favoriteChannel.setSelected(false);
+                favoriteChannelList.getEditor().textProperty().setValue("");
+            } else {
+                if (channelDefault.isSelected())
+                    channelCustomInput.setText("");
+                favoriteChannelList.getEditor().textProperty().setValue(fffavname);
+                favoriteChannel.setSelected(true);
+            }
+            favoriteChannelList.getSelectionModel().clearSelection();
+        });
+        foundFav = false;
+        foundFavName = "";
     }
 
     @Override
@@ -261,7 +467,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * {@inheritDoc}
      */
     @Override
-    public void onStateUpdated(final StreamManager streamManager, final StreamState oldState, final StreamState newState) {
+    public void onStateUpdated(final StreamManager streamManager, final StreamState oldState,
+            final StreamState newState) {
         switch (newState) {
             case CONNECTING:
                 setCustomChannelValid(true);

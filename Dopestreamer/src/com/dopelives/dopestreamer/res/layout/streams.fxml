@@ -14,9 +14,11 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.control.Tooltip?>
 
-<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Streams" xmlns:fx="http://javafx.com/fxml"
-    fx:id="root" styleClass="root" onMousePressed="#clearFocus" focusTraversable="true">
+<VBox fx:controller="com.dopelives.dopestreamer.gui.controllers.Streams"
+	xmlns:fx="http://javafx.com/fxml" fx:id="root" styleClass="root"
+	onMousePressed="#clearFocus" focusTraversable="true">
 
 	<stylesheets>
 		<URL value="@../style/style.css" />
@@ -32,68 +34,94 @@
 	<HBox>
 		<VBox prefWidth="170">
 			<Label text="Stream service" />
-			<ComboBox fx:id="streamServiceSelection" prefWidth="160" prefHeight="30" />
+			<ComboBox fx:id="streamServiceSelection" prefWidth="160"
+				prefHeight="30" />
 		</VBox>
 		<VBox>
 			<Label text="Quality" />
-			<ComboBox fx:id="qualitySelection" prefWidth="90" prefHeight="30">
-		        <tooltip>
-		            <Tooltip text="Depending on the stream, not all listed qualities might be available" />
-		        </tooltip>
-	        </ComboBox>
+			<ComboBox fx:id="qualitySelection" prefWidth="90"
+				prefHeight="30">
+				<tooltip>
+					<Tooltip
+						text="Depending on the stream, not all listed qualities might be available" />
+				</tooltip>
+			</ComboBox>
 		</VBox>
 	</HBox>
 
 
 	<Label text="Channel" />
-    <HBox alignment="CENTER_LEFT">
-        <RadioButton fx:id="channelDefault" selected="true" text="Dopelives" toggleGroup="$channelGroup" />
-        <Pane HBox.hgrow="ALWAYS" />
-	    <CheckBox fx:id="autoswitchToggle" onAction="#onAutoswitchToggle" text="Autoswitch" />
-    </HBox>
+	<HBox alignment="CENTER_LEFT">
+		<RadioButton fx:id="channelDefault" selected="true" text="Dopelives"
+			toggleGroup="$channelGroup" />
+		<Pane HBox.hgrow="ALWAYS" />
+		<CheckBox fx:id="autoswitchToggle" onAction="#onAutoswitchToggle"
+			text="Autoswitch" />
+	</HBox>
 	<VBox prefHeight="5" />
 	<HBox alignment="CENTER_LEFT">
-		<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
-		<TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefWidth="235" prefHeight="30" />
+		<VBox alignment="CENTER">
+			<RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
+		</VBox>
+		<VBox>
+			<TextField fx:id="channelCustomInput" promptText="Enter a channel name"
+				prefWidth="200" prefHeight="30" />
+		</VBox>
+		<VBox prefWidth="20" />
+		<VBox alignment="CENTER">
+			<CheckBox fx:id="favoriteChannel">
+				<tooltip>
+					<Tooltip text="Favorite this channel" />
+				</tooltip>
+			</CheckBox>
+		</VBox>
 	</HBox>
+	<HBox prefHeight="5" />
+	<ComboBox fx:id="favoriteChannelList" prefWidth="270"
+		prefHeight="30" editable="true" promptText="Favorite List">
+		<tooltip>
+			<Tooltip text="You can enter a label here to store the channel with" />
+		</tooltip>
+	</ComboBox>
 
 
-	<VBox prefHeight="20" />
+	<VBox prefHeight="10" />
 	<Button fx:id="streamButton" onAction="#onStreamButtonClicked"
 		prefWidth="260" prefHeight="50" />
-		
-    <VBox prefHeight="10" />
-    <CheckBox fx:id="gameModeToggle" onAction="#onGameModeToggle" text="Game mode">
-	    <tooltip>
-	        <Tooltip text="Prevents automatic stream restarts" />
-	    </tooltip>
-    </CheckBox>
+
+	<VBox prefHeight="10" />
+	<CheckBox fx:id="gameModeToggle" onAction="#onGameModeToggle"
+		text="Game mode">
+		<tooltip>
+			<Tooltip text="Prevents automatic stream restarts" />
+		</tooltip>
+	</CheckBox>
 
 
-    <HBox alignment="BOTTOM_LEFT">
-        <Label text="Topic info" />
-        <Pane HBox.hgrow="ALWAYS" />
-        <HBox styleClass="viewerCount">
-	        <ImageView>
-	            <image>
-	                <Image url="@../images/viewercount.png" />
-	            </image>
-	        </ImageView>
-	        <HBox prefWidth="5" />
-	        <Text fx:id="viewerInfo" text="0" />
-        </HBox>
-    </HBox>
+	<HBox alignment="BOTTOM_LEFT">
+		<Label text="Topic info" />
+		<Pane HBox.hgrow="ALWAYS" />
+		<HBox styleClass="viewerCount">
+			<ImageView>
+				<image>
+					<Image url="@../images/viewercount.png" />
+				</image>
+			</ImageView>
+			<HBox prefWidth="5" />
+			<Text fx:id="viewerInfo" text="0" />
+		</HBox>
+	</HBox>
 	<VBox fx:id="topicActive" managed="false" visible="false">
 		<HBox>
 			<Text text="Streamer: " />
 			<Label fx:id="streamerInfo" styleClass="streamInfo" />
 		</HBox>
 		<HBox>
-            <Text fx:id="streamTypeInfo" />
-            <Text text=": " />
+			<Text fx:id="streamTypeInfo" />
+			<Text text=": " />
 			<Label fx:id="gameInfo" styleClass="streamInfo" />
 		</HBox>
 	</VBox>
-    <Text fx:id="topicInactive" text="No streamer active" />
+	<Text fx:id="topicInactive" text="No streamer active" />
 
 </VBox>

@@ -85,7 +85,10 @@ public class StreamManager implements ConsoleListener {
         stopStreamConsole();
 
         // Prepare the stream
-        mStream = new Stream(streamService, channel, quality);
+        if (channel.equals("") && streamService.hasDefaultChannel())
+            mStream = new Stream(streamService, quality);
+        else
+            mStream = new Stream(streamService, channel, quality);
         mStream.addListener(this);
         updateState(StreamState.CONNECTING);
 

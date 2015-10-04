@@ -19,7 +19,7 @@ Button {
 }
 
 .headerButton {
-    -fx-padding: 9.0px 0.0px 0.0px 0.0px;
+    -fx-padding: 6.0px 0.0px 0.0px 0.0px;
 }
 .headerButton ImageView {
     -fx-cursor: hand;
@@ -30,7 +30,7 @@ Button {
     -fx-font-size: 15.0px;
     -fx-font-weight: bold;
     -fx-text-fill: #696;
-    -fx-label-padding: 20.0px 0.0 4.0px 0.0;
+    -fx-label-padding: 15.0px 0.0 4.0px 0.0;
     -fx-effect: innershadow(three-pass-box, rgba(0.0,0.0,0.0,0.7), 3.0, 0.0, 0.0, 1.5);
 }
 
@@ -110,4 +110,26 @@ ScrollPane .corner {
 }
 .combo-box-base > *.arrow-button {
     -fx-padding: 0 10px 0 3px;
+}
+
+#favoriteChannel>.box {
+	-fx-background-insets: 0;
+  	-fx-background-radius: 0;
+  	-fx-background-color: transparent;
+  	-fx-scale-x: 3;
+  	-fx-scale-y: 3;
+}
+
+#favoriteChannel>.box>.mark {
+	-fx-background-image: url("../images/star_empty.png");
+	-fx-background-position: center;
+  	-fx-background-repeat: no-repeat;
+  	-fx-background-size: 12;
+  	-fx-shape: none;
+  	-fx-cursor: hand;
+}
+
+#favoriteChannel:selected>.box>.mark {
+	-fx-background-color: transparent;
+	-fx-background-image: url("../images/star_full.png");
 }
