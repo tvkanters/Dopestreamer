@@ -116,8 +116,8 @@ ScrollPane .corner {
 	-fx-background-insets: 0.0;
   	-fx-background-radius: 0.0;
   	-fx-background-color: transparent;
-  	-fx-scale-x: 3.0;
-  	-fx-scale-y: 3.0;
+  	-fx-scale-x: 2.0;
+  	-fx-scale-y: 2.0;
 }
 
 #favoriteChannel>.box>.mark {

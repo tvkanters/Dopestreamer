@@ -11,10 +11,10 @@ public class FavoriteStream implements ComboBoxItem {
     private String streamServiceKey;
     private String channelName;
 
-    public FavoriteStream(JSONObject Jason) {
-        label = Jason.getString("label");
-        streamServiceKey = Jason.getString("streamServiceKey");
-        channelName = Jason.getString("channelName");
+    public FavoriteStream(JSONObject jsonObject) {
+        label = jsonObject.getString("label");
+        streamServiceKey = jsonObject.getString("streamServiceKey");
+        channelName = jsonObject.getString("channelName");
         try {
             iconUrl = StreamServiceManager.getStreamServiceByKey(streamServiceKey).getIconUrl();
         } catch (final NullPointerException ex) {
@@ -40,5 +40,4 @@ public class FavoriteStream implements ComboBoxItem {
     public String getIconUrl() {
         return iconUrl;
     }
-
 }

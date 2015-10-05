@@ -8,19 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
-
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.TrayManager;
 import com.dopelives.dopestreamer.gui.Screen;
@@ -35,6 +22,19 @@ import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 import com.dopelives.dopestreamer.streams.services.Vacker;
 import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.Pref;
+
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 
 public class Settings extends ScrollableController {
 
@@ -129,12 +129,19 @@ public class Settings extends ScrollableController {
                 Pref.DISABLED_STREAM_SERVICES.remove(streamService.getKey());
             }
 
+            Streams streams = (Streams) Screen.STREAMS.getController();
+            final StreamService selectedStreamService = streams.getSelectedStreamService();
+
             Platform.runLater(() -> {
                 streamingServicesDisabled.getSelectionModel().clearSelection();
                 streamingServicesDisabled.getItems().setAll(streamServices);
             });
 
-            ((Streams) Screen.STREAMS.getController()).updateStreamServices();
+            streams.updateStreamServices();
+            Platform.runLater(() -> {
+                streams.updateTemporaryStreamService(selectedStreamService);
+                streams.setSelectedStreamService(selectedStreamService);
+            });
 
             streamingServicesDisabled.consumeNextHide();
         });
@@ -298,6 +305,6 @@ public class Settings extends ScrollableController {
             Platform.runLater(() -> {
                 saveOutputButton.setDisable(false);
             });
-        }, 1000);
+        } , 1000);
     }
 }
