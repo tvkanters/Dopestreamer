@@ -100,8 +100,14 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
 
+        // Oh boy
         favoriteChannelList.setConverter(new StringConverter<FavoriteStream>() {
 
+            // I am still not sure why or how it needs this but it does
+            // At some point JavaFX calls toString and sets the value of the editable combo box favoriteChanneList to
+            // whatever toString returns meaning we need to return the string we want to be there, which is the label.
+            // Also
+            // means we can't set this value manually
             public String toString(FavoriteStream object) {
                 if (object != null) {
                     return object.getLabel();
@@ -110,6 +116,13 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 }
             }
 
+            // fromString also just expects you to return the right object from just one single String. Luckily in this
+            // case we can do it based on other environment values but I pray to god I never have to work with JavaFX
+            // ever again
+            // -Boomer
+            // So because this editable box is the label we just return a new FavoriteStream with the other values
+            // already put in place. This means that the editbox has been changed manually by the user and that in turn
+            // means they want to change the name of a stored favorite
             public FavoriteStream fromString(String string) {
                 return new FavoriteStream(new JSONObject().put("label", string)
                         .put("streamServiceKey", streamServiceSelection.getValue().getKey())
@@ -117,15 +130,23 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
             }
         });
 
+        // No need to set the button as this is an editable combo box
         favoriteChannelList
                 .setCellFactory((final ListView<FavoriteStream> param) -> new ComboBoxCell<FavoriteStream>());
         updateFavoriteList();
 
+        // We only need to check for favorites on these events
         channelDefault.setOnAction((final ActionEvent event) -> {
             checkFavorites();
         });
         channelCustom.setOnAction((final ActionEvent event) -> {
             checkFavorites();
+        });
+        channelCustomInput.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                checkFavorites();
+            }
         });
 
         favoriteChannel.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -187,21 +208,20 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
             }
         });
 
-        channelCustomInput.textProperty().addListener(new ChangeListener<String>() {
-
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                checkFavorites();
-            }
-
-        });
-
         // Whenever we select another favorite from the list
         favoriteChannelList.setOnAction((final ActionEvent event) -> {
+            // Man JavaFX you are great
             FavoriteStream favoriteStream = favoriteChannelList.getValue();
+            // If you enable editable combo box then this ^ can actually return a String unless you set a converter with
+            // fromString and toString
+            // I'm impressed they managed to return entirely the wrong kind of object though, that takes some doing
             if (favoriteStream == null) {
                 return;
             }
+
+            // This should only be true when the user has manually edited the combo box input, meaning they either want
+            // to store a new favorite or change the name of an already stored favorite in which case we just get,
+            // change, rebuild and store again.
             if (favoriteStream.GetKey().equals(streamServiceSelection.getValue().getKey())
                     && favoriteStream.GetChannelName().equals(channelCustomInput.getText())) {
                 String newLabel = favoriteStream.getLabel();
@@ -211,8 +231,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 int foundIndex = 0;
                 JSONObject foundJSON = new JSONObject();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject tempJSON;
-                    tempJSON = jsonArray.getJSONObject(i);
+                    JSONObject tempJSON = jsonArray.getJSONObject(i);
                     if (tempJSON.getString("streamServiceKey").equals(streamServiceSelection.getValue().getKey())
                             && tempJSON.getString("channelName").equals(channelCustomInput.getText())) {
                         found = true;
@@ -227,11 +246,14 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                     Pref.FAVORITED_STREAMS.put(jsonArray.toString());
                     updateFavoriteList();
                 } else {
+                    // If it's not already in there, put it there. Just change the value of favoriteChannel and it will
+                    // do all the work for us
                     favoriteChannel.setSelected(true);
                 }
                 return;
             }
 
+            // If it's not the textbox then they seleceted a favorite from the list
             final StreamService strSrvc = StreamServiceManager.getStreamServiceByKey(favoriteStream.GetKey());
 
             updateTemporaryStreamService(strSrvc);
@@ -390,13 +412,23 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         return streamServiceSelection.getValue();
     }
 
-    // You should probably call this from a Platform.runLater
+    /**
+     * You should probably call this from a Platform.runLater
+     * 
+     * @param selectStreamService
+     *            The new StreamService you want to select
+     */
     public void setSelectedStreamService(StreamService selectStreamService) {
         streamServiceSelection.getSelectionModel().select(selectStreamService);
     }
 
-    // Feed this function whatever stream you're trying to set the streamServiceSelection selection to before you change
-    // it. It will make sure that you can select that stream and remove the temporary StreamService as approriate
+    /**
+     * Feed this function whatever stream you're trying to set the streamServiceSelection selection to before you change
+     * it. It will make sure that you can select that stream and remove the temporary StreamService as approriate
+     * 
+     * @param newPotentialTemporaryStream
+     *            The StreamService you want to switch to
+     */
     public void updateTemporaryStreamService(StreamService newPotentialTemporaryStream) {
         if (mFavChanTemp != null) {
             if (!mFavChanTemp.isEnabled()) streamServiceSelection.getItems().remove(mFavChanTemp);
@@ -408,11 +440,13 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         }
     }
 
+    /**
+     * This needs to be called any time you modify the value of Pref.FAVORITED_STREAMS
+     */
     private void updateFavoriteList() {
-        List<FavoriteStream> favorites = new LinkedList<FavoriteStream>();
         String favString = Pref.FAVORITED_STREAMS.getString();
-        JSONArray jsonArray;
-        jsonArray = new JSONArray(favString);
+        JSONArray jsonArray = new JSONArray(favString);
+        List<FavoriteStream> favorites = new LinkedList<FavoriteStream>();
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject tempJSON;
             tempJSON = jsonArray.getJSONObject(i);
@@ -423,18 +457,20 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         });
     }
 
+    /**
+     * This needs to be called any time streamServiceSelection, channelCustomInput, channelDefault or channelCustom
+     * changes values. It checks if any of the inputs match an already stored favorite and automatically checks/unchecks
+     * the favorite button as appropriate
+     */
     private void checkFavorites() {
-        String favsString = Pref.FAVORITED_STREAMS.getString();
-        JSONArray jsonArray;
-        jsonArray = new JSONArray(favsString);
+        JSONArray jsonArray = new JSONArray(Pref.FAVORITED_STREAMS.getString());
 
+        String sel = streamServiceSelection.getValue().getKey();
+        String editBoxValue = channelCustomInput.getText();
         boolean foundFav = false;
         String foundFavName = "";
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject tempJSON;
-            tempJSON = jsonArray.getJSONObject(i);
-            String sel = streamServiceSelection.getValue().getKey();
-            String editBoxValue = channelCustomInput.getText();
+            JSONObject tempJSON = jsonArray.getJSONObject(i);
             String jsel = tempJSON.getString("streamServiceKey");
             String jchanname = tempJSON.getString("channelName");
             if ((editBoxValue.equals(jchanname) || (jchanname.equals("") && channelDefault.isSelected()))
