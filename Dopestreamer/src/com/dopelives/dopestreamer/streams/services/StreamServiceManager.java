@@ -87,6 +87,8 @@ public class StreamServiceManager {
      * @return The stream service with matching key or null if it wasn't found
      */
     public static StreamService getStreamServiceByKey(final String key) {
+        if (key.equals("none")) return new DisabledStreamService();
+
         final Optional<StreamService> match = sStreamServices.stream().filter(s -> s.getKey().equals(key)).findAny();
 
         return match.isPresent() ? match.get() : null;

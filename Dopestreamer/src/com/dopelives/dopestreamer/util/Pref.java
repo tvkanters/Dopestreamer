@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.prefs.Preferences;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  * An enum used to manage Dopestreamer preferences.
  */
@@ -47,7 +50,11 @@ public enum Pref {
     HLS_QUICK_BUFFER("hlsquickbuffer", true),
     /** Stream services that the user disabled and shouldn't be offered */
     DISABLED_STREAM_SERVICES("disabledstreamservices", new String[] { "afreeca", "bambuser", "livestreamold",
-            "livestream" });
+            "livestream" }),
+    /** Favorited streams, for easy access. */
+    FAVORITED_STREAMS("favoritedstreams", new JSONArray()
+            .put(new JSONObject().put("label", "Dopelives").put("streamServiceKey", "xphome").put("channelName", ""))
+            .toString());
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
