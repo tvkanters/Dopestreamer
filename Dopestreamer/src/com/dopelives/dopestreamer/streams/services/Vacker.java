@@ -98,7 +98,7 @@ public class Vacker extends StreamService {
     }
 
     /** A regex for parsing Vacker channels */
-    private static final Pattern sChannelParser = Pattern.compile("^([a-z]+)(_low)?(/[a-z]+(_low)?)?$",
+    private static final Pattern sChannelParser = Pattern.compile("^([a-z0-9_-]+)(/[a-z0-9_-]+)?$",
             Pattern.CASE_INSENSITIVE);
 
     /**
