@@ -23,8 +23,6 @@ public class StreamInfo {
 
     /** The URL at which to get the topic info */
     private static final String URL_TOPIC = "http://goalitium.kapsi.fi/dopelives_status2";
-    /** The URL at which to get the Hitbox info */
-    private static final String URL_HITBOX = "http://api.hitbox.tv/media/live/dopefish";
     /** The URL at which to get the Twitch info */
     private static final String URL_TWITCH = "https://api.twitch.tv/kraken/streams/dopelives";
 
@@ -49,8 +47,6 @@ public class StreamInfo {
 
     /** The amount of viewers on Vacker */
     private static int sViewersVacker = 0;
-    /** The amount of viewers on Hitbox */
-    private static int sViewersHitbox = 0;
     /** The amount of viewers on Twitch */
     private static int sViewersTwitch = 0;
 
@@ -81,6 +77,13 @@ public class StreamInfo {
                         sStreamer = streamer;
                         sType = type;
                         sGame = game;
+
+                        try {
+                            Thread.sleep(2000);
+                        } catch (final InterruptedException ex) {
+                            // TODO Auto-generated catch block
+                            ex.printStackTrace();
+                        }
 
                         // Notify all listeners of a change in stream info
                         for (final StreamInfoListener listener : sListeners) {
@@ -156,39 +159,6 @@ public class StreamInfo {
         }
     };
 
-    /** The updater performing the HTTP request to get the latest Hitbox info */
-    private static final Runnable sHitboxUpdater = new Runnable() {
-        @Override
-        public void run() {
-            // Check the newest stream info
-            final String result = HttpHelper.getContent(URL_HITBOX);
-            if (result != null) {
-                final JSONObject json;
-                try {
-                    json = new JSONObject(result).getJSONArray("livestream").getJSONObject(0);
-                } catch (final JSONException ex) {
-                    System.out.println("Could not parse Hitbox response as JSON");
-                    return;
-                }
-
-                // Viewer count is -2 by default to account for the restream viewers
-                int viewerCount = -2;
-
-                // Only add the Hitbox viewer count if it's live
-                if (json.getInt("media_is_live") == 1) {
-                    viewerCount += json.getInt("media_views");
-                }
-
-                // If the viewer count changed, update it
-                viewerCount = Math.max(viewerCount, 0);
-                if (viewerCount != sViewersHitbox) {
-                    sViewersHitbox = viewerCount;
-                    updateViewerCount();
-                }
-            }
-        }
-    };
-
     /** The updater performing the HTTP request to get the latest Twitch info */
     private static final Runnable sTwitchUpdater = new Runnable() {
         @Override
@@ -232,7 +202,6 @@ public class StreamInfo {
      */
     private static void executeViewerCountRefresh() {
         Executor.execute(sVackerUpdater);
-        Executor.execute(sHitboxUpdater);
         Executor.execute(sTwitchUpdater);
     }
 
@@ -259,11 +228,11 @@ public class StreamInfo {
         // Create the tasks
         sRequestTopicTask = Executor.scheduleInterval(() -> {
             executeTopicRefresh();
-        }, 0, REQUEST_INTERVAL_TOPIC);
+        } , 0, REQUEST_INTERVAL_TOPIC);
 
         sRequestViewerCountTask = Executor.scheduleInterval(() -> {
             executeViewerCountRefresh();
-        }, 0, REQUEST_INTERVAL_VIEWER_COUNT);
+        } , 0, REQUEST_INTERVAL_VIEWER_COUNT);
     }
 
     /**
@@ -283,7 +252,7 @@ public class StreamInfo {
      * Informs the listeners of an updated viewer count.
      */
     private static synchronized void updateViewerCount() {
-        final int viewerCount = sViewersVacker + sViewersHitbox + sViewersTwitch;
+        final int viewerCount = sViewersVacker + sViewersTwitch;
 
         for (final StreamInfoListener listener : sListeners) {
             listener.onViewerCountUpdated(viewerCount);

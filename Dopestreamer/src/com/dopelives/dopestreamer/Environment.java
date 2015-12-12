@@ -38,8 +38,6 @@ public class Environment {
             .getPath());
     /** The directory of the executable file running Dopestreamer */
     public static final String EXE_DIR = EXE_FILE.getParentFile().toString() + File.separator;
-    /** Whether or not autoswitch is shown as an option to the user */
-    public static final boolean ALLOW_AUTOSWITCH = false;
 
     /** Remembers all output for logging purposes */
     private static final OutputSpy sOutputSpy = new OutputSpy(System.out);

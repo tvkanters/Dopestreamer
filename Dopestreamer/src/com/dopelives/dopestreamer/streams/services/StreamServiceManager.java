@@ -10,26 +10,22 @@ import java.util.Optional;
  */
 public class StreamServiceManager {
 
+    /** A placeholder stream service for when a service is disabled */
+    public static final StreamService DISABLED = new DisabledStreamService();
+    /** A placeholder stream service for when no service is enabled */
+    public static final StreamService NONE = new NoStreamService();
+
     /** The list of registered stream services */
     private static final List<StreamService> sStreamServices = new LinkedList<>();
 
-    /** The list of stream services to autoswitch to */
-    private static final List<StreamService> sAutoswitchServices = new LinkedList<>();
-
     static {
-        final StreamService hitbox = new Hitbox();
-        final StreamService vacker = new Vacker();
-
         register(new Afreeca());
-        register(hitbox);
+        register(new Hitbox());
         register(new LivestreamNew());
         register(new LivestreamOld());
         register(new Twitch());
         register(new Ustream());
-        register(vacker);
-
-        registerAutoswitch(vacker);
-        registerAutoswitch(hitbox);
+        register(new Vacker());
     }
 
     /**
@@ -40,16 +36,6 @@ public class StreamServiceManager {
      */
     private static void register(final StreamService streamService) {
         sStreamServices.add(streamService);
-    }
-
-    /**
-     * Registers a stream service for autoswitch use.
-     *
-     * @param streamService
-     *            The stream service to register
-     */
-    private static void registerAutoswitch(final StreamService streamService) {
-        sAutoswitchServices.add(streamService);
     }
 
     /**
@@ -65,7 +51,7 @@ public class StreamServiceManager {
         }
 
         if (enabledStreamServices.isEmpty()) {
-            enabledStreamServices.add(new NoStreamService());
+            enabledStreamServices.add(NONE);
         }
 
         return Collections.unmodifiableList(enabledStreamServices);
@@ -87,18 +73,8 @@ public class StreamServiceManager {
      * @return The stream service with matching key or null if it wasn't found
      */
     public static StreamService getStreamServiceByKey(final String key) {
-        if (key.equals("none")) return new DisabledStreamService();
-
         final Optional<StreamService> match = sStreamServices.stream().filter(s -> s.getKey().equals(key)).findAny();
-
-        return match.isPresent() ? match.get() : null;
-    }
-
-    /**
-     * @return The autoswitch stream services
-     */
-    public static List<StreamService> getAutoswitchServices() {
-        return sAutoswitchServices;
+        return (match.isPresent() ? match.get() : null);
     }
 
     /**

@@ -46,14 +46,6 @@ public class Twitch extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    public String getDefaultChannel() {
-        return "dopelives";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected List<Quality> getServiceSpecificQualities() {
         final List<Quality> qualities = new LinkedList<>();
         qualities.add(Quality.HIGH);

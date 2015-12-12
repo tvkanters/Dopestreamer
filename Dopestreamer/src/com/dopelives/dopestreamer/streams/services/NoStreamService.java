@@ -1,9 +1,14 @@
 package com.dopelives.dopestreamer.streams.services;
 
 /**
- * The place holder service for when none is selected.
+ * The place holder service for when none is enabled.
  */
 public class NoStreamService extends StreamService {
+
+    /**
+     * This stream service can be accessed through {@link StreamServiceManager#NONE}.
+     */
+    /* default */ NoStreamService() {}
 
     /**
      * {@inheritDoc}
@@ -52,4 +57,5 @@ public class NoStreamService extends StreamService {
     public boolean isConnectPossible(final String channel) {
         return false;
     }
+
 }

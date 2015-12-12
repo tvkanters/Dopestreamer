@@ -41,18 +41,6 @@ public class Stream {
     private boolean mStopping = false;
 
     /**
-     * Starts a stream for the default channel at the given service.
-     *
-     * @param streamService
-     *            The service to start
-     * @param quality
-     *            The quality to show the stream in
-     */
-    public Stream(final StreamService streamService, final Quality quality) {
-        this(streamService, streamService.getDefaultChannel(), quality);
-    }
-
-    /**
      * Starts a stream for the given channel at the service.
      *
      * @param streamService
@@ -156,7 +144,7 @@ public class Stream {
                     mConnectTask.cancel(false);
                     mConnectTask = null;
                 }
-            }, 0, RETRY_DELAY * 1000);
+            } , 0, RETRY_DELAY * 1000);
         });
     }
 

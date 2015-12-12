@@ -41,7 +41,7 @@ public abstract class StreamService implements ComboBoxItem {
      * @return True iff the service has not been disabled
      */
     public final boolean isEnabled() {
-        return getKey().equals("none") ? false : !Pref.DISABLED_STREAM_SERVICES.contains(getKey());
+        return (!Pref.DISABLED_STREAM_SERVICES.contains(getKey()) && !getKey().equals("none"));
     }
 
     /**
@@ -56,20 +56,6 @@ public abstract class StreamService implements ComboBoxItem {
      */
     public String getConnectionDetails(final String channel, final Quality quality) {
         return getUrl() + channel + " " + quality.getCommand();
-    }
-
-    /**
-     * @return True iff the service has a default (Dopelives) channel
-     */
-    public boolean hasDefaultChannel() {
-        return getDefaultChannel() != null;
-    }
-
-    /**
-     * @return The default channel to start for this service when a channel isn't provided or null if there isn't any
-     */
-    public String getDefaultChannel() {
-        return null;
     }
 
     /**
@@ -118,13 +104,14 @@ public abstract class StreamService implements ComboBoxItem {
     }
 
     /**
-     * Checks if a custom channel can be requested. Returns true by default but can be overridden to add conditional
-     * returns.
-     *
-     * @return True iff the user may enter a custom channel
+     * @return True iff the stream service keys correspond.
      */
-    public boolean allowsCustomChannels() {
-        return true;
+    @Override
+    public boolean equals(final Object obj) {
+        if (!(obj instanceof StreamService)) {
+            return false;
+        }
+        return (this == obj || getKey().equals(((StreamService) obj).getKey()));
     }
 
 }

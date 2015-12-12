@@ -137,14 +137,6 @@ public class Vacker extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    public String getDefaultChannel() {
-        return "live";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getConnectionDetails(final String channel, final Quality quality) {
         String parsedChannel = parseChannel(channel);
         if (parsedChannel == null) {

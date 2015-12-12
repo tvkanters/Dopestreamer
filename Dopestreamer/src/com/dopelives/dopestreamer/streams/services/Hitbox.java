@@ -46,14 +46,6 @@ public class Hitbox extends StreamService {
      * {@inheritDoc}
      */
     @Override
-    public String getDefaultChannel() {
-        return "dopefish";
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     protected List<Quality> getServiceSpecificQualities() {
         final List<Quality> qualities = new LinkedList<>();
         qualities.add(Quality.P720);

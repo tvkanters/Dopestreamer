@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
-import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.gui.StreamState;
 import com.dopelives.dopestreamer.shell.ConsoleListener;
 import com.dopelives.dopestreamer.shell.ProcessId;
@@ -38,30 +37,11 @@ public class StreamManager implements ConsoleListener {
     /** The listeners that will receive updates of stream changes */
     private final List<StreamListener> mListeners = new LinkedList<>();
 
-    /** Whether or not the stream will autoswitch between channels */
-    private boolean mAutoswitchEnabled;
-    /** The index of the current autoswitch stream service */
-    private int mCurrentAutoswitchIndex = -1;
-    /** The task used to retry autoswitch services */
-    private ScheduledFuture<?> mAutoswitchDelay = null;
-
     /**
      * @return The base stream manager to use for global streams
      */
     public static StreamManager getInstance() {
         return sInstance;
-    }
-
-    /**
-     * Starts a stream based on the given parameters with the default channel for the given service.
-     *
-     * @param streamService
-     *            The service to use (e.g., Hitbox)
-     * @param quality
-     *            The quality of the stream
-     */
-    public synchronized void startStream(final StreamService streamService, final Quality quality) {
-        startStream(streamService, streamService.getDefaultChannel(), quality);
     }
 
     /**
@@ -79,22 +59,17 @@ public class StreamManager implements ConsoleListener {
      */
     public synchronized void startStream(final StreamService streamService, final String channel, final Quality quality)
             throws InvalidParameterException {
-        mAutoswitchEnabled = false;
-
         // Clean up
         stopStreamConsole();
 
         // Prepare the stream
-        if (channel.equals("") && streamService.hasDefaultChannel())
-            mStream = new Stream(streamService, quality);
-        else
-            mStream = new Stream(streamService, channel, quality);
+        mStream = new Stream(streamService, channel, quality);
         mStream.addListener(this);
         updateState(StreamState.CONNECTING);
 
         // Save the stream settings
         Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
-        Pref.LAST_CHANNEL.put(channel.equals(streamService.getDefaultChannel()) ? "" : channel);
+        Pref.LAST_CHANNEL.put(channel);
         Pref.LAST_QUALITY.put(quality.toString());
 
         // Start the stream
@@ -102,80 +77,12 @@ public class StreamManager implements ConsoleListener {
     }
 
     /**
-     * Starts a stream that automatically switches between available default channels.
-     *
-     * @param quality
-     *            The quality of the stream
-     */
-    public synchronized void startAutoswitch(final Quality quality) {
-        mAutoswitchEnabled = true;
-        boolean delay = false;
-
-        // Clean up
-        stopStreamConsole();
-
-        // Update state
-        if (mStreamState != StreamState.WAITING) {
-            updateState(StreamState.CONNECTING);
-        }
-
-        // Switch to the next stream service
-        ++mCurrentAutoswitchIndex;
-        if (mCurrentAutoswitchIndex == StreamServiceManager.getAutoswitchServices().size()) {
-            mCurrentAutoswitchIndex = 0;
-            delay = true;
-            updateState(StreamState.WAITING);
-        }
-
-        // Prepare the stream
-        final StreamService streamService = StreamServiceManager.getAutoswitchServices().get(mCurrentAutoswitchIndex);
-        mStream = new Stream(streamService, quality);
-        mStream.addListener(this);
-
-        // Save the stream settings
-        Pref.LAST_STREAM_SERVICE.put(streamService.getKey());
-        Pref.LAST_CHANNEL.put("");
-        Pref.LAST_QUALITY.put(quality.toString());
-
-        // Start the stream
-        if (delay) {
-            mAutoswitchDelay = Executor.schedule(() -> {
-                mStream.start();
-                mAutoswitchDelay = null;
-            }, Stream.RETRY_DELAY * 1000);
-
-        } else {
-            mStream.start();
-        }
-    }
-
-    /**
-     * Resets the autoswitch rotation.
-     */
-    public synchronized void resetAutoswitch() {
-        mCurrentAutoswitchIndex = -1;
-    }
-
-    /**
      * Starts the stream based on the user preferences. Will restart the stream if it was already running.
      */
-    @SuppressWarnings("unused")
     public synchronized void restartLastStream() {
-        final Quality quality = Quality.valueOf(Pref.LAST_QUALITY.getString());
-
-        final StreamService streamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE
-                .getString());
-        final String channel = Pref.LAST_CHANNEL.getString();
-
-        if (channel.equals("")) {
-            if (Environment.ALLOW_AUTOSWITCH && Pref.AUTOSWITCH.getBoolean()) {
-                startAutoswitch(quality);
-            } else {
-                startStream(streamService, quality);
-            }
-        } else {
-            startStream(streamService, channel, quality);
-        }
+        startStream(StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getString()),
+                Pref.LAST_CHANNEL.getString(),
+                Quality.valueOf(Pref.LAST_QUALITY.getString()));
     }
 
     /**
@@ -191,11 +98,6 @@ public class StreamManager implements ConsoleListener {
      * Stops the console of the stream, if it was opened.
      */
     private synchronized void stopStreamConsole() {
-        if (mAutoswitchDelay != null) {
-            mAutoswitchDelay.cancel(false);
-            mAutoswitchDelay = null;
-        }
-
         if (mStream != null) {
             mStream.stop();
             mStream = null;
@@ -221,14 +123,7 @@ public class StreamManager implements ConsoleListener {
 
             // No stream active at the moment, so waiting for it to start
         } else if (output.contains("Waiting for streams")) {
-            if (mAutoswitchEnabled) {
-                // Try the next stream service
-                stopStreamConsole();
-                restartLastStream();
-
-            } else {
-                updateState(StreamState.WAITING);
-            }
+            updateState(StreamState.WAITING);
 
             // Invalid channel name
         } else if (output.contains("404 Client Error: Not Found")) {
@@ -243,7 +138,6 @@ public class StreamManager implements ConsoleListener {
             // Opening the media player
         } else if (output.contains("Starting player")) {
             stopBufferingTimeout();
-            resetAutoswitch();
 
             // Streaming started
         } else if (output.contains("Writing stream")) {

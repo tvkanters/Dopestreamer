@@ -24,13 +24,10 @@ import com.dopelives.dopestreamer.util.Executor;
 import com.dopelives.dopestreamer.util.Pref;
 
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -114,10 +111,10 @@ public class Settings extends ScrollableController {
 
         // Make the stream services look nice within the combo box
         streamingServicesDisabled.setButtonCell(new ComboBoxTextCell<>("Enable or disable services"));
-        streamingServicesDisabled
-                .setCellFactory((final ListView<StreamService> param) -> new ComboBoxCell<StreamService>());
+        streamingServicesDisabled.setCellFactory(param -> new ComboBoxCell<StreamService>());
 
-        streamingServicesDisabled.setOnAction((final ActionEvent event) -> {
+        // When enabling or disabling stream services, store the preference and update the UI
+        streamingServicesDisabled.setOnAction(event -> {
             final StreamService streamService = streamingServicesDisabled.getValue();
             if (streamService == null) {
                 return;
@@ -129,19 +126,14 @@ public class Settings extends ScrollableController {
                 Pref.DISABLED_STREAM_SERVICES.remove(streamService.getKey());
             }
 
-            Streams streams = (Streams) Screen.STREAMS.getController();
-            final StreamService selectedStreamService = streams.getSelectedStreamService();
-
             Platform.runLater(() -> {
                 streamingServicesDisabled.getSelectionModel().clearSelection();
                 streamingServicesDisabled.getItems().setAll(streamServices);
             });
 
-            streams.updateStreamServices();
-            Platform.runLater(() -> {
-                streams.updateTemporaryStreamService(selectedStreamService);
-                streams.setSelectedStreamService(selectedStreamService);
-            });
+            final Streams streamsController = ((Streams) Screen.STREAMS.getController());
+            streamsController.updateFavouriteStreams();
+            streamsController.updateStreamServices();
 
             streamingServicesDisabled.consumeNextHide();
         });
@@ -151,8 +143,7 @@ public class Settings extends ScrollableController {
         mediaPlayerSelection.getItems().addAll(mediaPlayers);
 
         // Update the custom media player input field based on the selected media player
-        mediaPlayerSelection.valueProperty().addListener((final ObservableValue<? extends MediaPlayer> observable,
-                final MediaPlayer oldValue, final MediaPlayer newValue) -> {
+        mediaPlayerSelection.valueProperty().addListener((observable, oldValue, newValue) -> {
             final boolean customPlayer = newValue.getKey().equals("");
             mediaPlayerLocationWrapper.setVisible(customPlayer);
             mediaPlayerLocationWrapper.setManaged(customPlayer);
@@ -169,7 +160,7 @@ public class Settings extends ScrollableController {
 
         // Make the media players look nice within the combo box
         mediaPlayerSelection.setButtonCell(new ComboBoxCell<MediaPlayer>());
-        mediaPlayerSelection.setCellFactory((final ListView<MediaPlayer> param) -> new ComboBoxCell<MediaPlayer>());
+        mediaPlayerSelection.setCellFactory(param -> new ComboBoxCell<MediaPlayer>());
 
         // Set text of player location field
         mediaPlayerLocation.setText(Pref.PLAYER_LOCATION.getString());
@@ -179,8 +170,7 @@ public class Settings extends ScrollableController {
         vackerServerSelection.getItems().addAll(vackerServers);
 
         // Update the Vacker server based on the selection
-        vackerServerSelection.valueProperty().addListener((final ObservableValue<? extends Vacker.Server> observable,
-                final Vacker.Server oldValue, final Vacker.Server newValue) -> {
+        vackerServerSelection.valueProperty().addListener((observable, oldValue, newValue) -> {
             Pref.VACKER_SERVER.put(newValue.getKey());
         });
 
@@ -189,8 +179,7 @@ public class Settings extends ScrollableController {
 
         // Make the Vacker servers look nice within the combo box
         vackerServerSelection.setButtonCell(new ComboBoxCell<Vacker.Server>());
-        vackerServerSelection
-                .setCellFactory((final ListView<Vacker.Server> param) -> new ComboBoxCell<Vacker.Server>());
+        vackerServerSelection.setCellFactory(param -> new ComboBoxCell<Vacker.Server>());
     }
 
     @Override

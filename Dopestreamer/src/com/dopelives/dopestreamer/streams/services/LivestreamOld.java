@@ -37,12 +37,4 @@ public class LivestreamOld extends StreamService {
         return "livestream.com/";
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getDefaultChannel() {
-        return "dopefish";
-    }
-
 }

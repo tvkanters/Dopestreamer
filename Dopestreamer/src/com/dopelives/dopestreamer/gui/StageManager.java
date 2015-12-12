@@ -2,6 +2,11 @@ package com.dopelives.dopestreamer.gui;
 
 import java.io.IOException;
 
+import com.dopelives.dopestreamer.Environment;
+import com.dopelives.dopestreamer.TrayManager;
+import com.dopelives.dopestreamer.util.Executor;
+import com.dopelives.dopestreamer.util.Pref;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -13,11 +18,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import com.dopelives.dopestreamer.Environment;
-import com.dopelives.dopestreamer.TrayManager;
-import com.dopelives.dopestreamer.util.Pref;
-import com.dopelives.dopestreamer.util.Executor;
-
 /**
  * Handles the main window's stage. May only be opened once.
  */
@@ -26,7 +26,7 @@ public class StageManager extends Application {
     /** The window's width */
     public static final int WIDTH = 300;
     /** The window's height */
-    public static final int HEIGHT = 415;
+    public static final int HEIGHT = 425;
     /** The margin that JavaFX adds for some reason */
     public static final int MARGIN_CORRECTION = 10;
 

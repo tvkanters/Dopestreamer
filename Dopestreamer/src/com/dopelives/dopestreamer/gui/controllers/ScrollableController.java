@@ -52,7 +52,7 @@ public abstract class ScrollableController implements Initializable, Controller 
 
         // Prevent scroll bar dragging from twitching due to the scroll speed fix
         // Must be done at a later time as the scroll bars are loaded later
-        scrollPane.setOnMouseEntered((final MouseEvent event) -> {
+        scrollPane.setOnMouseEntered(event -> {
             scrollPane.setOnMouseEntered(null);
             final Set<Node> nodes = scrollPane.lookupAll(".scroll-bar .thumb");
             for (final Node node : nodes) {

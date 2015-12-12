@@ -36,7 +36,7 @@ public class Audio {
             final Clip clip = (Clip) AudioSystem.getLine(new Line.Info(Clip.class));
 
             // Make the the clip is freed after playing
-            clip.addLineListener((final LineEvent event) -> {
+            clip.addLineListener(event -> {
                 if (event.getType() == LineEvent.Type.STOP) {
                     clip.close();
                 }

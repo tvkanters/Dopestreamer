@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.prefs.Preferences;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.JSONException;
+
+import com.dopelives.dopestreamer.streams.FavouriteStream;
+import com.dopelives.dopestreamer.streams.Quality;
+import com.dopelives.dopestreamer.streams.services.StreamServiceManager;
 
 /**
  * An enum used to manage Dopestreamer preferences.
@@ -23,11 +27,11 @@ public enum Pref {
     /** Integer type representation of the window's y-coordinate */
     WINDOW_Y("windowy", -32000),
     /** The last channel someone streamed, empty string for default Dopelives channel */
-    LAST_CHANNEL("lastchannel", ""),
+    LAST_CHANNEL("lastchannel", "live"),
     /** The key of the last stream service used */
     LAST_STREAM_SERVICE("laststreamservice", "xphome"),
     /** The enum constant of the last quality used */
-    LAST_QUALITY("lastquality", "BEST"),
+    LAST_QUALITY("lastquality", Quality.BEST.name()),
     /** The key of the selected default media player or an empty string for a custom media player */
     DEFAULT_PLAYER("defaultplayer", ""),
     /** The location of the media player to use */
@@ -40,8 +44,6 @@ public enum Pref {
     NOTIFICATIONS("notifications", false),
     /** Whether or not topic changes should use ding dong as sound */
     NOTIFICATION_DINGDONG("notificationdingdong", false),
-    /** Whether or not streams automatically switch to live Dopelives channels */
-    AUTOSWITCH("autoswitch", true),
     /** The Vacker server to use */
     VACKER_SERVER("vackerserver", ""),
     /** Whether or not Dopestreamer should check if updates of Livestreamer are available */
@@ -51,10 +53,9 @@ public enum Pref {
     /** Stream services that the user disabled and shouldn't be offered */
     DISABLED_STREAM_SERVICES("disabledstreamservices", new String[] { "afreeca", "bambuser", "livestreamold",
             "livestream" }),
-    /** Favorited streams, for easy access. */
-    FAVORITED_STREAMS("favoritedstreams", new JSONArray()
-            .put(new JSONObject().put("label", "Dopelives").put("streamServiceKey", "xphome").put("channelName", ""))
-            .toString());
+    /** The user's favourite streams, stored for easy access */
+    FAVOURITE_STREAMS("favouritestreams", new String[] {
+            new FavouriteStream("Dopelives", StreamServiceManager.getStreamServiceByKey("xphome"), "live").toJson() });
 
     /** Java's preferences manager */
     private static final Preferences sPreferences = Preferences.userRoot().node(Pref.class.getName());
@@ -109,7 +110,7 @@ public enum Pref {
 
         final String storedList = Preferences.userRoot().node(Pref.class.getName()).get(mKey, null);
         if (storedList != null) {
-            mList = new ArrayList<>(Arrays.asList(storedList.split(",")));
+            mList = decodeList(storedList);
         } else {
             mList = new ArrayList<>(mDefaultList);
         }
@@ -157,7 +158,7 @@ public enum Pref {
     public void put(final List<String> value) {
         enforceList();
         mList = new ArrayList<String>(value);
-        sPreferences.put(mKey, String.join(",", mList));
+        sPreferences.put(mKey, encodeList(mList));
     }
 
     /**
@@ -169,7 +170,7 @@ public enum Pref {
     public void add(final String value) {
         enforceList();
         mList.add(value);
-        sPreferences.put(mKey, String.join(",", mList));
+        sPreferences.put(mKey, encodeList(mList));
     }
 
     /**
@@ -181,7 +182,7 @@ public enum Pref {
     public void remove(final String value) {
         enforceList();
         mList.remove(value);
-        sPreferences.put(mKey, String.join(",", mList));
+        sPreferences.put(mKey, encodeList(mList));
     }
 
     /**
@@ -319,6 +320,46 @@ public enum Pref {
         if (mDefaultList == null) {
             throw new IllegalArgumentException(this + " does not accept list items");
         }
+    }
+
+    /**
+     * Parses the string representation of a stored list to a list format.
+     *
+     * @param storedList
+     *            The string representation of the list
+     *
+     * @return The list in actual list format
+     */
+    private List<String> decodeList(final String storedList) {
+        try {
+            final JSONArray json = new JSONArray(storedList);
+
+            final List<String> list = new ArrayList<>();
+            for (int i = 0; i < json.length(); ++i) {
+                list.add(json.getString(i));
+            }
+            return list;
+
+        } catch (final JSONException ex) {
+            // Support for legacy stored lists
+            return new ArrayList<>(Arrays.asList(storedList.split(",")));
+        }
+    }
+
+    /**
+     * Converts a list into a storable JSON representation.
+     *
+     * @param list
+     *            The list to store
+     *
+     * @return The JSON representation of the list to store as string
+     */
+    private String encodeList(final List<String> list) {
+        final JSONArray json = new JSONArray();
+        for (final String listItem : list) {
+            json.put(listItem);
+        }
+        return json.toString();
     }
 
 }

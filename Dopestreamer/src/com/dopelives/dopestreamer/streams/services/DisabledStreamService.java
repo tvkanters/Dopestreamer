@@ -1,16 +1,21 @@
 package com.dopelives.dopestreamer.streams.services;
 
 /**
- * The place holder service for when none is selected.
+ * The place holder service for a previously used stream service has since been removed.
  */
 public class DisabledStreamService extends StreamService {
+
+    /**
+     * This stream service can be accessed through {@link StreamServiceManager#DISABLED}.
+     */
+    /* default */ DisabledStreamService() {}
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String getKey() {
-        return "none";
+        return "disabled";
     }
 
     /**
@@ -18,7 +23,7 @@ public class DisabledStreamService extends StreamService {
      */
     @Override
     public String getLabel() {
-        return "Removed";
+        return "Disabled";
     }
 
     /**
@@ -52,4 +57,5 @@ public class DisabledStreamService extends StreamService {
     public boolean isConnectPossible(final String channel) {
         return false;
     }
+
 }
