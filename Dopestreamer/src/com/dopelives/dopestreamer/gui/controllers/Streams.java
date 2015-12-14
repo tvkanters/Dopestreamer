@@ -33,7 +33,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -45,12 +44,12 @@ import javafx.util.StringConverter;
  */
 public class Streams implements Initializable, StreamListener, StreamInfoListener, Controller {
 
+    /** A favourite stream placeholder for when the entered stream settings are not favourited */
+    private static final FavouriteStream DEFAULT_FAVOURITE_STREAM = new FavouriteStream("Select a favourite stream",
+            null, null);
+
     @FXML
     private Node root;
-    @FXML
-    private RadioButton channelFavourite;
-    @FXML
-    private RadioButton channelCustom;
     @FXML
     private TextField channelCustomInput;
     @FXML
@@ -103,106 +102,53 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @Override
     public synchronized void initialize(final URL location, final ResourceBundle resources) {
 
-        /* FAVOURITE STREAMS UI */
-
-        // Set up a converter for the editable combo box
-        favouriteStreamSelection.setConverter(new StringConverter<FavouriteStream>() {
-            @Override
-            public String toString(final FavouriteStream object) {
-                return (object != null ? object.getLabel() : null);
-            }
-
-            @Override
-            public FavouriteStream fromString(final String string) {
-                final FavouriteStream selectedFavouriteStream = favouriteStreamSelection.getValue();
-                return new FavouriteStream(string, selectedFavouriteStream.getStreamService(),
-                        selectedFavouriteStream.getChannel());
-            }
-        });
-
-        // Make the favourite streams look nice within the combo box
-        favouriteStreamSelection.setButtonCell(new ComboBoxCell<>());
-        favouriteStreamSelection.setCellFactory(param -> new ComboBoxCell<>());
-        updateFavouriteStreams();
-
-        // Update other UI elements upon selecting a different favourite stream
-        favouriteStreamSelection.setOnAction(event -> {
-            if (!mIgnoreFavouriteStreamActions) {
-                channelFavourite.setSelected(true);
-                onSelectFavouriteStream();
-            }
-        });
-
-        // Catch ENTER events on the favourite stream's input field to finish editing (and prevent exceptions)
-        favouriteStreamSelection.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                onFavouriteStreamEditStop();
-                event.consume();
-            }
-        });
-
-        // Update UI when a different channel mode is selected
-        channelFavourite.setOnAction(event -> {
-            onSelectFavouriteStream();
-        });
-        channelCustom.setOnAction(event -> {
-            updateStreamServices();
-        });
-
         /* STREAM SERVICE UI */
 
         // Add stream services to the combo box
         final List<StreamService> streamServices = StreamServiceManager.getEnabledStreamServices();
         streamServiceSelection.getItems().addAll(streamServices);
 
-        // Indicate unavailable streams and update quality options
-        streamServiceSelection.setOnAction(event -> {
+        // Select the stored last stream service
+        StreamService lastStreamService = StreamServiceManager
+                .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getString());
+        if (!streamServices.contains(lastStreamService)) {
+            lastStreamService = StreamServiceManager.getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getDefaultString());
+        }
+        if (!streamServices.contains(lastStreamService)) {
+            lastStreamService = streamServiceSelection.getItems().get(0);
+        }
+        streamServiceSelection.setValue(lastStreamService);
+
+        // Update the UI when the stream service changes
+        streamServiceSelection.valueProperty().addListener((observable, oldValue, newValue) -> {
             mLockStreamServiceSelection = false;
 
-            final StreamService streamService = streamServiceSelection.getValue();
-            final StreamService favouriteStreamService = favouriteStreamSelection.getValue().getStreamService();
-            if (!favouriteStreamService.equals(streamService)
-                    && (favouriteStreamService.isEnabled() || !streamService.equals(StreamServiceManager.DISABLED))) {
-                channelCustom.setSelected(true);
-                channelCustomInput.requestFocus();
-            }
-
             updateQualityOptions();
-            updateFavouriteStreamToggle();
+            updateFavouriteStreams();
+
+            setQualityValid(true);
+            setCustomChannelValid(true);
         });
-
-        // Select the stored last stream service
-        final StreamService selectedService = StreamServiceManager
-                .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getString());
-        if (streamServices.contains(selectedService)) {
-            streamServiceSelection.setValue(selectedService);
-        }
-
-        // Make sure a value is selected
-        if (streamServiceSelection.getValue() == null) {
-            final StreamService defaultService = StreamServiceManager
-                    .getStreamServiceByKey(Pref.LAST_STREAM_SERVICE.getDefaultString());
-            if (streamServices.contains(defaultService)) {
-                streamServiceSelection.setValue(defaultService);
-            } else {
-                streamServiceSelection.getSelectionModel().select(0);
-            }
-        }
-        streamServiceSelection.getOnAction().handle(null);
 
         // Make the stream services look nice within the combo box
         streamServiceSelection.setButtonCell(new ComboBoxCell<>());
         streamServiceSelection.setCellFactory(param -> new ComboBoxCell<>());
 
+        /* QUALITY UI */
+
+        // Prepare the quality combo box
+        updateQualityOptions();
+        qualitySelection.setButtonCell(new ComboBoxCell<>());
+        qualitySelection.setCellFactory(param -> new ComboBoxCell<>());
+        qualitySelection.valueProperty().addListener((oberserver, oldValue, newValue) -> {
+            setQualityValid(true);
+        });
+
         /* CUSTOM CHANNEL UI */
 
-        // Select the custom channel radio button upon focusing the text field next to it
-        channelCustomInput.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                channelCustom.setSelected(true);
-                channelCustom.getOnAction().handle(null);
-            }
-        });
+        // Set the last used stream if provided
+        final String lastChannel = Pref.LAST_CHANNEL.getString();
+        channelCustomInput.setText(!lastChannel.equals("") ? lastChannel : Pref.LAST_CHANNEL.getDefaultString());
 
         // Start stream when pressing ENTER in the channel input box
         channelCustomInput.setOnKeyPressed(event -> {
@@ -226,36 +172,71 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
                 startStream();
             }
         });
-        // Update favourite checkbox and add dank Easter egg
+
+        // Update UI when changing the entered channel and add a dank Easter egg
         channelCustomInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            updateFavouriteStreamToggle();
+            updateFavouriteStreams();
+
             if (newValue.equals("420")) {
                 for (final Screen screen : Screen.values()) {
                     screen.getNode().getStylesheets().add(Environment.STYLE_FOLDER + "420.css");
                 }
             }
+
+            setCustomChannelValid(true);
         });
 
-        // Set the last used stream if provided
-        final String lastChannel = Pref.LAST_CHANNEL.getString();
-        final Optional<FavouriteStream> lastFavouriteStream = findFavouriteStream(streamServiceSelection.getValue(),
-                lastChannel);
-        if (lastFavouriteStream.isPresent() || lastChannel.equals("")) {
-            channelFavourite.setSelected(true);
-            if (lastFavouriteStream.isPresent()) {
-                favouriteStreamSelection.setValue(lastFavouriteStream.get());
+        /* FAVOURITE STREAMS UI */
+
+        // Set up a converter for the editable combo box
+        favouriteStreamSelection.setConverter(new StringConverter<FavouriteStream>() {
+            @Override
+            public String toString(final FavouriteStream object) {
+                return (object != null ? object.getLabel() : null);
             }
-        } else {
-            channelCustom.setSelected(true);
-            channelCustomInput.setText(lastChannel);
-        }
 
-        /* QUALITY UI */
+            @Override
+            public FavouriteStream fromString(final String string) {
+                final FavouriteStream selectedFavouriteStream = favouriteStreamSelection.getValue();
+                return new FavouriteStream(string, selectedFavouriteStream.getStreamService(),
+                        selectedFavouriteStream.getChannel());
+            }
+        });
 
-        // Prepare the quality combo box
-        updateQualityOptions();
-        qualitySelection.setButtonCell(new ComboBoxCell<>());
-        qualitySelection.setCellFactory(param -> new ComboBoxCell<>());
+        // Populate the favourite stream selection combo box
+        updateFavouriteStreams();
+
+        // Update the UI when selecting a different favourite stream
+        favouriteStreamSelection.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (!mIgnoreFavouriteStreamActions) {
+                if (newValue != null && !newValue.equals(DEFAULT_FAVOURITE_STREAM)) {
+                    Platform.runLater(() -> {
+                        mIgnoreFavouriteStreamActions = true;
+
+                        streamServiceSelection.setValue(newValue.getStreamService());
+                        if (!channelCustomInput.getText().equalsIgnoreCase(newValue.getChannel())) {
+                            channelCustomInput.setText(newValue.getChannel());
+                        }
+
+                        mIgnoreFavouriteStreamActions = false;
+                    });
+                }
+            }
+
+            setCustomChannelValid(true);
+        });
+
+        // Catch ENTER events on the favourite stream's input field to finish editing (and prevent exceptions)
+        favouriteStreamSelection.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                onFavouriteStreamEditStop();
+                event.consume();
+            }
+        });
+
+        // Make the favourite streams look nice within the combo box
+        favouriteStreamSelection.setButtonCell(new ComboBoxCell<>());
+        favouriteStreamSelection.setCellFactory(param -> new ComboBoxCell<>());
 
         /* GAME MODE UI */
 
@@ -305,26 +286,15 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     }
 
     /**
-     * Uses the GUI input to start a stream.
+     * Uses the UI input to start a stream.
      */
     private void startStream() {
-        final StreamManager streamManager = StreamManager.getInstance();
-        final Quality quality = qualitySelection.getValue();
-
-        // Pick a default or custom channel
-        if (channelFavourite.isSelected()) {
-            final FavouriteStream favouriteStream = favouriteStreamSelection.getValue();
-            try {
-                streamManager.startStream(favouriteStream.getStreamService(), favouriteStream.getChannel(), quality);
-            } catch (final InvalidParameterException ex) {
-                setFavouriteStreamValid(false);
-            }
-        } else {
-            try {
-                streamManager.startStream(streamServiceSelection.getValue(), channelCustomInput.getText(), quality);
-            } catch (final InvalidParameterException ex) {
-                setCustomChannelValid(false);
-            }
+        try {
+            StreamManager.getInstance().startStream(streamServiceSelection.getValue(),
+                    channelCustomInput.getText(),
+                    qualitySelection.getValue());
+        } catch (final InvalidParameterException ex) {
+            setCustomChannelValid(false);
         }
     }
 
@@ -338,7 +308,6 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
             case CONNECTING:
                 // When the stream starts connecting, remove errors and update the stream info
                 setCustomChannelValid(true);
-                setFavouriteStreamValid(true);
                 setQualityValid(true);
                 StreamInfo.requestRefresh();
                 break;
@@ -362,11 +331,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      */
     @Override
     public void onInvalidChannel(final Stream stream) {
-        if (channelCustom.isSelected()) {
-            setCustomChannelValid(false);
-        } else {
-            setFavouriteStreamValid(false);
-        }
+        setCustomChannelValid(false);
     }
 
     /**
@@ -458,7 +423,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     }
 
     /**
-     * Defines whether or not the inserted custom channel is valid or not. Will update the GUI appropriately.
+     * Defines whether or not the inserted custom channel is valid or not. Will update the UI appropriately.
      *
      * @param valid
      *            True iff the input value is valid
@@ -468,17 +433,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     }
 
     /**
-     * Defines whether or not the selected favourite stream is valid or not. Will update the GUI appropriately.
-     *
-     * @param valid
-     *            True iff the input value is valid
-     */
-    private synchronized void setFavouriteStreamValid(final boolean valid) {
-        ControllerHelper.setCssClass(favouriteStreamSelection, "invalid", !valid);
-    }
-
-    /**
-     * Defines whether or not the quality is valid or not. Will update the GUI appropriately.
+     * Defines whether or not the quality is valid or not. Will update the UI appropriately.
      *
      * @param valid
      *            True iff the input quality is valid
@@ -497,15 +452,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         if (favouriteStreamToggle.isSelected()) {
             // The current entered stream is favourited, so store it and update the list
             final String channel = channelCustomInput.getText();
-            if (channel.equals("")) {
-                favouriteStreamToggle.setSelected(false);
-            } else {
-                final FavouriteStream favouriteStream = new FavouriteStream(channel, streamServiceSelection.getValue(),
-                        channel);
-                Pref.FAVOURITE_STREAMS.add(favouriteStream.toJson());
-                updateFavouriteStreams();
-                favouriteStreamSelection.setValue(favouriteStream);
-            }
+            final FavouriteStream favouriteStream = new FavouriteStream(channel, streamServiceSelection.getValue(),
+                    channel);
+            Pref.FAVOURITE_STREAMS.add(favouriteStream.toJson());
+            updateFavouriteStreams();
 
         } else {
             // The currently selected favourite stream has been unfavourited, so remove it
@@ -574,41 +524,6 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     }
 
     /**
-     * Called when a favourite stream has been selected. Updates the rest of the UI appropriately.
-     */
-    private void onSelectFavouriteStream() {
-        final FavouriteStream favouriteStream = favouriteStreamSelection.getValue();
-        if (favouriteStream != null) {
-            updateStreamServices();
-            Platform.runLater(() -> {
-                if (streamServiceSelection.getItems().contains(favouriteStream.getStreamService())) {
-                    streamServiceSelection.setValue(favouriteStream.getStreamService());
-                } else {
-                    if (streamServiceSelection.getItems().contains(StreamServiceManager.DISABLED)) {
-                        streamServiceSelection.setValue(StreamServiceManager.DISABLED);
-                    }
-                }
-            });
-        }
-    }
-
-    /**
-     * Enables or disables selection favourite streams.
-     *
-     * @param enabled
-     *            True iff the user should be able to select favourite streams
-     */
-    public void setFavouriteSelectionEnabled(final boolean enabled) {
-        if (!enabled) {
-            channelCustom.setSelected(true);
-        }
-
-        channelFavourite.setDisable(!enabled);
-        favouriteStreamSelection.setDisable(!enabled);
-        favouriteStreamEdit.setDisable(!enabled);
-    }
-
-    /**
      * Deleted a favourite stream from persistent storage and the UI.
      *
      * @param favouriteStream
@@ -620,44 +535,36 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         // Update the UI
         updateFavouriteStreams();
-        channelCustom.setSelected(true);
     }
 
     /**
      * Updates the last of stream services. To be called after stream services are enabled or disabled.
      */
     public void updateStreamServices() {
-        Platform.runLater(() -> {
-            final List<StreamService> streamServices = new ArrayList<>(StreamServiceManager.getEnabledStreamServices());
+        final List<StreamService> streamServices = new ArrayList<>(StreamServiceManager.getEnabledStreamServices());
 
-            // Add a disabled stream service if it's selected as favourite stream
-            if (channelFavourite.isSelected() && !favouriteStreamSelection.getValue().getStreamService().isEnabled()) {
-                streamServices.add(StreamServiceManager.DISABLED);
-            }
+        // Keep track of which stream service the user selected manually
+        final StreamService selected = streamServiceSelection.getValue();
+        if (selected != null && !mLockStreamServiceSelection) {
+            mLastSelected = selected;
+        }
 
-            // Keep track of which stream service the user selected manually
-            final StreamService selected = streamServiceSelection.getValue();
-            if (selected != null && !mLockStreamServiceSelection) {
-                mLastSelected = selected;
-            }
+        // Update the stream services
+        streamServiceSelection.getItems().setAll(streamServices);
 
-            // Update the stream services
-            streamServiceSelection.getItems().setAll(streamServices);
+        // Select the right stream service
+        if (streamServiceSelection.getItems().contains(mLastSelected) && mLockStreamServiceSelection) {
+            streamServiceSelection.setValue(mLastSelected);
+            mLockStreamServiceSelection = false;
 
-            // Select the right stream service
-            if (streamServiceSelection.getItems().contains(mLastSelected) && mLockStreamServiceSelection) {
-                streamServiceSelection.setValue(mLastSelected);
-                mLockStreamServiceSelection = false;
+        } else if (streamServiceSelection.getItems().contains(selected)) {
+            streamServiceSelection.setValue(selected);
+            mLockStreamServiceSelection = true;
 
-            } else if (streamServiceSelection.getItems().contains(selected)) {
-                streamServiceSelection.setValue(selected);
-                mLockStreamServiceSelection = true;
-
-            } else if (streamServices.size() > 0) {
-                streamServiceSelection.getSelectionModel().select(0);
-                mLockStreamServiceSelection = true;
-            }
-        });
+        } else {
+            streamServiceSelection.getSelectionModel().select(0);
+            mLockStreamServiceSelection = true;
+        }
     }
 
     /**
@@ -689,47 +596,55 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * Updates the favourites combo box. Should be called after modifying the stored favourite streams.
      */
     public void updateFavouriteStreams() {
-        final List<FavouriteStream> favouriteStreams = new LinkedList<FavouriteStream>();
+        updateFavouriteStreams(false);
+    }
 
-        // Collect stored favourite streams
+    /**
+     * Updates the favourites combo box. Should be called after modifying the stored favourite streams.
+     *
+     * @param forceValueUpdate
+     *            Whether or not the combo box value should be forcefully updated to prevent bugs
+     */
+    public void updateFavouriteStreams(final boolean forceValueUpdate) {
+        // Collect the entered stream settings
+        final StreamService enteredStreamService = streamServiceSelection.getValue();
+        final String enteredChannel = channelCustomInput.getText();
+
+        // Collect stored favourite streams, but only if their stream service is enabled
+        final List<FavouriteStream> favouriteStreams = new LinkedList<FavouriteStream>();
         final List<String> favouriteStreamJsons = Pref.FAVOURITE_STREAMS.getList();
         for (final String favouriteStreamJson : favouriteStreamJsons) {
-            favouriteStreams.add(new FavouriteStream(favouriteStreamJson));
-        }
-
-        // Check if there are any favourite streams and if not, handle it appropriately
-        if (favouriteStreams.isEmpty()) {
-            favouriteStreams.add(new FavouriteStream("No stream favourited", StreamServiceManager.NONE, ""));
-            setFavouriteSelectionEnabled(false);
-        } else {
-            setFavouriteSelectionEnabled(true);
+            final FavouriteStream favouriteStream = new FavouriteStream(favouriteStreamJson);
+            if (favouriteStream.getStreamService().isEnabled()) {
+                favouriteStreams.add(favouriteStream);
+            }
         }
 
         // Add favourite streams
         favouriteStreamSelection.getItems().setAll(favouriteStreams);
 
-        // Make sure a favourite stream is selected
-        if (favouriteStreamSelection.getValue() == null
-                || !favouriteStreams.contains(favouriteStreamSelection.getValue())) {
-            favouriteStreamSelection.setValue(favouriteStreams.get(0));
+        // Check if the entered stream settings are favourited and update the UI appropriately
+        final Optional<FavouriteStream> matchedFavouriteStream = findFavouriteStream(enteredStreamService,
+                enteredChannel);
+        if (!matchedFavouriteStream.isPresent()) {
+            favouriteStreamSelection.getItems().add(0, DEFAULT_FAVOURITE_STREAM);
         }
+        favouriteStreamEdit.setDisable(!matchedFavouriteStream.isPresent());
 
-        updateFavouriteStreamToggle();
-    }
+        // Select a favourite stream
+        if (forceValueUpdate) {
+            favouriteStreamSelection.setValue(null);
+        }
+        favouriteStreamSelection
+                .setValue(matchedFavouriteStream.isPresent() ? matchedFavouriteStream.get() : DEFAULT_FAVOURITE_STREAM);
 
-    /**
-     * Updates the favourite stream toggle based on the entered info.
-     */
-    public void updateFavouriteStreamToggle() {
-        final StreamService currentStreamService = streamServiceSelection.getValue();
-        final String currentChannel = channelCustomInput.getText();
-
-        if (StreamServiceManager.NONE.equals(currentStreamService) || currentChannel.equals("")) {
+        // Update the favourite stream toggle star
+        if (StreamServiceManager.NONE.equals(enteredStreamService) || enteredChannel.equals("")) {
             favouriteStreamToggle.setDisable(true);
             favouriteStreamToggle.setSelected(false);
         } else {
             favouriteStreamToggle.setDisable(false);
-            favouriteStreamToggle.setSelected(findFavouriteStream(currentStreamService, currentChannel).isPresent());
+            favouriteStreamToggle.setSelected(matchedFavouriteStream.isPresent());
         }
     }
 
@@ -744,10 +659,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * @return An optional matching favourite stream
      */
     public Optional<FavouriteStream> findFavouriteStream(final StreamService streamService, final String channel) {
-        final String channelPruned = channel.toLowerCase();
-        return favouriteStreamSelection.getItems().stream().filter(
-                f -> f.getStreamService().equals(streamService) && f.getChannel().toLowerCase().equals(channelPruned))
-                .findAny();
+        final FavouriteStream favouriteStream = new FavouriteStream("", streamService, channel);
+        return favouriteStreamSelection.getItems().stream().filter(f -> f.equalsLoosely(favouriteStream)).findAny();
     }
 
 }

@@ -1,10 +1,10 @@
 package com.dopelives.dopestreamer.gui.combobox;
 
+import com.dopelives.dopestreamer.Environment;
+
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
-import com.dopelives.dopestreamer.Environment;
 
 /**
  * The class for a combo box cell.
@@ -34,8 +34,6 @@ public class ComboBoxCell<T extends ComboBoxItem> extends ListCell<T> {
         setText(item.getLabel());
 
         final String iconUrl = item.getIconUrl();
-        if (iconUrl != null) {
-            setGraphic(new ImageView(new Image(Environment.IMAGE_FOLDER + iconUrl)));
-        }
+        setGraphic(iconUrl != null ? new ImageView(new Image(Environment.IMAGE_FOLDER + iconUrl)) : null);
     }
 }

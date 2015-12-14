@@ -78,13 +78,6 @@ public class StreamInfo {
                         sType = type;
                         sGame = game;
 
-                        try {
-                            Thread.sleep(2000);
-                        } catch (final InterruptedException ex) {
-                            // TODO Auto-generated catch block
-                            ex.printStackTrace();
-                        }
-
                         // Notify all listeners of a change in stream info
                         for (final StreamInfoListener listener : sListeners) {
                             listener.onStreamInfoUpdated(sStreamer, sType, sGame);

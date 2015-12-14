@@ -31,11 +31,11 @@
 
     <HBox>
         <VBox prefWidth="170">
-            <Label text="Stream service" />
+            <Label text="Stream settings" />
             <ComboBox fx:id="streamServiceSelection" prefWidth="160" prefHeight="30" />
         </VBox>
         <VBox>
-            <Label text="Quality" />
+            <Label text="" />
             <ComboBox fx:id="qualitySelection" prefWidth="90" prefHeight="30">
                 <tooltip>
                     <Tooltip text="Depending on the stream, not all listed qualities might be available" />
@@ -44,11 +44,23 @@
         </VBox>
     </HBox>
 
+    <VBox prefHeight="10" />
 
-    <Label text="Channel" />
+    <!--Label text="Channel" styleClass="labelSmallPadding" /-->
     <HBox alignment="CENTER_LEFT">
-        <RadioButton fx:id="channelFavourite" selected="true" toggleGroup="$channelGroup" />
-        <ComboBox fx:id="favouriteStreamSelection" prefWidth="202" prefHeight="30" />
+        <TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefWidth="232" prefHeight="30" />
+        <HBox prefWidth="10" />
+        <CheckBox fx:id="favouriteStreamToggle" onAction="#onFavouriteStreamToggle">
+            <tooltip>
+                <Tooltip text="Favorite this channel" />
+            </tooltip>
+        </CheckBox>
+    </HBox>
+
+
+    <Label text="Favourites" />
+    <HBox alignment="CENTER_LEFT">
+        <ComboBox fx:id="favouriteStreamSelection" prefWidth="228" prefHeight="30" />
         <HBox prefWidth="7" />
         <Button fx:id="favouriteStreamEdit" onAction="#onFavouriteStreamEditStart">
             <tooltip>
@@ -61,20 +73,9 @@
             </tooltip>
         </Button>
     </HBox>
-    <VBox prefHeight="5" />
-    <HBox alignment="CENTER_LEFT">
-        <RadioButton fx:id="channelCustom" toggleGroup="$channelGroup" />
-        <TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefWidth="205" prefHeight="30" />
-        <HBox prefWidth="10" />
-        <CheckBox fx:id="favouriteStreamToggle" onAction="#onFavouriteStreamToggle">
-            <tooltip>
-                <Tooltip text="Favorite this channel" />
-            </tooltip>
-        </CheckBox>
-    </HBox>
 
 
-    <VBox prefHeight="20" />
+    <VBox prefHeight="15" />
     <Button fx:id="streamButton" onAction="#onStreamButtonClicked"
         prefWidth="260" prefHeight="50" />
         

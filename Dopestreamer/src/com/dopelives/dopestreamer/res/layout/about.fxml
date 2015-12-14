@@ -44,7 +44,7 @@
 			<Label text="Developed by" />
 			<Text text="Timon Kanters (Ezid)" onMouseClicked="#onEzidClicked" styleClass="link" />
             <Text text="Simon Vacker (Xphome)" onMouseClicked="#onXphomeClicked" styleClass="link" />
-            <Text text="Joakim (Booom3)" onMouseClicked="#onBoomerClicked" styleClass="link" />
+            <Text text="Joakim (Boomer)" onMouseClicked="#onBoomerClicked" styleClass="link" />
 		    <Text text="Jimmy (did nothing wrong)" />
 		    <Text text="Ari Vuollet (GoaLitiuM)" />
 		

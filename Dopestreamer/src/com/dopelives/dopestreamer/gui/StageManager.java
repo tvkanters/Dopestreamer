@@ -26,7 +26,7 @@ public class StageManager extends Application {
     /** The window's width */
     public static final int WIDTH = 300;
     /** The window's height */
-    public static final int HEIGHT = 425;
+    public static final int HEIGHT = 410;
     /** The margin that JavaFX adds for some reason */
     public static final int MARGIN_CORRECTION = 10;
 

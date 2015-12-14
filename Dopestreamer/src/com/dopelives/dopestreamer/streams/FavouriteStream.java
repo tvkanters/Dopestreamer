@@ -1,5 +1,7 @@
 package com.dopelives.dopestreamer.streams;
 
+import java.util.Objects;
+
 import org.json.JSONObject;
 
 import com.dopelives.dopestreamer.gui.combobox.ComboBoxItem;
@@ -99,7 +101,7 @@ public class FavouriteStream implements ComboBoxItem {
      */
     @Override
     public String getIconUrl() {
-        return mStreamService.getIconUrl();
+        return (mStreamService != null ? mStreamService.getIconUrl() : null);
     }
 
     /**
@@ -111,6 +113,19 @@ public class FavouriteStream implements ComboBoxItem {
     }
 
     /**
+     * @return True iff the stream service and (case-insensitive) channel are equal.
+     */
+    public boolean equalsLoosely(final Object obj) {
+        if (!(obj instanceof FavouriteStream)) {
+            return false;
+        }
+        final FavouriteStream other = (FavouriteStream) obj;
+        return (Objects.equals(mStreamService, other.mStreamService)
+                && ((mChannel != null && mChannel.equalsIgnoreCase(other.mChannel))
+                        || (mChannel == null && other.mChannel == null)));
+    }
+
+    /**
      * @return True iff all members are equal.
      */
     @Override
@@ -119,8 +134,8 @@ public class FavouriteStream implements ComboBoxItem {
             return false;
         }
         final FavouriteStream other = (FavouriteStream) obj;
-        return (mLabel.equals(other.mLabel) && mStreamService == other.mStreamService
-                && mChannel.equals(other.mChannel));
+        return (Objects.equals(mLabel, other.mLabel) && Objects.equals(mStreamService, other.mStreamService)
+                && Objects.equals(mChannel, other.mChannel));
     }
 
     /**

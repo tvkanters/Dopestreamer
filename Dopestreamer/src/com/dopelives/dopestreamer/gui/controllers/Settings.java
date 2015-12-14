@@ -129,11 +129,11 @@ public class Settings extends ScrollableController {
             Platform.runLater(() -> {
                 streamingServicesDisabled.getSelectionModel().clearSelection();
                 streamingServicesDisabled.getItems().setAll(streamServices);
-            });
 
-            final Streams streamsController = ((Streams) Screen.STREAMS.getController());
-            streamsController.updateFavouriteStreams();
-            streamsController.updateStreamServices();
+                final Streams streamsController = ((Streams) Screen.STREAMS.getController());
+                streamsController.updateStreamServices();
+                streamsController.updateFavouriteStreams(true);
+            });
 
             streamingServicesDisabled.consumeNextHide();
         });
