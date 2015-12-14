@@ -48,13 +48,7 @@
 
     <!--Label text="Channel" styleClass="labelSmallPadding" /-->
     <HBox alignment="CENTER_LEFT">
-        <TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefWidth="232" prefHeight="30" />
-        <HBox prefWidth="10" />
-        <CheckBox fx:id="favouriteStreamToggle" onAction="#onFavouriteStreamToggle">
-            <tooltip>
-                <Tooltip text="Favorite this channel" />
-            </tooltip>
-        </CheckBox>
+        <TextField fx:id="channelCustomInput" promptText="Enter a channel name" prefWidth="260" prefHeight="30" />
     </HBox>
 
 
@@ -62,7 +56,12 @@
     <HBox alignment="CENTER_LEFT">
         <ComboBox fx:id="favouriteStreamSelection" prefWidth="228" prefHeight="30" />
         <HBox prefWidth="7" />
-        <Button fx:id="favouriteStreamEdit" onAction="#onFavouriteStreamEditStart">
+        <Button fx:id="favouriteStreamAdd" onAction="#onFavouriteStreamAdd">
+            <tooltip>
+                <Tooltip text="Favourite current settings" />
+            </tooltip>
+        </Button>
+        <Button fx:id="favouriteStreamEdit" onAction="#onFavouriteStreamEditStart" managed="false" visible="false">
             <tooltip>
                 <Tooltip text="Edit name or delete" />
             </tooltip>
@@ -80,9 +79,9 @@
         prefWidth="260" prefHeight="50" />
         
     <VBox prefHeight="10" />
-    <CheckBox fx:id="gameModeToggle" onAction="#onGameModeToggle" text="Game mode">
+    <CheckBox fx:id="gameModeToggle" onAction="#onGameModeToggle" text="Auto restart streams">
         <tooltip>
-            <Tooltip text="Prevents automatic stream restarts" />
+            <Tooltip text="Disabling prevents stealing focus while gaming" />
         </tooltip>
     </CheckBox>
 

@@ -73,7 +73,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @FXML
     private Text viewerInfo;
     @FXML
-    private CheckBox favouriteStreamToggle;
+    private Button favouriteStreamAdd;
     @FXML
     private Button favouriteStreamEdit;
     @FXML
@@ -121,6 +121,10 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
 
         // Update the UI when the stream service changes
         streamServiceSelection.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+
             mLockStreamServiceSelection = false;
 
             updateQualityOptions();
@@ -241,7 +245,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         /* GAME MODE UI */
 
         // Set checkbox preferences
-        gameModeToggle.setSelected(Pref.GAME_MODE.getBoolean());
+        gameModeToggle.setSelected(!Pref.GAME_MODE.getBoolean());
 
         /* UPDATE UI BASED ON STREAM STATE */
 
@@ -442,29 +446,39 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         ControllerHelper.setCssClass(qualitySelection, "invalid", !valid);
     }
 
-    @FXML
-    private void onGameModeToggle() {
-        Pref.GAME_MODE.put(gameModeToggle.isSelected());
+    /**
+     * Shows one of the favourite stream buttons and hides the others.
+     *
+     * @param button
+     *            The favourite stream button to show
+     */
+    private void showFavouriteStreamButton(final Button button) {
+        favouriteStreamAdd.setVisible(false);
+        favouriteStreamAdd.setManaged(false);
+        favouriteStreamEdit.setVisible(false);
+        favouriteStreamEdit.setManaged(false);
+        favouriteStreamDelete.setVisible(false);
+        favouriteStreamDelete.setManaged(false);
+
+        button.setVisible(true);
+        button.setManaged(true);
+
+        button.setDisable(streamServiceSelection.getValue().equals(StreamServiceManager.NONE)
+                || channelCustomInput.getText().equals(""));
     }
 
     @FXML
-    private void onFavouriteStreamToggle() {
-        if (favouriteStreamToggle.isSelected()) {
-            // The current entered stream is favourited, so store it and update the list
-            final String channel = channelCustomInput.getText();
-            final FavouriteStream favouriteStream = new FavouriteStream(channel, streamServiceSelection.getValue(),
-                    channel);
-            Pref.FAVOURITE_STREAMS.add(favouriteStream.toJson());
-            updateFavouriteStreams();
+    private void onGameModeToggle() {
+        Pref.GAME_MODE.put(!gameModeToggle.isSelected());
+    }
 
-        } else {
-            // The currently selected favourite stream has been unfavourited, so remove it
-            final Optional<FavouriteStream> targetFavouriteStream = findFavouriteStream(
-                    streamServiceSelection.getValue(), channelCustomInput.getText());
-            if (targetFavouriteStream.isPresent()) {
-                deleteFavouriteStream(targetFavouriteStream.get());
-            }
-        }
+    @FXML
+    private void onFavouriteStreamAdd() {
+        final String channel = channelCustomInput.getText();
+        final FavouriteStream favouriteStream = new FavouriteStream(channel, streamServiceSelection.getValue(),
+                channel);
+        Pref.FAVOURITE_STREAMS.add(favouriteStream.toJson());
+        updateFavouriteStreams();
     }
 
     @FXML
@@ -477,10 +491,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         favouriteStreamSelection.focusedProperty().addListener(mFavouriteStreamBlurAction);
         favouriteStreamSelection.showingProperty().addListener(mFavouriteStreamOpenAction);
 
-        favouriteStreamEdit.setVisible(false);
-        favouriteStreamEdit.setManaged(false);
-        favouriteStreamDelete.setVisible(true);
-        favouriteStreamDelete.setManaged(true);
+        showFavouriteStreamButton(favouriteStreamDelete);
     }
 
     /**
@@ -489,10 +500,8 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     private void onFavouriteStreamEditStop() {
         favouriteStreamSelection.focusedProperty().removeListener(mFavouriteStreamBlurAction);
         favouriteStreamSelection.showingProperty().removeListener(mFavouriteStreamOpenAction);
-        favouriteStreamEdit.setVisible(true);
-        favouriteStreamEdit.setManaged(true);
-        favouriteStreamDelete.setVisible(false);
-        favouriteStreamDelete.setManaged(false);
+
+        showFavouriteStreamButton(favouriteStreamEdit);
 
         if (favouriteStreamDelete.isFocused()) {
             // If the delete button got focus, delete the favourite stream that was being edited
@@ -541,16 +550,31 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
      * Updates the last of stream services. To be called after stream services are enabled or disabled.
      */
     public void updateStreamServices() {
+        updateStreamServices(false);
+    }
+
+    /**
+     * Updates the last of stream services. To be called after stream services are enabled or disabled.
+     *
+     * @param forceValueUpdate
+     *            Whether or not the combo box value should be forcefully updated to prevent bugs
+     */
+    public void updateStreamServices(final boolean forceValueUpdate) {
         final List<StreamService> streamServices = new ArrayList<>(StreamServiceManager.getEnabledStreamServices());
 
         // Keep track of which stream service the user selected manually
         final StreamService selected = streamServiceSelection.getValue();
-        if (selected != null && !mLockStreamServiceSelection) {
+        if (!mLockStreamServiceSelection) {
             mLastSelected = selected;
         }
 
         // Update the stream services
         streamServiceSelection.getItems().setAll(streamServices);
+
+        // Enforce the value being updated if needed
+        if (forceValueUpdate) {
+            streamServiceSelection.setValue(null);
+        }
 
         // Select the right stream service
         if (streamServiceSelection.getItems().contains(mLastSelected) && mLockStreamServiceSelection) {
@@ -623,28 +647,21 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
         // Add favourite streams
         favouriteStreamSelection.getItems().setAll(favouriteStreams);
 
+        // Enforce the value being updated if needed
+        if (forceValueUpdate) {
+            favouriteStreamSelection.setValue(null);
+        }
+
         // Check if the entered stream settings are favourited and update the UI appropriately
         final Optional<FavouriteStream> matchedFavouriteStream = findFavouriteStream(enteredStreamService,
                 enteredChannel);
         if (!matchedFavouriteStream.isPresent()) {
             favouriteStreamSelection.getItems().add(0, DEFAULT_FAVOURITE_STREAM);
-        }
-        favouriteStreamEdit.setDisable(!matchedFavouriteStream.isPresent());
-
-        // Select a favourite stream
-        if (forceValueUpdate) {
-            favouriteStreamSelection.setValue(null);
-        }
-        favouriteStreamSelection
-                .setValue(matchedFavouriteStream.isPresent() ? matchedFavouriteStream.get() : DEFAULT_FAVOURITE_STREAM);
-
-        // Update the favourite stream toggle star
-        if (StreamServiceManager.NONE.equals(enteredStreamService) || enteredChannel.equals("")) {
-            favouriteStreamToggle.setDisable(true);
-            favouriteStreamToggle.setSelected(false);
+            favouriteStreamSelection.setValue(DEFAULT_FAVOURITE_STREAM);
+            showFavouriteStreamButton(favouriteStreamAdd);
         } else {
-            favouriteStreamToggle.setDisable(false);
-            favouriteStreamToggle.setSelected(matchedFavouriteStream.isPresent());
+            showFavouriteStreamButton(favouriteStreamEdit);
+            favouriteStreamSelection.setValue(matchedFavouriteStream.get());
         }
     }
 

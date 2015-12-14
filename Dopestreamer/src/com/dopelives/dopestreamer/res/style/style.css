@@ -33,6 +33,14 @@ Button {
     -fx-label-padding: 15.0px 0.0 4.0px 0.0;
     -fx-effect: innershadow(three-pass-box, rgba(0.0,0.0,0.0,0.7), 3.0, 0.0, 0.0, 1.5);
 }
+.context-menu .label {
+    -fx-font-family: Arial;
+    -fx-font-size: 13.0px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #000;
+    -fx-label-padding: 0.0;
+    -fx-effect: none;
+}
 
 .link {
     -fx-fill: #585;
@@ -110,6 +118,16 @@ ScrollPane .corner {
 }
 .combo-box-base > *.arrow-button {
     -fx-padding: 0 10px 0 3px;
+}
+
+#favouriteStreamAdd {
+    -fx-pref-width: 24px;
+    -fx-pref-height: 24px;
+    -fx-background-image: url("../images/favourite_off.png");
+    -fx-background-insets: 0.0;
+    -fx-background-radius: 0.0;
+    -fx-padding: 0.0;
+    -fx-background-color: transparent;
 }
 
 #favouriteStreamEdit {
