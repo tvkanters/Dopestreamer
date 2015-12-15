@@ -3,8 +3,6 @@ package com.dopelives.dopestreamer;
 import java.io.File;
 import java.io.PrintStream;
 
-import javafx.application.Application;
-
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.shell.Console;
 import com.dopelives.dopestreamer.shell.Shell;
@@ -13,13 +11,15 @@ import com.dopelives.dopestreamer.streams.StreamManager;
 import com.dopelives.dopestreamer.util.OutputSpy;
 import com.dopelives.dopestreamer.util.Pref;
 
+import javafx.application.Application;
+
 /**
  * The initialiser and general environment manager.
  */
 public class Environment {
 
     /** The current version without prefix */
-    public static final String VERSION = "1.16.0";
+    public static final String VERSION = "1.17.0";
 
     /** The absolute path to the folder containing the GUI resources */
     public static final String RESOURCE_FOLDER = "/com/dopelives/dopestreamer/res/";
@@ -34,8 +34,8 @@ public class Environment {
     /** The application's title */
     public static final String TITLE = "Dopestreamer";
     /** The location of the executable file running Dopestreamer */
-    public static final File EXE_FILE = new File(Environment.class.getProtectionDomain().getCodeSource().getLocation()
-            .getPath());
+    public static final File EXE_FILE = new File(
+            Environment.class.getProtectionDomain().getCodeSource().getLocation().getPath());
     /** The directory of the executable file running Dopestreamer */
     public static final String EXE_DIR = EXE_FILE.getParentFile().toString() + File.separator;
 
