@@ -47,7 +47,7 @@ public enum Pref {
     /** The Vacker server to use */
     VACKER_SERVER("vackerserver", ""),
     /** Whether or not Dopestreamer should check if updates of Livestreamer are available */
-    LIVESTREAMER_UPDATE_CHECK("livestreamerupdatecheck", true),
+    LIVESTREAMER_UPDATE_CHECK("livestreamerupdatecheck", false),
     /** Whether or not the buffering of HLS should be done quicker */
     HLS_QUICK_BUFFER("hlsquickbuffer", true),
     /** Stream services that the user disabled and shouldn't be offered */

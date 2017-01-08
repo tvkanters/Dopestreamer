@@ -37,8 +37,7 @@
             <Label fx:id="livestreamerVersion" />
 		    <VBox fx:id="livestreamerUpdateBox" managed="false" visible="false">
 		        <Text fx:id="liveStreamerVersionAvailable" />
-		        <Text text="Visit Github to update" onMouseClicked="#onLivestreamerChangelogClicked" styleClass="link" />
-                <Text wrappingWidth="260" text="${'• Download the zip file\n• Move contents to DSer/LSer directory\n• Remove the outdated .egg folders'}" />
+		        <Text text="Visit Github or bug Ezid to update" onMouseClicked="#onLivestreamerChangelogClicked" styleClass="link" />
 		    </VBox>
 		
 			<Label text="Developed by" />
@@ -50,7 +49,7 @@
 		
 			<Label text="Special thanks to" />
 			<Text text="The Dopelives community" onMouseClicked="#onDopelivesClicked" styleClass="link" />
-			<Text text="The Livestreamer devs" onMouseClicked="#onLivestreamerClicked" styleClass="link" />
+			<Text text="The Streamlink devs" onMouseClicked="#onLivestreamerClicked" styleClass="link" />
 			<Text text="The RTMPDump devs" onMouseClicked="#onRtmpDumpClicked" styleClass="link" />
 			
             <VBox prefHeight="20" />

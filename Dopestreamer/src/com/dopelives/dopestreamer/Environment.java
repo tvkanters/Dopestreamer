@@ -89,8 +89,8 @@ public class Environment {
             livestreamerArgs += args[i] + " ";
         }
 
-        // Strip the Livestreamer protocol
-        command += " " + livestreamerArgs.replaceAll("(?i)^livestreamer:(//)?", "").trim();
+        // Strip the Livestreamer/Streamlink protocol
+        command += " " + livestreamerArgs.replaceAll("(?i)^(livestreamer|streamlink):(//)?", "").trim();
 
         // Start Livestreamer with the provided arguments
         final Console console = shell.createConsole(command);

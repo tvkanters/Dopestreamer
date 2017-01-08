@@ -10,6 +10,9 @@ import com.dopelives.dopestreamer.Environment;
  */
 public class LinuxShell extends Shell {
 
+    private static final String[] LIVESTREAMER_PATHS = { Environment.EXE_DIR + "streamlink",
+            Environment.EXE_DIR + "livestreamer" };
+
     protected LinuxShell() {
         super();
     }
@@ -69,17 +72,14 @@ public class LinuxShell extends Shell {
      */
     @Override
     public String getLivestreamerPath() {
-        String path = "";
-
-        // Check if there's a bundled Livestreamer installation
-        final File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
-        if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-            path = "\"" + Environment.EXE_DIR + "livestreamer\"";
-        } else {
-            path = "livestreamer";
+        for (final String path : LIVESTREAMER_PATHS) {
+            final File file = new File(path);
+            if (file.exists() && !file.isDirectory()) {
+                return "\"" + path + "\"";
+            }
         }
 
-        return path;
+        return "streamlink";
     }
 
     /**

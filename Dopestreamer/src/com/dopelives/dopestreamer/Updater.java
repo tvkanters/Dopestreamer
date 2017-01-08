@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.JSONArray;
@@ -25,10 +26,10 @@ public class Updater {
     /** The Dopestreamer Github API page */
     private static final String DOPESTREAMER_PAGE = "https://api.github.com/repos/tvkanters/Dopestreamer/releases?per_page=1";
     /** The Livestreamer Github API page */
-    private static final String LIVESTREAMER_PAGE = "https://api.github.com/repos/chrippa/livestreamer/releases?per_page=1";
+    private static final String LIVESTREAMER_PAGE = "https://api.github.com/repos/streamlink/streamlink/releases?per_page=1";
 
     /** The pattern used to match version numbers */
-    private static final Pattern sVersionMatcher = Pattern.compile("^\\d+(\\.\\d+)*$");
+    private static final Pattern sVersionMatcher = Pattern.compile("\\d+(\\.\\d+)+");
 
     /** The latest Dopestreamer version's code in x.x.x format */
     private static String sDopestreamerLatestVersion = null;
@@ -76,7 +77,7 @@ public class Updater {
         }
 
         final JSONObject json = new JSONArray(result).getJSONObject(0);
-        return json.getString("tag_name").substring(1);
+        return json.getString("tag_name").replaceAll("^v", "");
     }
 
     /**
@@ -135,12 +136,12 @@ public class Updater {
     public static synchronized String getCurrentLivestreamerVersion() {
         if (sLivestreamerCurrentVersion == null) {
             final Shell shell = Shell.getInstance();
-            String currentVersion = shell.executeCommandForResult(shell.getLivestreamerPath() + " --version");
-            currentVersion = currentVersion.substring(currentVersion.indexOf(' ') + 1);
+            final String currentVersion = shell.executeCommandForResult(shell.getLivestreamerPath() + " --version");
+            final Matcher versionMatcher = sVersionMatcher.matcher(currentVersion);
 
             // Only return an actual version number or nothing
-            if (sVersionMatcher.matcher(currentVersion).find()) {
-                sLivestreamerCurrentVersion = currentVersion;
+            if (versionMatcher.find()) {
+                sLivestreamerCurrentVersion = versionMatcher.group();
             }
         }
 
@@ -182,7 +183,8 @@ public class Updater {
                 new File(tempPath).delete();
 
                 // Download new update
-                Files.copy(new URL(downloadUrl).openStream(), FileSystems.getDefault().getPath(tempPath),
+                Files.copy(new URL(downloadUrl).openStream(),
+                        FileSystems.getDefault().getPath(tempPath),
                         StandardCopyOption.REPLACE_EXISTING);
 
                 // Make note of the successful download

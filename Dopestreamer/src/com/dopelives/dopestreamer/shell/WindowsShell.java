@@ -16,6 +16,10 @@ import com.sun.jna.platform.win32.WinNT;
  */
 public class WindowsShell extends Shell {
 
+    private static final String[] LIVESTREAMER_PATHS = { Environment.EXE_DIR + "Streamlink.exe",
+            Environment.EXE_DIR + "streamlink.exe", Environment.EXE_DIR + "streamlink",
+            Environment.EXE_DIR + "livestreamer.exe", Environment.EXE_DIR + "livestreamer" };
+
     protected WindowsShell() {
         super();
     }
@@ -84,22 +88,14 @@ public class WindowsShell extends Shell {
      */
     @Override
     public String getLivestreamerPath() {
-        String path = "";
-
-        // Check if there's a bundled Livestreamer installation
-        File livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer.exe");
-        if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-            path = "\"" + Environment.EXE_DIR + "livestreamer.exe\"";
-        } else {
-            livestreamerCheck = new File(Environment.EXE_DIR + "livestreamer");
-            if (livestreamerCheck.exists() && !livestreamerCheck.isDirectory()) {
-                path = "\"" + Environment.EXE_DIR + "livestreamer\"";
-            } else {
-                path = "livestreamer";
+        for (final String path : LIVESTREAMER_PATHS) {
+            final File file = new File(path);
+            if (file.exists() && !file.isDirectory()) {
+                return "\"" + path + "\"";
             }
         }
 
-        return path;
+        return "Streamlink.exe";
     }
 
     /**
@@ -183,6 +179,11 @@ public class WindowsShell extends Shell {
         if (!Registry.addString("HKEY_CLASSES_ROOT\\livestreamer", "URL Protocol", "")) return false;
         if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\livestreamer\\Shell\\Open\\Command", command)) return false;
 
+        // Register streamlink://
+        if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\streamlink", "URL:livestreamer protocol")) return false;
+        if (!Registry.addString("HKEY_CLASSES_ROOT\\streamlink", "URL Protocol", "")) return false;
+        if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\streamlink\\Shell\\Open\\Command", command)) return false;
+
         // Register rtmp://
         if (!Registry.addDefaultString("HKEY_CLASSES_ROOT\\rtmp", "URL:livestreamer protocol")) return false;
         if (!Registry.addString("HKEY_CLASSES_ROOT\\rtmp", "URL Protocol", "")) return false;
@@ -197,6 +198,7 @@ public class WindowsShell extends Shell {
     @Override
     public boolean unregisterCustomProtocol() {
         if (!Registry.delete("HKEY_CLASSES_ROOT\\livestreamer")) return false;
+        if (!Registry.delete("HKEY_CLASSES_ROOT\\streamlink")) return false;
         if (!Registry.delete("HKEY_CLASSES_ROOT\\rtmp")) return false;
 
         return true;
@@ -228,8 +230,10 @@ public class WindowsShell extends Shell {
             return false;
         }
 
-        if (!Registry.addString("HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run", "Dopestreamer",
-                dopestreamerCommand)) return false;
+        if (!Registry.addString("HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+                "Dopestreamer",
+                dopestreamerCommand))
+            return false;
 
         return true;
     }

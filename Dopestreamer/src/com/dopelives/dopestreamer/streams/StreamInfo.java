@@ -195,7 +195,8 @@ public class StreamInfo {
      */
     private static void executeViewerCountRefresh() {
         Executor.execute(sVackerUpdater);
-        Executor.execute(sTwitchUpdater);
+        // Twitch is disabled until a proper solution for public OAUTH tokens has been found
+        // Executor.execute(sTwitchUpdater);
     }
 
     /**

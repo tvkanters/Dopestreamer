@@ -362,7 +362,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @Override
     public void onInvalidLivestreamer(final Stream stream) {
         Platform.runLater(() -> {
-            streamButton.setText("Livestreamer outdated");
+            streamButton.setText("Streamlink outdated");
         });
     }
 
@@ -372,7 +372,7 @@ public class Streams implements Initializable, StreamListener, StreamInfoListene
     @Override
     public void onLivestreamerNotFound(final Stream stream) {
         Platform.runLater(() -> {
-            streamButton.setText("Livestreamer not found");
+            streamButton.setText("Streamlink not found");
         });
     }
 

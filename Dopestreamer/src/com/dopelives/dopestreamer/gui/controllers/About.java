@@ -7,16 +7,16 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.text.Text;
-
 import com.dopelives.dopestreamer.Environment;
 import com.dopelives.dopestreamer.Updater;
 import com.dopelives.dopestreamer.gui.Screen;
 import com.dopelives.dopestreamer.gui.StageManager;
 import com.dopelives.dopestreamer.util.Pref;
+
+import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 
 public class About extends ScrollableController {
 
@@ -47,8 +47,8 @@ public class About extends ScrollableController {
         }
 
         final String currentVersion = Updater.getCurrentLivestreamerVersion();
-        livestreamerVersion.setText("Livestreamer "
-                + (currentVersion != null ? "version " + currentVersion : "not found"));
+        livestreamerVersion
+                .setText("Streamlink " + (currentVersion != null ? "version " + currentVersion : "not found"));
         if (Pref.LIVESTREAMER_UPDATE_CHECK.getBoolean() && Updater.isLivestreamerOutdated()) {
             liveStreamerVersionAvailable.setText("New update available: v" + Updater.getLatestLivestreamerVersion());
 
@@ -67,7 +67,7 @@ public class About extends ScrollableController {
 
     @FXML
     public void onLivestreamerChangelogClicked() {
-        openUrl("https://github.com/chrippa/livestreamer/releases");
+        openUrl("https://github.com/streamlink/streamlink/releases");
     }
 
     @FXML
@@ -97,7 +97,7 @@ public class About extends ScrollableController {
 
     @FXML
     public void onLivestreamerClicked() {
-        openUrl("https://github.com/chrippa/livestreamer");
+        openUrl("https://github.com/streamlink/streamlink");
     }
 
     @FXML

@@ -58,10 +58,10 @@
 		    <CheckBox fx:id="notificationDingdongToggle" onAction="#onNotificationDingdongToggle" text="Tanzenkat DINGDONG notifications" />
             <VBox fx:id="protocolToggleWrapper">
                 <VBox prefHeight="2" />
-                <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support livestreamer:// and rtmp://" />
+                <CheckBox fx:id="protocolToggle" onAction="#onProtocolToggle" text="Support streamlink:// and rtmp://" />
             </VBox>
             <VBox prefHeight="2" />
-            <CheckBox fx:id="livestreamerUpdateCheckToggle" onAction="#onLivestreamerUpdateCheckToggle" text="Check for Livestreamer updates" />
+            <CheckBox fx:id="livestreamerUpdateCheckToggle" onAction="#onLivestreamerUpdateCheckToggle" text="Check for Streamlink updates" />
             <VBox prefHeight="2" />
             <CheckBox fx:id="hlsQuickBufferToggle" onAction="#onHlsQuickBufferToggle" text="Reduced Twitch delay">
                 <tooltip>
