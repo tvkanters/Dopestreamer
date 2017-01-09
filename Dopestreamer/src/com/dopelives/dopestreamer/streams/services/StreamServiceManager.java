@@ -20,6 +20,7 @@ public class StreamServiceManager {
 
     static {
         register(new Afreeca());
+        register(new BeamPro());
         register(new Hitbox());
         register(new LivestreamNew());
         register(new LivestreamOld());

@@ -51,7 +51,7 @@ public enum Pref {
     /** Whether or not the buffering of HLS should be done quicker */
     HLS_QUICK_BUFFER("hlsquickbuffer", true),
     /** Stream services that the user disabled and shouldn't be offered */
-    DISABLED_STREAM_SERVICES("disabledstreamservices", new String[] { "afreeca", "bambuser", "livestreamold",
+    DISABLED_STREAM_SERVICES("disabledstreamservices", new String[] { "afreeca", "bambuser", "beampro", "livestreamold",
             "livestream" }),
     /** The user's favourite streams, stored for easy access */
     FAVOURITE_STREAMS("favouritestreams", new String[] {
