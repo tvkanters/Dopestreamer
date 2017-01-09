@@ -35,7 +35,7 @@ public class Environment {
     public static final String TITLE = "Dopestreamer";
     /** The location of the executable file running Dopestreamer */
     public static final File EXE_FILE = new File(
-            Environment.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            Environment.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
     /** The directory of the executable file running Dopestreamer */
     public static final String EXE_DIR = EXE_FILE.getParentFile().toString() + File.separator;
 
