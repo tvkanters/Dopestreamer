@@ -19,7 +19,7 @@ import javafx.application.Application;
 public class Environment {
 
     /** The current version without prefix */
-    public static final String VERSION = "2.1.0";
+    public static final String VERSION = "2.2.0";
 
     /** The absolute path to the folder containing the GUI resources */
     public static final String RESOURCE_FOLDER = "/com/dopelives/dopestreamer/res/";
