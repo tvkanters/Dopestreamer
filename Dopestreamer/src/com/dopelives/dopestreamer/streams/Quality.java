@@ -8,6 +8,7 @@ import com.dopelives.dopestreamer.gui.combobox.ComboBoxItem;
 public enum Quality implements ComboBoxItem {
 
     BEST("Best", "best"),
+    P72060("720p60", "720p60"),
     P720("720p", "720p"),
     P480("480p", "480p"),
     P360("360p", "360p"),

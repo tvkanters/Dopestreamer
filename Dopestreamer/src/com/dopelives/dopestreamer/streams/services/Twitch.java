@@ -48,9 +48,10 @@ public class Twitch extends StreamService {
     @Override
     protected List<Quality> getServiceSpecificQualities() {
         final List<Quality> qualities = new LinkedList<>();
-        qualities.add(Quality.HIGH);
-        qualities.add(Quality.MEDIUM);
-        qualities.add(Quality.LOW);
+        qualities.add(Quality.P72060);
+        qualities.add(Quality.P720);
+        qualities.add(Quality.P480);
+        qualities.add(Quality.P360);
         return qualities;
     }
 
