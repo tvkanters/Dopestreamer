@@ -1,7 +1,7 @@
 Dopestreamer
 ============
 
-A Java-based wrapper for Livestreamer that offers a GUI to easily launch and resume streams. Anyone in the Dopelives community is contribute to the project. Send Ezid a message on IRC for access. When contributing, please use the attached formatter style for consistency purposes and UTF-8 as the default character encoding.
+A Java-based wrapper for Livestreamer that offers a GUI to easily launch and resume streams. Anyone in the Dopelives community is welcome to contribute to the project. Send Ezid a message on IRC for access. When contributing, please use the attached formatter style for consistency purposes and UTF-8 as the default character encoding.
 
 ![UI screenshot](http://i.imgur.com/cHceb5Z.png)
 
