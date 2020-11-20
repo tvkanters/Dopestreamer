@@ -7,7 +7,7 @@
   <cmdLine></cmdLine>
   <chdir></chdir>
   <priority>normal</priority>
-  <downloadUrl>http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html</downloadUrl>
+  <downloadUrl>https://www.java.com/en/download/</downloadUrl>
   <supportUrl>https://github.com/tvkanters/Dopestreamer</supportUrl>
   <stayAlive>false</stayAlive>
   <manifest></manifest>
