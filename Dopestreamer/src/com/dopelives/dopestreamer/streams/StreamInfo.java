@@ -2,6 +2,7 @@ package com.dopelives.dopestreamer.streams;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -72,8 +73,8 @@ public class StreamInfo {
                     final String type = matcher.group(2);
                     final String game = matcher.group(3);
 
-                    final boolean streamInfoChanged = !sStreamer.equals(streamer) || !sType.equals(type)
-                            || !sGame.equals(game);
+                    final boolean streamInfoChanged = !Objects.equals(sStreamer, streamer)
+                            || !Objects.equals(sType, type) || !Objects.equals(sGame, game);
                     if (!sStreamActive || streamInfoChanged) {
                         sStreamActive = true;
                         sStreamer = streamer;
