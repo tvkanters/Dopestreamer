@@ -72,7 +72,9 @@ public class StreamInfo {
                     final String type = matcher.group(2);
                     final String game = matcher.group(3);
 
-                    if (!sStreamActive || !sStreamer.equals(streamer) || !sType.equals(type) || !sGame.equals(game)) {
+                    final boolean streamInfoChanged = !sStreamer.equals(streamer) || !sType.equals(type)
+                            || !sGame.equals(game);
+                    if (!sStreamActive || streamInfoChanged) {
                         sStreamActive = true;
                         sStreamer = streamer;
                         sType = type;
@@ -86,7 +88,7 @@ public class StreamInfo {
                         // Notify the user if he wants and if a stream isn't already active
                         if (Pref.NOTIFICATIONS.getBoolean()
                                 && StreamManager.getInstance().getStreamState() == StreamState.INACTIVE
-                                && !sInitialUpdate) {
+                                && !sInitialUpdate && streamInfoChanged) {
                             Audio.playNotification();
                         }
                     }
